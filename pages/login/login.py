@@ -4,7 +4,7 @@ from flet_route import Params, Basket
 from pages.login.login_elements import email_input, password_input, error_message
 from utils.Database import Database
 from utils.functions import hash_password_
-from utils.style import *
+from pages.style.style import *
 
 
 class LoginPage:
@@ -26,7 +26,7 @@ class LoginPage:
             email = self.email_input.content.value
             password = self.password_input.content.value
             hash_password = hash_password_(password)
-            if db.authorization(email, hash_password):   #TODO переделать на email или login
+            if db.authorization(email, hash_password):
                 page.session.set('auth_user', True)
                 page.go('/dashboard')
             else:
@@ -50,7 +50,7 @@ class LoginPage:
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                 controls=[
                                     ft.Text(
-                                        "Приветствую Вас",
+                                        "Вход в систему",
                                         color=defaultFontColor,
                                         size=25,
                                         weight=ft.FontWeight.NORMAL,
@@ -64,12 +64,6 @@ class LoginPage:
                                         height=40,
                                         bgcolor=hoverBgcolor,
                                         on_click=lambda e: authorization(e)
-                                    ),
-                                    ft.Container(        # ft.Container можно вынести в signup_link = ft.Container(...)
-                                        ft.Text(
-                                            "Создать аккаунт", color=defaultFontColor
-                                        ),
-                                        on_click=lambda e: page.go("/signup"),
                                     ),
                                 ],
                             ),
