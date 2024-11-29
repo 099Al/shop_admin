@@ -1,8 +1,11 @@
 import flet as ft
 from flet_route import Params, Basket
 
+from database.connect import DataBase
+from database.models.models import Admin
+from database.requests.req_login import ReqAdmins
 from pages.login.login_elements import email_input, password_input, error_message
-from utils.Database import Database
+from database.Database import Database
 from utils.functions import hash_password_
 from pages.style.style import *
 
@@ -22,12 +25,15 @@ class LoginPage:
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
 
         def authorization(e):
-            db = Database()
+            db = DataBase()
+            req = ReqAdmins(db)
             email = self.email_input.content.value
             password = self.password_input.content.value
             hash_password = hash_password_(password)
-            if db.authorization(email, hash_password):
+            login_resp: Admin = req.authorization(email, hash_password)
+            if login_resp:
                 page.session.set('auth_user', True)
+                page.session.set('auth_role', login_resp.role)
                 page.go('/dashboard')
             else:
                 self.error_message.open = True  # error_message определен выше
