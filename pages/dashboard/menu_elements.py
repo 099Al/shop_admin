@@ -1,4 +1,7 @@
 import flet as ft
+
+from pages.dashboard.content import Dash_Content
+from pages.dashboard.types import EnumDashContent
 from pages.style.style import *
 
 # style_menu
@@ -17,7 +20,7 @@ logo = ft.Container(
             content=ft.Row(
                 controls=[
                     ft.Image(
-                        src="../../assets/images/logo.jpg", width=45, height=32, fit=ft.ImageFit.FILL
+                        src="/images/logo.jpg", width=45, height=32, fit=ft.ImageFit.FILL
                     ),
                     ft.Text(
                         "Candy",
@@ -33,7 +36,8 @@ logo = ft.Container(
         )
 
 # menu
-sidebar_menu = ft.Container(
+def sidebar_menu(content: Dash_Content):
+    return ft.Container(
             padding=ft.padding.symmetric(0, 13),
             content=ft.Column(
                 controls=[
@@ -48,19 +52,19 @@ sidebar_menu = ft.Container(
                         "Категории",
                         icon="post_add",
                         style=style_menu,
-                        on_click=lambda e: page.go("/post"),
+                        on_click=lambda e: content.update_content(EnumDashContent.CATEGORY),
                     ),
                     ft.TextButton(
                         "Товар"
                         , icon="verified_user"
                         , style=style_menu
-                        , on_click=lambda e: page.go("/post"),
+                        , on_click=lambda e: content.update_content(EnumDashContent.PRODUCTS),
                     ),
                     ft.TextButton(
                         "Пользователи"
                         , icon="verified_user"
                         , style=style_menu
-                        , on_click=lambda e: page.go("/post"),
+                        #, on_click=lambda e: update_content(),
                     ),
                     ft.TextButton(
                         "Клиенты"

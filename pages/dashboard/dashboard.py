@@ -1,6 +1,7 @@
 import flet as ft
 from flet_route import Params, Basket
 
+from pages.dashboard.content import Dash_Content
 from pages.dashboard.head_elements import circle_avatar, header
 from pages.dashboard.menu_elements import logo, sidebar_menu
 from pages.style.style import *
@@ -67,27 +68,35 @@ class DashboardPage:
                 color=secondaryFontColor,
             )
 
+        #body_content = [header(self.user_role)]
+        ds_content = Dash_Content(page, self.user_role)
+
         return ft.View(
             "/dashboard",
             controls=[
-                # ft.Container(content=input_form('введите токен бота'))
-                ft.Row(
+                ft.Row(          #Страница помещатся в одну большую строку
                     expand=True,
                     controls=[
                         # left
-                        ft.Container(
+                        ft.Container(       #1-й элемент это столбец с лого и меню
                             expand=1,
-                            content=ft.Column(controls=[logo, sidebar_menu]),
+                            # content=ft.Column(controls=[logo, sidebar_menu(page, body_content)]),
+                            content=ft.Column(controls=[logo, sidebar_menu(ds_content)]),
                             bgcolor=secondaryBgColor,
                         ),
                         # body center
-                        ft.Container(
+                        ft.Container(              #2-й элемент это столбец с контентом
                             expand=4,
                             padding=ft.padding.symmetric(15, 10),
-                            content=ft.Column([header(self.user_role)]),
+                            content=ft.Column(ds_content.body_content),
                         ),
+
+
+
                     ],
-                )
+                ),
+
+
             ],
             bgcolor=defaultBgColor,
             padding=0,
