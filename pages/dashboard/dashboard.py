@@ -28,6 +28,7 @@ class DashboardPage:
         page.window.min_height = 400
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
 
+
         # self.user_role = page.session.get('auth_role')
         self.user_role = "admin"  # TEST
         # self.check_channel = page.session.get('CHANNEL')
@@ -76,12 +77,13 @@ class DashboardPage:
             controls=[
                 ft.Row(          #Страница помещатся в одну большую строку
                     expand=True,
+                    spacing=0,
                     controls=[
                         # left
                         ft.Container(       #1-й элемент это столбец с лого и меню
                             expand=1,
                             # content=ft.Column(controls=[logo, sidebar_menu(page, body_content)]),
-                            content=ft.Column(controls=[logo, sidebar_menu(ds_content)]),
+                            content=ft.Column(controls=[logo, sidebar_menu(ds_content)]),  #TODO в Row и добавить scroll
                             bgcolor=secondaryBgColor,
                         ),
                         # body center
