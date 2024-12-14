@@ -23,12 +23,12 @@ def circle_avatar(role, **kwargs):
         )
 
 # start_header
-def header(user_role):
+def header(label_name, user_role):
     return ft.Container(
             content=ft.Row(
                 controls=[
                     ft.Text(
-                        "Панель управления",
+                        label_name,
                         color=defaultFontColor,
                         size=20,
                         font_family="cupurum",
