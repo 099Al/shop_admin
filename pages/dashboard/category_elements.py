@@ -71,7 +71,7 @@ class CategoryRow(ft.Row):
             ft.Container(
                 scale=0.8,
                 margin=ft.margin.only(left=0),
-                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete)
+                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog)
             ),
         ]
 
@@ -125,15 +125,44 @@ class CategoryRow(ft.Row):
         self.r_name.update()
         # self.page.update()
 
-    def delete(self, e):
-        db = DataBase()
-        req = ReqCategory(db)
-        req.delete_category(self.id)
-        del self.out_controls[self.index_of_elements[self.indx]]
-        del self.index_of_elements[self.indx]         #перенеумерация элементов. т.к. list controls уменьшился. На этот словарь и list ссылваются все элементы
-        for i, x in enumerate(self.index_of_elements):
-            self.index_of_elements[x] = i
+
+
+
+    def delete_dialog(self, e):
+        def delete_category_handle_yes(e):
+            db = DataBase()
+            req = ReqCategory(db)
+            req.delete_category(self.id)
+            del self.out_controls[self.index_of_elements[self.indx]]
+            del self.index_of_elements[self.indx]         #перенеумерация элементов. т.к. list controls уменьшился. На этот словарь и list ссылваются все элементы
+            for i, x in enumerate(self.index_of_elements):
+                self.index_of_elements[x] = i
+            dlg_delete.open = False
+            self.page.update()
+
+        def delete_category_handle_close(e):
+            dlg_delete.open = False
+            self.page.update()
+
+        dlg_delete = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Подтверждение"),
+            content=ft.Text("Вы действительно хотите удалить категорию?"),
+            actions=[
+                ft.TextButton("Yes", on_click=delete_category_handle_yes),
+                ft.TextButton("No", on_click=delete_category_handle_close),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+            # on_dismiss=lambda e: self.page.add(ft.Text("Modal dialog dismissed"),),
+        )
+
+        self.page.dialog = dlg_delete
+        dlg_delete.open = True
         self.page.update()
+
+
+
+
 
 
 
@@ -174,7 +203,27 @@ def el_header(name_width):
             ),
             el_divider,
         ],
-        height=100,
+        height=50,
         vertical_alignment=ft.CrossAxisAlignment.END,
     )
+
+
+
+
+def add_category():
+    pass
+
+def el_add_category():
+    return ft.Row(
+                        controls=[
+                            ft.Container(
+                            content=ft.ElevatedButton("Добавить категорию",
+                                                      icon=ft.icons.ADD,
+                                                      on_click=add_category()),
+                            margin=ft.margin.only(right=30, top=40),
+                            ),
+                                  ],
+                        alignment=ft.MainAxisAlignment.END,
+
+                    )
 
