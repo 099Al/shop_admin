@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update, delete
+from sqlalchemy import select, func, update, delete, insert
 
 from database.connect import DataBase
 from database.models.models import Category, Product
@@ -40,3 +40,14 @@ class ReqCategory:
             .where(Category.id == category_id)
         )
         self.session.commit()
+
+    def new_category(self, category_name):
+        result = self.session.execute(
+            insert(Category)
+            .values(name=category_name)
+        )
+        self.session.commit()
+
+        id = result.inserted_primary_key[0]
+
+        return id

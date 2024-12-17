@@ -8,14 +8,14 @@ from pages.style.style import *
 class CategoryRow(ft.Row):
     def __init__(self, **kwargs):
         super().__init__()
-        self.id = kwargs["id"]
-        self.p_name = kwargs["p_name"]
-        self.p_cnt = kwargs["p_cnt"]
-        self.name_width = kwargs["name_width"]
         self.page = kwargs["page"]
-        self.out_controls = kwargs["controls"]
-        self.indx = kwargs["index"]
-        self.index_of_elements = kwargs["index_of_elements"]
+        self.name_width = kwargs["name_width"]
+        self.id = kwargs["id"]                 #id категории в БД
+        self.p_name = kwargs["p_name"]         #название категории
+        self.p_product_cnt = kwargs["p_product_cnt"]   #количество продуктов в категории
+
+        self.l_elements = kwargs["l_elements"]
+
 
         self.el_divider = ft.Container(
             height=25,
@@ -61,7 +61,7 @@ class CategoryRow(ft.Row):
             ft.Container(
                 width=150,
                 content=ft.Text(
-                    self.p_cnt,
+                    self.p_product_cnt,
                     color=defaultFontColor,
                     size=15,
                     font_family="cupurum",
@@ -133,10 +133,11 @@ class CategoryRow(ft.Row):
             db = DataBase()
             req = ReqCategory(db)
             req.delete_category(self.id)
-            del self.out_controls[self.index_of_elements[self.indx]]
-            del self.index_of_elements[self.indx]         #перенеумерация элементов. т.к. list controls уменьшился. На этот словарь и list ссылваются все элементы
-            for i, x in enumerate(self.index_of_elements):
-                self.index_of_elements[x] = i
+
+            for x in self.l_elements:
+                if x.id == self.id:
+                    self.l_elements.remove(x)
+
             dlg_delete.open = False
             self.page.update()
 
@@ -210,20 +211,148 @@ def el_header(name_width):
 
 
 
-def add_category():
-    pass
+def add_category(page: ft.Page):
 
-def el_add_category():
+    def add_category_handle_yes(e):
+        dlg_create.open = False
+        page.update()
+
+    def add_category_handle_close(e):
+        dlg_create.open = False
+        page.update()
+
+    dlg_create = ft.AlertDialog(
+        modal=True,
+        title=ft.Text("Новая категория"),
+        content=ft.Container(
+            height=80,
+            content=ft.Column(
+                controls=[
+                    ft.TextField(label="Название", height=40, read_only=False, text_size=15),
+                ]
+            )
+        ),
+        actions=[
+            ft.TextButton("Yes", on_click=add_category_handle_yes),
+            ft.TextButton("No", on_click=add_category_handle_close),
+        ],
+        actions_alignment=ft.MainAxisAlignment.END,
+        # on_dismiss=lambda e: self.page.add(ft.Text("Modal dialog dismissed"),),
+    )
+
+    page.dialog = dlg_create
+    dlg_create.open = True
+    page.update()
+
+
+def el_add_category(page: ft.Page):
     return ft.Row(
                         controls=[
                             ft.Container(
                             content=ft.ElevatedButton("Добавить категорию",
                                                       icon=ft.icons.ADD,
-                                                      on_click=add_category()),
+                                                      on_click=add_category(page)),
                             margin=ft.margin.only(right=30, top=40),
                             ),
                                   ],
                         alignment=ft.MainAxisAlignment.END,
 
                     )
+
+
+
+class AddCategoryButton(ft.UserControl):
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.page = kwargs["page"]
+        self.name_width = kwargs["name_width"]
+        self.l_elements = kwargs["l_elements"]
+        #self.c_elements_index: CategoryElementsIndex = kwargs["elements_index"]
+
+    def build(self):
+        return ft.Row(
+            controls=[
+                ft.Container(
+                    content=ft.ElevatedButton("Добавить категорию",
+                                              icon=ft.icons.ADD,
+                                              on_click=self.add_category),
+                    margin=ft.margin.only(right=30, top=40),
+                    #width=250,
+
+                )
+            ],
+            alignment=ft.MainAxisAlignment.END,
+        )
+
+    def add_category(self, e):
+        def add_category_handle_yes(e):
+
+            db = DataBase()
+            req = ReqCategory(db)
+            new_id = req.new_category(dlg_create.content.content.controls[0].value)
+            new_row = CategoryRow(
+                page=self.page,
+                name_width=self.name_width,
+                id=new_id,
+                p_name=dlg_create.content.content.controls[0].value,
+                p_product_cnt=0,
+                l_elements=self.l_elements,
+
+            )
+
+            #self.c_elements_index.add_element(new_row) #добавление элемента в список
+            self.l_elements.append(new_row)
+
+            dlg_create.open = False
+            self.page.update()
+
+        def add_category_handle_close(e):
+            dlg_create.open = False
+            self.page.update()
+
+        dlg_create = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Новая категория"),
+            content=ft.Container(
+                height=80,
+                content=ft.Column(
+                    controls=[
+                        ft.TextField(label="Название", height=40, read_only=False, text_size=15),
+                    ]
+                )
+            ),
+            actions=[
+                ft.TextButton("Yes", on_click=add_category_handle_yes),
+                ft.TextButton("No", on_click=add_category_handle_close),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+            # on_dismiss=lambda e: self.page.add(ft.Text("Modal dialog dismissed"),),
+        )
+
+        self.page.dialog = dlg_create
+        dlg_create.open = True
+        self.page.update()
+
+
+
+class AddCategoryButton2(ft.ElevatedButton):
+    """
+    Пример кастомной кнопки
+    В content.py оборачиваем данный элемент в Container и двигаем
+    # el = ft.Row(controls=[
+                #     ft.Container(content=AddCategoryButton(page=self.page), margin=ft.margin.only(right=30, top=40))],
+                #             alignment=ft.MainAxisAlignment.END)
+                # self.body_content.append(el)
+    Внутри данного элемента не работает Container и Row, чтобы задать расположение
+    """
+    def __init__(self, **kwargs):
+        super().__init__()
+        self.page = kwargs["page"]
+        self.text = "Добавить категорию"
+        self.icon = ft.icons.ADD
+        self.on_click = self.add_category
+
+
+    def add_category(self, e):
+        pass
 
