@@ -23,7 +23,7 @@ class DashboardPage:
         self.AUTH_USER = page.session.get("auth_user")
         page.title = "Панель управления"
         page.window.width = defaultWidthWindow
-        page.window.height = defaultWidthWindow
+        page.window.height = defaultHeightWindow
         page.window.min_width = 900
         page.window.min_height = 400
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}

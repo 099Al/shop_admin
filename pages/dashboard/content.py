@@ -65,7 +65,10 @@ class Dash_Content():
                                       )
                 self.body_content.append(ft.Column(
                     controls=l_controls,
-                    spacing=1
+                    spacing=1,
+                    #height=600,     #scroll не будет работать, если изменить размер окна
+                    scroll=ft.ScrollMode.AUTO,
+                    expand=True
                 ))
                 #--rows-----------
 
