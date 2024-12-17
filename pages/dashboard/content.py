@@ -24,6 +24,12 @@ class Dash_Content():
     def update_content(self, content_type):
         match content_type:
             case EnumDashContent.CATEGORY:
+
+                error_message = ft.SnackBar(
+                    content=ft.Text('Категория с таким названием уже существует'),
+                    bgcolor=inputBgErrorColor
+                )
+
                 self.body_content.clear()
                 self.content_header = header(label_name="Список Категорий", user_role=self.user_role)
                 self.body_content.append(self.content_header)
@@ -40,6 +46,7 @@ class Dash_Content():
                 self.body_content.append(
                     AddCategoryButton(page=self.page,
                                       name_width=name_width,
+                                      error_message=error_message,
                                       l_elements=l_controls,
                                       )
                 )
@@ -49,6 +56,7 @@ class Dash_Content():
                 for id, c_name, p_cnt in req.category__products_cnt():
                     l_controls.append(CategoryRow(page=self.page,
                                                   name_width=name_width,
+                                                  error_message=error_message,
                                                   id=id,
                                                   p_name=c_name,
                                                   p_product_cnt=str(p_cnt),
@@ -61,6 +69,7 @@ class Dash_Content():
                 ))
                 #--rows-----------
 
+                self.body_content.append(error_message)
 
 
 

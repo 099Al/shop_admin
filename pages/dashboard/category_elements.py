@@ -10,12 +10,17 @@ class CategoryRow(ft.Row):
         super().__init__()
         self.page = kwargs["page"]
         self.name_width = kwargs["name_width"]
+        self.error_message = kwargs["error_message"]
         self.id = kwargs["id"]                 #id категории в БД
         self.p_name = kwargs["p_name"]         #название категории
         self.p_product_cnt = kwargs["p_product_cnt"]   #количество продуктов в категории
 
         self.l_elements = kwargs["l_elements"]
 
+        self.error_upd = ft.SnackBar(
+            content=ft.Text('категория с таким названием уже существует'),
+            bgcolor=inputBgErrorColor
+        )
 
         self.el_divider = ft.Container(
             height=25,
@@ -110,10 +115,16 @@ class CategoryRow(ft.Row):
 
         db = DataBase()
         req = ReqCategory(db)
-        req.update_category(self.p_name, v_text)
+        upd_res = req.update_category(self.p_name, v_text)
+
+        if upd_res is None:
+            self.error_message.open = True
+            self.error_message.update()
+            self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+        else:
+            self.r_name.content = ft.Text(v_text, color=defaultFontColor, size=15, font_family="cupurum")
 
         self.r_container_icon.content = self.r_content_edit
-        self.r_name.content = ft.Text(v_text, color=defaultFontColor, size=15, font_family="cupurum")
         self.r_container_icon.update()
         self.r_name.update()
         # self.page.update()
@@ -211,61 +222,12 @@ def el_header(name_width):
 
 
 
-def add_category(page: ft.Page):
-
-    def add_category_handle_yes(e):
-        dlg_create.open = False
-        page.update()
-
-    def add_category_handle_close(e):
-        dlg_create.open = False
-        page.update()
-
-    dlg_create = ft.AlertDialog(
-        modal=True,
-        title=ft.Text("Новая категория"),
-        content=ft.Container(
-            height=80,
-            content=ft.Column(
-                controls=[
-                    ft.TextField(label="Название", height=40, read_only=False, text_size=15),
-                ]
-            )
-        ),
-        actions=[
-            ft.TextButton("Yes", on_click=add_category_handle_yes),
-            ft.TextButton("No", on_click=add_category_handle_close),
-        ],
-        actions_alignment=ft.MainAxisAlignment.END,
-        # on_dismiss=lambda e: self.page.add(ft.Text("Modal dialog dismissed"),),
-    )
-
-    page.dialog = dlg_create
-    dlg_create.open = True
-    page.update()
-
-
-def el_add_category(page: ft.Page):
-    return ft.Row(
-                        controls=[
-                            ft.Container(
-                            content=ft.ElevatedButton("Добавить категорию",
-                                                      icon=ft.icons.ADD,
-                                                      on_click=add_category(page)),
-                            margin=ft.margin.only(right=30, top=40),
-                            ),
-                                  ],
-                        alignment=ft.MainAxisAlignment.END,
-
-                    )
-
-
-
 class AddCategoryButton(ft.UserControl):
     def __init__(self, **kwargs):
         super().__init__()
         self.page = kwargs["page"]
         self.name_width = kwargs["name_width"]
+        self.error_message = kwargs["error_message"]
         self.l_elements = kwargs["l_elements"]
         #self.c_elements_index: CategoryElementsIndex = kwargs["elements_index"]
 
@@ -290,21 +252,27 @@ class AddCategoryButton(ft.UserControl):
             db = DataBase()
             req = ReqCategory(db)
             new_id = req.new_category(dlg_create.content.content.controls[0].value)
-            new_row = CategoryRow(
-                page=self.page,
-                name_width=self.name_width,
-                id=new_id,
-                p_name=dlg_create.content.content.controls[0].value,
-                p_product_cnt=0,
-                l_elements=self.l_elements,
 
-            )
+            if new_id is None:
+                self.error_message.open = True
+                self.error_message.update()
+                return
+            else:
+                new_row = CategoryRow(
+                    page=self.page,
+                    name_width=self.name_width,
+                    error_message=self.error_message,
+                    id=new_id,
+                    p_name=dlg_create.content.content.controls[0].value,
+                    p_product_cnt=0,
+                    l_elements=self.l_elements,
+                )
 
-            #self.c_elements_index.add_element(new_row) #добавление элемента в список
-            self.l_elements.append(new_row)
+                #self.c_elements_index.add_element(new_row) #добавление элемента в список
+                self.l_elements.append(new_row)
 
-            dlg_create.open = False
-            self.page.update()
+                dlg_create.open = False
+                self.page.update()
 
         def add_category_handle_close(e):
             dlg_create.open = False

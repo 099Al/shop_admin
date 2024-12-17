@@ -27,12 +27,17 @@ class ReqCategory:
         return category_counts
 
     def update_category(self, name, new_name):
-        self.session.execute(
-            update(Category)
-            .where(Category.name == name)
-            .values(name=new_name)
-        )
-        self.session.commit()
+        try:
+            self.session.execute(
+                update(Category)
+                .where(Category.name == name)
+                .values(name=new_name)
+            )
+            self.session.commit()
+            return 1
+        except Exception as e:
+            self.session.rollback()
+            return None
 
     def delete_category(self, category_id):
         self.session.execute(
@@ -42,12 +47,16 @@ class ReqCategory:
         self.session.commit()
 
     def new_category(self, category_name):
-        result = self.session.execute(
-            insert(Category)
-            .values(name=category_name)
-        )
-        self.session.commit()
+        try:
+            result = self.session.execute(
+                insert(Category)
+                .values(name=category_name)
+            )
+            self.session.commit()
 
-        id = result.inserted_primary_key[0]
+            id = result.inserted_primary_key[0]
 
-        return id
+            return id
+        except Exception as e:
+            self.session.rollback()
+            return None
