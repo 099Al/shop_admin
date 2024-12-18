@@ -120,12 +120,16 @@ class CategoryRow(ft.Row):
         if upd_res is None:
             self.error_message.open = True
             self.error_message.update()
-            self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+            #self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+            self.r_name.content = ft.TextField(self.p_name, color="white", bgcolor=secondaryBgColor,
+                                               border_color=textFieldColor,
+                                               text_size=15)
         else:
             self.r_name.content = ft.Text(v_text, color=defaultFontColor, size=15, font_family="cupurum")
+            self.r_container_icon.content = self.r_content_edit
+            self.r_container_icon.update()
 
-        self.r_container_icon.content = self.r_content_edit
-        self.r_container_icon.update()
+
         self.r_name.update()
         # self.page.update()
 
