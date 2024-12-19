@@ -50,31 +50,31 @@ def sidebar_menu(content: Dash_Content):
                     ),
                     ft.TextButton(
                         "Категории",
-                        icon="post_add",
+                        icon=ft.icons.CATEGORY,
                         style=style_menu,
                         on_click=lambda e: content.update_content(EnumDashContent.CATEGORY),
                     ),
                     ft.TextButton(
                         "Товар"
-                        , icon="verified_user"
+                        , icon="post_add"
                         , style=style_menu
                         , on_click=lambda e: content.update_content(EnumDashContent.PRODUCTS),
                     ),
                     ft.TextButton(
                         "Пользователи"
-                        , icon="verified_user"
+                        , icon=ft.icons.ADMIN_PANEL_SETTINGS
                         , style=style_menu
                         #, on_click=lambda e: update_content(),
                     ),
                     ft.TextButton(
                         "Клиенты"
-                        , icon="verified_user"
+                        , icon=ft.icons.SUPERVISED_USER_CIRCLE
                         , style=style_menu
                         , on_click=lambda e: page.go("/post"),
                     ),
                     ft.TextButton(
                         "Заказы"
-                        , icon="verified_user"
+                        , icon=ft.icons.SHOPPING_BASKET
                         , style=style_menu
                         , on_click=lambda e: page.go("/post"),
                     ),
