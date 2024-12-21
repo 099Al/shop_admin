@@ -30,17 +30,8 @@ class CategoryRow(ft.Row):
             padding=0
         )
 
-        self.r_name = ft.Container(
-            content=ft.Text(
-                self.p_name,
-                color=defaultFontColor,
-                size=15,
-                font_family="cupurum",
-            ),
-            # height=25,
-            width=self.name_width,
-            alignment=ft.alignment.bottom_left,
-        )
+        self.r_name = self.f_field(text=self.p_name, width=self.name_width)
+
 
         self.r_content_edit = ft.Row(controls=[
             ft.Container(
@@ -81,6 +72,20 @@ class CategoryRow(ft.Row):
         ]
 
         #self.category_text = ""  # for save state
+
+    def f_field(self, text, width):
+        return ft.Container(
+            content=ft.Text(
+                text,
+                color=defaultFontColor,
+                size=15,
+                font_family="cupurum",
+            ),
+            # height=25,
+            width=width,
+            alignment=ft.alignment.bottom_left,
+            #bgcolor=ft.colors.DEEP_ORANGE_800
+        )
 
     def edit(self, e):
         v_text = self.r_name.content.value
@@ -190,7 +195,7 @@ el_divider = ft.Container(
                 padding=0
             )
 
-def el_header(name_width):
+def el_category_header(name_width):
     return ft.Row(
         controls=[
             ft.Container(
