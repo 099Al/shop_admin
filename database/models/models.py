@@ -40,4 +40,3 @@ class Product(Base):
     promo_expire_date: Mapped[Date] = mapped_column(Date, nullable=True)
 
     #r_image: Mapped['ImagePhoto'] = relationship(back_populates='r_product', uselist=False, lazy="selectin")
-

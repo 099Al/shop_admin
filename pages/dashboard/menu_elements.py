@@ -64,7 +64,7 @@ def sidebar_menu(content: Dash_Content):
                         "Пользователи"
                         , icon=ft.icons.ADMIN_PANEL_SETTINGS
                         , style=style_menu
-                        #, on_click=lambda e: update_content(),
+                        , on_click=lambda e: content.update_content(EnumDashContent.ADMINS),
                     ),
                     ft.TextButton(
                         "Клиенты"
