@@ -44,6 +44,13 @@ class AdminRow(ft.Row):
             content=self.r_content_edit
         )
 
+        self.r_content_delete = ft.Container(
+            scale=0.8,
+            margin=ft.margin.only(left=0),
+            content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog)
+        )
+
+
         self.r_telegram_id = self.f_field(text=self.telegram_id, width=self.d_width['telegram_id'])
         self.r_role = self.f_field(text=self.role, width=self.d_width['role'])
         self.r_name = self.f_field(text=self.name, width=self.d_width['name'])
@@ -66,6 +73,7 @@ class AdminRow(ft.Row):
             self.el_divider,
             self.r_login,
             self.el_divider,
+            self.r_content_delete
         ]
 
 
@@ -83,9 +91,6 @@ class AdminRow(ft.Row):
             #bgcolor=ft.colors.DEEP_ORANGE_800
         )
 
-
-
-
     def resize(self, d_width):
         self.r_telegram_id.width = d_width["telegram_id"]
         self.r_role.width = d_width["role"]
@@ -94,10 +99,72 @@ class AdminRow(ft.Row):
         self.r_email.width = d_width["email"]
         self.r_login.width = d_width["login"]
 
-
     def edit(self, e):
+        v_text = self.r_name.content.value
+        # self.category_text = v_text  # save text
+        self.p_name = v_text
+        self.r_name.content = ft.TextField(v_text, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,
+                                           text_size=15)
+
+        self.r_container_icon.content = ft.Row(
+            spacing=0,
+            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+            controls=[
+                ft.Container(margin=ft.margin.all(0),
+                             padding=ft.padding.all(0),
+                             adaptive=True,
+                             scale=0.8,
+                             # bgcolor="red",
+                             content=ft.IconButton(ft.icons.SAVE, on_click=self.save)),
+                ft.Container(margin=ft.margin.only(left=0),
+                             scale=0.8,
+                             # bgcolor="green",
+                             content=ft.IconButton(ft.icons.CANCEL, on_click=self.cancel))
+            ]
+        )
+        self.r_container_icon.update()
+        self.r_name.update()
+
+    def delete_dialog(self, e):
+        def delete_category_handle_yes(e):
+            db = DataBase()
+            req = ReqAdmins(db)
+            req.delete_admin(self.telegram_id)
+
+            for x in self.l_elements:
+                if x.telegram_id == self.telegram_id:
+                    self.l_elements.remove(x)
+
+            dlg_delete.open = False
+            self.page.update()
+
+        def delete_category_handle_close(e):
+            dlg_delete.open = False
+            self.page.update()
+
+        dlg_delete = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Подтверждение"),
+            content=ft.Text("Вы действительно хотите удалить пользователя?"),
+            actions=[
+                ft.TextButton("Yes", on_click=delete_category_handle_yes),
+                ft.TextButton("No", on_click=delete_category_handle_close),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        self.page.dialog = dlg_delete
+        dlg_delete.open = True
+        self.page.update()
+
+    def save(self, e):
         pass
 
+    def cancel(self, e):
+        self.r_container_icon.content = self.r_content_edit
+        self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_container_icon.update()
+        self.r_name.update()
 
 class AdminHeader(ft.UserControl):
     def __init__(self, letter_size):

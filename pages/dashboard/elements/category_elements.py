@@ -182,11 +182,6 @@ class CategoryRow(ft.Row):
         self.page.update()
 
 
-
-
-
-
-
 el_divider = ft.Container(
                 height=25,
                 width=1,
