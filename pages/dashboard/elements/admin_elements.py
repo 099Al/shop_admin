@@ -30,6 +30,20 @@ class AdminRow(ft.Row):
             padding=0
         )
 
+        self.r_content_edit = ft.Row(controls=[
+            ft.Container(
+                scale=0.8,
+                # bgcolor="blue",
+                margin=ft.margin.only(left=47),
+                content=ft.IconButton(ft.icons.EDIT, on_click=self.edit)
+            )
+        ])
+
+        self.r_container_icon = ft.Container(
+            width=80,
+            content=self.r_content_edit
+        )
+
         self.r_telegram_id = self.f_field(text=self.telegram_id, width=self.d_width['telegram_id'])
         self.r_role = self.f_field(text=self.role, width=self.d_width['role'])
         self.r_name = self.f_field(text=self.name, width=self.d_width['name'])
@@ -38,6 +52,7 @@ class AdminRow(ft.Row):
         self.r_login = self.f_field(text=self.login, width=self.d_width['login'])
 
         self.controls = [
+            self.r_container_icon,
             self.el_divider,
             self.r_telegram_id,
             self.el_divider,
@@ -78,6 +93,10 @@ class AdminRow(ft.Row):
         self.r_phone.width = d_width["phone"]
         self.r_email.width = d_width["email"]
         self.r_login.width = d_width["login"]
+
+
+    def edit(self, e):
+        pass
 
 
 class AdminHeader(ft.UserControl):
@@ -122,7 +141,7 @@ class AdminHeader(ft.UserControl):
         )
     def build(self):
 
-        l_cotrols = []
+        l_cotrols = [ft.Container(width=80,)]
         for k, v in self.d_headers.items():
             l_cotrols.append(self.el_divider)
             l_cotrols.append(self.f_field(text=k, width=v))
