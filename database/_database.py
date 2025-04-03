@@ -21,10 +21,11 @@ class Database:
         self.metadata = MetaData()
         self.Base = declarative_base()
 
-        self.adminUser = Table('admins', self.metadata, autoload_with=self.engine)
 
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
+
+        self.adminUser = Table('admins', self.metadata, autoload_with=self.engine)
 
     def check_email(self, email):
         result = self.session.execute(
