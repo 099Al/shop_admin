@@ -15,7 +15,7 @@ class CategoryRow(ft.Row):
         self.p_name = kwargs["p_name"]         #название категории
         self.p_product_cnt = kwargs["p_product_cnt"]   #количество продуктов в категории
 
-        self.l_elements = kwargs["l_elements"]
+        self.l_elements = kwargs["l_elements"]    #ссылка на список категорий, чтобы отсюда ее модифицировать
 
         self.error_upd = ft.SnackBar(
             content=ft.Text('категория с таким названием уже существует'),
@@ -42,13 +42,15 @@ class CategoryRow(ft.Row):
             )
         ])
 
+        #элемент с редактированием
         self.r_container_icon = ft.Container(
             # bgcolor="orange",
             width=80,
             # padding=ft.padding.only(right=30),
-            content=self.r_content_edit
+            content=self.r_content_edit if self.p_name != "default" else None  #default нельзя изменить
         )
 
+        #сборка элементов в строку
         self.controls = [
             self.r_container_icon,
             self.el_divider,
@@ -67,7 +69,8 @@ class CategoryRow(ft.Row):
             ft.Container(
                 scale=0.8,
                 margin=ft.margin.only(left=0),
-                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog)
+
+                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog) if self.p_name != "default" else None  #default нельзя удалить
             ),
         ]
 
