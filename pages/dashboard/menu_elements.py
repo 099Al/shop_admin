@@ -36,7 +36,7 @@ logo = ft.Container(
         )
 
 # menu
-def sidebar_menu(content: Dash_Content):
+def sidebar_menu(content_template: Dash_Content):
     return ft.Container(
             padding=ft.padding.symmetric(0, 13),
             content=ft.Column(
@@ -52,19 +52,19 @@ def sidebar_menu(content: Dash_Content):
                         "Категории",
                         icon=ft.icons.CATEGORY,
                         style=style_menu,
-                        on_click=lambda e: content.update_content(EnumDashContent.CATEGORY),
+                        on_click=lambda e: content_template.update_content(EnumDashContent.CATEGORY),
                     ),
                     ft.TextButton(
                         "Товар"
                         , icon="post_add"
                         , style=style_menu
-                        , on_click=lambda e: content.update_content(EnumDashContent.PRODUCTS),
+                        , on_click=lambda e: content_template.update_content(EnumDashContent.PRODUCTS),
                     ),
                     ft.TextButton(
                         "Пользователи"
                         , icon=ft.icons.ADMIN_PANEL_SETTINGS
                         , style=style_menu
-                        , on_click=lambda e: content.update_content(EnumDashContent.ADMINS),
+                        , on_click=lambda e: content_template.update_content(EnumDashContent.ADMINS),
                     ),
                     ft.TextButton(
                         "Клиенты"

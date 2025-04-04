@@ -17,7 +17,7 @@ class ReqCategory:
         max_length = self.session.query(func.max(func.length(Category.name))).scalar()
         return max_length
 
-    def category__products_cnt(self):
+    def category_products_cnt(self):
         category_counts = (
             self.session.query(Category.id, Category.name, func.count(Product.product_id).label("product_count"))
             .join(Product, Category.id == Product.category_id, isouter=True)

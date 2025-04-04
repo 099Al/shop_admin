@@ -11,13 +11,13 @@ import os
 
 
 class DashboardPage:
-    load_dotenv()
+    #load_dotenv()
     AUTH_USER = False
-    check_token = ""  # не нужны т.к. данные берутся из сессии
-    check_channel = ""
-    env_file_path = Path("..") / ".env"
-    token_bot = os.getenv("TOKEN_BOT")
-    channel_link = os.getenv("CHANNEL")
+    #check_token = ""  # не нужны т.к. данные берутся из сессии
+    #check_channel = ""
+    #env_file_path = Path("..") / ".env"
+    #token_bot = os.getenv("TOKEN_BOT")
+    #channel_link = os.getenv("CHANNEL")
 
     def view(self, page: ft.Page, params: Params, basket: Basket):
         self.AUTH_USER = page.session.get("auth_user")
@@ -30,10 +30,12 @@ class DashboardPage:
 
 
         # self.user_role = page.session.get('auth_role')
-        self.user_role = "admin"  # TEST
+        self.user_role = "admin"  # TEST  TODO:  Убрать после реализации
         # self.check_channel = page.session.get('CHANNEL')
 
-        print(self.user_role)
+        print('dashboard', self.user_role)
+
+
 
         # def save_settings(e):
         # token = token_input.content.value
@@ -70,7 +72,7 @@ class DashboardPage:
             )
 
         #body_content = [header(self.user_role)]
-        ds_content = Dash_Content(page, self.user_role)
+        ds_content = Dash_Content(page, self.user_role)  #Здесь происходит заполнение body_content
 
         return ft.View(
             "/dashboard",
@@ -83,14 +85,14 @@ class DashboardPage:
                         ft.Container(       #1-й элемент это столбец с лого и меню
                             expand=1,
                             # content=ft.Column(controls=[logo, sidebar_menu(page, body_content)]),
-                            content=ft.Column(controls=[logo, sidebar_menu(ds_content)]),  #TODO в Row и добавить scroll
+                            content=ft.Column(controls=[logo, sidebar_menu(ds_content)]),  #Здесь выбираем контент   TODO в Row и добавить scroll
                             bgcolor=secondaryBgColor,
                         ),
                         # body center
                         ft.Container(              #2-й элемент это столбец с контентом
                             expand=4,
                             padding=ft.padding.symmetric(15, 10),
-                            content=ft.Column(ds_content.body_content),
+                            content=ft.Column(ds_content.body_content),   #Весь контент помещаем в столбец
                         ),
 
 

@@ -43,17 +43,18 @@ class Dash_Content():
 
                 l_controls = []
 
+                #кнопка "Добавить новую категорию"
                 self.body_content.append(
                     AddCategoryButton(page=self.page,
                                       name_width=name_width,
                                       error_message=error_message,
-                                      l_elements=l_controls,
+                                      l_elements=l_controls,    #передается ссылка на список строк, чтобы к нему добавить новую категорию
                                       )
                 )
 
                 self.body_content.append(el_category_header(name_width))  # table header
                 #---rows---
-                for id, c_name, p_cnt in req.category__products_cnt():
+                for id, c_name, p_cnt in req.category_products_cnt():
                     l_controls.append(CategoryRow(page=self.page,
                                                   name_width=name_width,
                                                   error_message=error_message,
