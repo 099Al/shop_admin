@@ -1,7 +1,7 @@
 from sqlalchemy import select, func, update, delete, insert
 
 from database.connect import DataBase
-from database.models.models import Category, Product
+from database.models.models import Category, Product, Category_Product
 
 
 class ReqCategory:
@@ -19,8 +19,8 @@ class ReqCategory:
 
     def category_products_cnt(self):
         category_counts = (
-            self.session.query(Category.id, Category.name, func.count(Product.product_id).label("product_count"))
-            .join(Product, Category.id == Product.category_id, isouter=True)
+            self.session.query(Category.id, Category.name, func.count(Category_Product.product_fk).label("product_count"))
+            .join(Category_Product, Category.id == Category_Product.category_fk, isouter=True)
             .group_by(Category.name)
             .all()
         )
