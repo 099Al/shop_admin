@@ -155,7 +155,7 @@ class CategoryRow(ft.Row):
         def delete_category_handle_yes(e):
             db = DataBase()
             req = ReqCategory(db)
-            req.delete_category(self.id)
+            req.delete_category_cascade(self.id)
 
             for x in self.l_elements:
                 if x.id == self.id:

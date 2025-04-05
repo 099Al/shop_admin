@@ -46,6 +46,39 @@ class ReqCategory:
         )
         self.session.commit()
 
+    def delete_category_cascade(self, category_id: int):
+        stmt = select(Category_Product.product_fk).join(Category).where(
+                Category.id == category_id
+            )
+        product_ids = (self.session.execute(stmt)).scalars().all()
+
+        for product_id in product_ids:
+                # Check if the product exists in other categories
+            other_categories_stmt = select(Category_Product).join(Category).where(
+                    Category_Product.product_fk == product_id,
+                    Category.id != category_id  # Ensure it's in a different category
+                )
+            other_categories = (self.session.execute(other_categories_stmt)).first()
+
+            if not other_categories:
+                    # Product exists only in this category; delete it
+                self.session.execute(
+                        delete(Product).where(Product.product_id == product_id)
+                    )
+
+                self.session.execute(
+                        delete(Category_Product).where(Category_Product.product_fk == product_id, Category_Product.category_fk == category_id)
+                    )
+
+        # Delete the category
+        self.session.execute(
+                        delete(Category).where(Category.id == category_id)
+                    )
+        self.session.execute(
+                delete(Category_Product).where(Category_Product.category_fk == category_id)
+            )
+        self.session.commit()
+
     def new_category(self, category_name):
         try:
             result = self.session.execute(
