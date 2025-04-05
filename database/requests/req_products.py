@@ -19,19 +19,24 @@ class ReqCategory:
 
     def category_products_cnt(self):
         category_counts = (
-            self.session.query(Category.id, Category.name, func.count(Category_Product.product_fk).label("product_count"))
+            self.session.query(Category.id, Category.name, Category.order_number, func.count(Category_Product.product_fk).label("product_count"))
             .join(Category_Product, Category.id == Category_Product.category_fk, isouter=True)
             .group_by(Category.name)
             .all()
         )
+
+        category_counts.sort(key=lambda x: x.order_number if x.order_number is not None else 0)
+
         return category_counts
 
-    def update_category(self, name, new_name):
+    def update_category(self, name, new_name, order_num):
         try:
+            if order_num.strip() == '':
+                order_num = None
             self.session.execute(
                 update(Category)
                 .where(Category.name == name)
-                .values(name=new_name)
+                .values(name=new_name, order_number=order_num)
             )
             self.session.commit()
             return 1

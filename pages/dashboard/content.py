@@ -40,6 +40,7 @@ class Dash_Content():
                 req = ReqCategory(db)
                 max_length_category = req.get_max_length()
                 name_width = max(max_length_category * 8, 100)  # 7 letter size
+                d_width = {"c1":80, "c2":name_width, "c3":150, "c4":90}
 
                 l_controls = []
 
@@ -52,15 +53,17 @@ class Dash_Content():
                                       )
                 )
 
-                self.body_content.append(el_category_header(name_width))  # table header
+
+                self.body_content.append(el_category_header(d_width))  # table header
                 #---rows---
-                for id, c_name, p_cnt in req.category_products_cnt():
+                for id, c_name, c_order, p_cnt in req.category_products_cnt():
                     l_controls.append(CategoryRow(page=self.page,
-                                                  name_width=name_width,
+                                                  d_width=d_width,
                                                   error_message=error_message,
                                                   id=id,
                                                   p_name=c_name,
                                                   p_product_cnt=str(p_cnt),
+                                                  p_order=c_order,
                                                   l_elements=l_controls,
                                                   )
                                       )

@@ -9,11 +9,12 @@ class CategoryRow(ft.Row):
     def __init__(self, **kwargs):
         super().__init__()
         self.page = kwargs["page"]
-        self.name_width = kwargs["name_width"]
+        self.d_width = kwargs["d_width"]
         self.error_message = kwargs["error_message"]
         self.id = kwargs["id"]                 #id категории в БД
         self.p_name = kwargs["p_name"]         #название категории
         self.p_product_cnt = kwargs["p_product_cnt"]   #количество продуктов в категории
+        self.p_order = kwargs["p_order"]           #порядковый номер для сортировки
 
         self.l_elements = kwargs["l_elements"]    #ссылка на список категорий, чтобы отсюда ее модифицировать
 
@@ -30,7 +31,17 @@ class CategoryRow(ft.Row):
             padding=0
         )
 
-        self.r_name = self.f_field(text=self.p_name, width=self.name_width)
+        self.r_name = self.f_field(text=self.p_name, width=self.d_width['c2'])
+        self.r_order = self.f_field(text=self.p_order, width=self.d_width['c2'])
+            # ft.Container(
+            #     width=self.d_width['c4'],
+            #     content=ft.Text(
+            #         self.p_order,
+            #         color=defaultFontColor,
+            #         size=15,
+            #         font_family="cupurum",
+            #     ),
+            # ),
 
 
         self.r_content_edit = ft.Row(controls=[
@@ -45,7 +56,7 @@ class CategoryRow(ft.Row):
         #элемент с редактированием
         self.r_container_icon = ft.Container(
             # bgcolor="orange",
-            width=80,
+            width=self.d_width['c1'],
             # padding=ft.padding.only(right=30),
             content=self.r_content_edit if self.p_name != "default" else None  #default нельзя изменить
         )
@@ -57,7 +68,7 @@ class CategoryRow(ft.Row):
             self.r_name,
             self.el_divider,
             ft.Container(
-                width=150,
+                width=self.d_width['c3'],
                 content=ft.Text(
                     self.p_product_cnt,
                     color=defaultFontColor,
@@ -65,6 +76,8 @@ class CategoryRow(ft.Row):
                     font_family="cupurum",
                 ),
             ),
+            self.el_divider,
+            self.r_order,
             self.el_divider,
             ft.Container(
                 scale=0.8,
@@ -92,9 +105,15 @@ class CategoryRow(ft.Row):
 
     def edit(self, e):
         v_text = self.r_name.content.value
+        v_order = self.r_order.content.value
         # self.category_text = v_text  # save text
         self.p_name = v_text
+        self.p_order = v_order
+
         self.r_name.content = ft.TextField(v_text, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,
+                                           text_size=15)
+
+        self.r_order.content = ft.TextField(v_order, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,
                                            text_size=15)
 
         self.r_container_icon.content = ft.Row(
@@ -115,37 +134,42 @@ class CategoryRow(ft.Row):
         )
         self.r_container_icon.update()
         self.r_name.update()
+        self.r_order.update()
 
         # self.page.update()
 
     def save(self, e):
         v_text = self.r_name.content.value
+        v_order = self.r_order.content.value
 
         db = DataBase()
         req = ReqCategory(db)
-        upd_res = req.update_category(self.p_name, v_text)
+        upd_res = req.update_category(self.p_name, v_text, v_order)
 
         if upd_res is None:
             self.error_message.open = True
             self.error_message.update()
             #self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-            self.r_name.content = ft.TextField(self.p_name, color="white", bgcolor=secondaryBgColor,
-                                               border_color=textFieldColor,
-                                               text_size=15)
+            self.r_name.content = ft.TextField(self.p_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+            self.r_order.content = ft.TextField(self.p_order, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         else:
             self.r_name.content = ft.Text(v_text, color=defaultFontColor, size=15, font_family="cupurum")
+            self.r_order.content = ft.Text(v_order, color=defaultFontColor, size=15, font_family="cupurum")
             self.r_container_icon.content = self.r_content_edit
             self.r_container_icon.update()
 
 
         self.r_name.update()
+        self.r_order.update()
         # self.page.update()
 
     def cancel(self, e):
         self.r_container_icon.content = self.r_content_edit
         self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_order.content = ft.Text(self.p_order, color=defaultFontColor, size=15, font_family="cupurum")
         self.r_container_icon.update()
         self.r_name.update()
+        self.r_order.update()
         # self.page.update()
 
 
@@ -193,11 +217,11 @@ el_divider = ft.Container(
                 padding=0
             )
 
-def el_category_header(name_width):
+def el_category_header(d_width):
     return ft.Row(
         controls=[
             ft.Container(
-                width=80,
+                width=d_width["c1"],
             ),
             el_divider,
             ft.Container(
@@ -207,7 +231,7 @@ def el_category_header(name_width):
                     size=15,
                     font_family="cupurum",
                 ),
-                width=name_width,
+                width=d_width["c2"],
                 alignment=ft.alignment.bottom_left,
             ),
             el_divider,
@@ -218,7 +242,17 @@ def el_category_header(name_width):
                     size=15,
                     font_family="cupurum",
                 ),
-                width=150,
+                width=d_width["c3"],
+            ),
+            el_divider,
+            ft.Container(
+                content=ft.Text(
+                    "Сортировка",
+                    color=defaultFontColor,
+                    size=15,
+                    font_family="cupurum",
+                ),
+                width=d_width["c4"],
             ),
             el_divider,
         ],
