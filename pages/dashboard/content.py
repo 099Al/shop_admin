@@ -36,18 +36,17 @@ class Dash_Content():
 
 
                 # resul append to body_content
-                db = DataBase()
-                req = ReqCategory(db)
+                req = ReqCategory()
                 max_length_category = req.get_max_length()
                 name_width = max(max_length_category * 8, 100)  # 7 letter size
-                d_width = {"c1":80, "c2":name_width, "c3":150, "c4":90}
+                d_width = {"c1": 80, "c2": name_width, "c3": 150, "c4": 90}
 
                 l_controls = []
 
                 #кнопка "Добавить новую категорию"
                 self.body_content.append(
                     AddCategoryButton(page=self.page,
-                                      name_width=name_width,
+                                      d_width=d_width,
                                       error_message=error_message,
                                       l_elements=l_controls,    #передается ссылка на список строк, чтобы к нему добавить новую категорию
                                       )
@@ -87,9 +86,12 @@ class Dash_Content():
                 )
 
                 self.body_content.clear()
+                self.content_header = header(label_name="Список Продуктов", user_role=self.user_role)
                 self.body_content.append(self.content_header)
 
-
+                # resul append to body_content
+                db = DataBase()
+                req = ReqProducts(db)
 
 
 

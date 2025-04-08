@@ -142,8 +142,7 @@ class CategoryRow(ft.Row):
         v_text = self.r_name.content.value
         v_order = self.r_order.content.value
 
-        db = DataBase()
-        req = ReqCategory(db)
+        req = ReqCategory()
         upd_res = req.update_category(self.p_name, v_text, v_order)
 
         if upd_res is None:
@@ -177,8 +176,7 @@ class CategoryRow(ft.Row):
 
     def delete_dialog(self, e):
         def delete_category_handle_yes(e):
-            db = DataBase()
-            req = ReqCategory(db)
+            req = ReqCategory()
             req.delete_category_cascade(self.id)
 
             for x in self.l_elements:
@@ -267,7 +265,7 @@ class AddCategoryButton(ft.UserControl):
     def __init__(self, **kwargs):
         super().__init__()
         self.page = kwargs["page"]
-        self.name_width = kwargs["name_width"]
+        self.d_width = kwargs["d_width"]
         self.error_message = kwargs["error_message"]
         self.l_elements = kwargs["l_elements"]
         #self.c_elements_index: CategoryElementsIndex = kwargs["elements_index"]
@@ -290,9 +288,15 @@ class AddCategoryButton(ft.UserControl):
     def add_category(self, e):
         def add_category_handle_yes(e):
 
-            db = DataBase()
-            req = ReqCategory(db)
-            new_id = req.new_category(dlg_create.content.content.controls[0].value)
+            req = ReqCategory()
+            category_name = dlg_create.content.content.controls[0].value
+            category_order = dlg_create.content.content.controls[1].value
+            if category_order.strip() == "":
+                category_order = None
+            elif not category_order.isdigit():
+                category_order = None
+
+            new_id = req.new_category(category_name, category_order)
 
             if new_id is None:
                 self.error_message.open = True
@@ -301,10 +305,11 @@ class AddCategoryButton(ft.UserControl):
             else:
                 new_row = CategoryRow(
                     page=self.page,
-                    name_width=self.name_width,
+                    d_width=self.d_width,
                     error_message=self.error_message,
                     id=new_id,
-                    p_name=dlg_create.content.content.controls[0].value,
+                    p_name=category_name,
+                    p_order=category_order,
                     p_product_cnt=0,
                     l_elements=self.l_elements,
                 )
@@ -327,6 +332,7 @@ class AddCategoryButton(ft.UserControl):
                 content=ft.Column(
                     controls=[
                         ft.TextField(label="Название", height=40, read_only=False, text_size=15),
+                        ft.TextField(label="Номер расположения", height=40, read_only=False, text_size=15),
                     ]
                 )
             ),

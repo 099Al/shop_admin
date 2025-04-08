@@ -6,8 +6,9 @@ from database.models.models import Category, Product, Category_Product
 
 class ReqCategory:
 
-    def __init__(self, db: DataBase):
-        self.session = db.get_session()
+    def __init__(self):
+        #self.session = db.get_session()
+        self.session = DataBase().get_session()
 
     def get_all_categories(self):
         result = self.session.execute(select(Category))
@@ -84,11 +85,11 @@ class ReqCategory:
             )
         self.session.commit()
 
-    def new_category(self, category_name):
+    def new_category(self, category_name, category_order=None):
         try:
             result = self.session.execute(
                 insert(Category)
-                .values(name=category_name)
+                .values(name=category_name, order_number=category_order)
             )
             self.session.commit()
 
