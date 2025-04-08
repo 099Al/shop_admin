@@ -2,7 +2,7 @@ import flet as ft
 
 from database.connect import DataBase
 from database.requests.req_admins import ReqAdmins
-from database.requests.req_products import ReqCategory
+from database.requests.req_categories import ReqCategory
 from pages.dashboard.elements.admin_elements import AdminRow, AdminHeader
 from pages.dashboard.elements.category_elements import el_category_header, CategoryRow, AddCategoryButton  # el_add_category
 from pages.dashboard.elements.row_width import RowWidth_Admin

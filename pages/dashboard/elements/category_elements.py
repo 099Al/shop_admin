@@ -1,7 +1,7 @@
 import flet as ft
 
 from database.connect import DataBase
-from database.requests.req_products import ReqCategory
+from database.requests.req_categories import ReqCategory
 from pages.style.style import *
 
 
