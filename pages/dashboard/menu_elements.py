@@ -1,6 +1,6 @@
 import flet as ft
 
-from pages.dashboard.content import Dash_Content
+from pages.dashboard.content_choose import Dash_Content
 from pages.dashboard.types import EnumDashContent
 from pages.style.style import *
 

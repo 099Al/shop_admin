@@ -1,13 +1,15 @@
 import flet as ft
 from flet_route import Params, Basket
 
-from pages.dashboard.content import Dash_Content
+from pages.dashboard.content_choose import Dash_Content
 from pages.dashboard.head_elements import circle_avatar, header
 from pages.dashboard.menu_elements import logo, sidebar_menu
 from pages.style.style import *
 from dotenv import set_key, load_dotenv
 from pathlib import Path
 import os
+
+
 
 
 class DashboardPage:
