@@ -3,6 +3,7 @@ import flet as ft
 from database.connect import DataBase
 from database.requests.req_admins import ReqAdmins
 from pages.dashboard.content.categories import CategoriesContent
+from pages.dashboard.content.products import ProductsContent
 
 #from pages.dashboard.content.categories import set_CategoriesContent
 from pages.dashboard.elements.admin_elements import AdminRow, AdminHeader
@@ -94,8 +95,8 @@ class Dash_Content:
                 self.body_content.append(self.content_header)
 
                 # resul append to body_content
-                db = DataBase()
-                req = ReqProducts(db)
+                product_content = ProductsContent(self)
+                product_content.build()
 
 
 
