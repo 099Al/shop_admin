@@ -27,6 +27,8 @@ class Settings(BaseSettings):
     ENGINE: str | None = None
     SQL_DB: str | None = None
 
+    MEDIA: str | None = None
+
     path_env: str = str(Path(__file__).resolve().parent)
     model_config = SettingsConfigDict(enf_file=f"{path_env}/.env")
 

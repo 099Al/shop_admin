@@ -1,10 +1,12 @@
 from datetime import datetime
 
 import flet as ft
+from flet_core.icons import MEDIATION
 
+from database.models.models import Product
 from database.requests.req_products import ReqProduct
 from pages.style.style import *
-
+from config import settings
 
 el_divider = ft.Container(
                 height=25,
@@ -20,6 +22,17 @@ def el_products_header(d_width):
         controls=[
             ft.Container(
                 width=d_width["c1"],
+            ),
+            el_divider,
+            ft.Container(
+                content=ft.Text(
+                    "Изображение",
+                    color=defaultFontColor,
+                    size=15,
+                    font_family="cupurum",
+                ),
+                width=d_width["c2"],
+                alignment=ft.alignment.bottom_left,
             ),
             el_divider,
             ft.Container(
@@ -109,14 +122,25 @@ class ProductRow(ft.Row):
         self.page = kwargs["page"]
         self.d_width = kwargs["d_width"]
         self.d_error_messages = kwargs["d_error_messages"]
-        self.product_id = kwargs["product_id"]                 #id продукта в БД
-        self.p_name = kwargs["p_name"]         #название категории
-        self.p_item_no = kwargs["p_item_no"]   #Артикул
-        self.p_price = kwargs["p_price"]       #цена
-        self.p_desc = kwargs["p_desc"]         #описание
-        self.p_promo_price = kwargs["p_promo_price"]   #цена по акции
-        self.p_promo_end = kwargs["p_promo_end"]       #дата окончания акции
-        self.p_promo_desc = kwargs["p_promo_desc"]     #описание акции
+        # self.product_id = kwargs["product_id"]                 #id продукта в БД
+        # self.p_name = kwargs["p_name"]         #название категории
+        # self.p_item_no = kwargs["p_item_no"]   #Артикул
+        # self.p_price = kwargs["p_price"]       #цена
+        # self.p_desc = kwargs["p_desc"]         #описание
+        # self.p_promo_price = kwargs["p_promo_price"]   #цена по акции
+        # self.p_promo_end = kwargs["p_promo_end"]       #дата окончания акции
+        # self.p_promo_desc = kwargs["p_promo_desc"]     #описание акции
+
+        self.product: Product = kwargs["product"]
+        self.product_id = self.product.product_id
+        self.p_name = self.product.name
+        self.p_item_no = self.product.item_no
+        self.p_price = self.product.price
+        self.p_desc = self.product.description
+        self.p_promo_price = self.product.promo_price
+        self.p_promo_end = self.product.promo_expire_date
+        self.p_promo_desc = self.product.promo_desc
+        self.p_img = self.product.r_image.image_name if self.product.r_image else None
 
         self.l_elements = kwargs["l_elements"]    #ссылка на список продуктов, чтобы отсюда ее модифицировать
 
@@ -135,13 +159,23 @@ class ProductRow(ft.Row):
             padding=0
         )
 
-        self.r_name = self.f_field(text=self.p_name, width=self.d_width['c2'])
-        self.r_item_no = self.f_field(text=self.p_item_no, width=self.d_width['c3'])
-        self.r_price = self.f_field(text=self.p_price, width=self.d_width['c4'])
-        self.r_desc = self.f_field(text=self.p_desc, width=self.d_width['c4'])
-        self.r_promo_price = self.f_field(text=self.p_promo_price, width=self.d_width['c4'])
-        self.r_promo_end = self.f_field(text=self.p_promo_end, width=self.d_width['c4'])
-        self.r_promo_desc = self.f_field(text=self.p_promo_desc, width=self.d_width['c4'])
+        _img = ft.Container(
+            content=ft.Image(
+                src=f"{settings.MEDIA}/original/{self.p_img}.jpeg" if self.p_img else f"{settings.MEDIA}/default/no_product_photo.jpeg",
+                width=100,
+                height=100,
+                fit=ft.ImageFit.CONTAIN
+            )
+            ,padding=ft.padding.only(top=5)
+        )
+        self.r_img = _img
+        self.r_name = self._field(text=self.p_name, width=self.d_width['c2'])
+        self.r_item_no = self._field(text=self.p_item_no, width=self.d_width['c3'])
+        self.r_price = self._field(text=self.p_price, width=self.d_width['c4'])
+        self.r_desc = self._field(text=self.p_desc, width=self.d_width['c4'])
+        self.r_promo_price = self._field(text=self.p_promo_price, width=self.d_width['c4'])
+        self.r_promo_end = self._field(text=self.p_promo_end, width=self.d_width['c4'])
+        self.r_promo_desc = self._field(text=self.p_promo_desc, width=self.d_width['c4'])
 
         self.r_content_edit = ft.Row(controls=[
             ft.Container(
@@ -163,6 +197,8 @@ class ProductRow(ft.Row):
         # сборка элементов в строку
         self.controls = [
             self.r_container_icon,
+            self.el_divider,
+            self.r_img,
             self.el_divider,
             self.r_name,
             self.el_divider,
@@ -188,15 +224,14 @@ class ProductRow(ft.Row):
 
 
 
-
-
-    def f_field(self, text, width):
+    def _field(self, text, width):
         return ft.Container(
             content=ft.Text(
                 text,
                 color=defaultFontColor,
                 size=15,
                 font_family="cupurum",
+
             ),
             # height=25,
             width=width,
@@ -223,13 +258,13 @@ class ProductRow(ft.Row):
         self.p_promo_desc = v_promo_desc
 
 
-        self.r_name.content = ft.TextField(v_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_name.content = ft.TextField(v_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, max_length=300)
         self.r_item_no.content = ft.TextField(v_item_no, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-        self.r_desc.content = ft.TextField(v_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_desc.content = ft.TextField(v_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_length=1000, shift_enter=True)
         self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-        self.r_promo_desc.content = ft.TextField(v_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_promo_desc.content = ft.TextField(v_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, max_length=1000)
 
         self.r_container_icon.content = ft.Row(
             spacing=0,
