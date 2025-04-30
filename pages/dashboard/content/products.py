@@ -35,10 +35,18 @@ class ProductsContent:
 
         # resul append to body_content
         req = ReqProduct()
-        max_length_product = req.get_max_length()
-        name_width = max(max_length_product * 8, 100)  # 7 letter size
-        d_width = {"c1": name_width, "c2": 80, "c3": 150, "c4": 90}
-
+        max_length_product = max(req.get_max_length(), len("Наименование"))
+        name_width = max(max_length_product * 9, 100)  # 7 letter size
+        d_column_width = {"c_edit": 100,
+                          "c_image": 100,
+                          "c_name": name_width,
+                          "с_item_no": 90,
+                          "c_price": 80,
+                          "c_desc": 150,
+                          "c_price_promo": 80,
+                          "c_promo_end": 50,
+                          "c_promo_desc": 150
+                          }
         l_controls = []
 
         # кнопка "Добавить новый продукт"  TODO
@@ -51,13 +59,13 @@ class ProductsContent:
         #                       )
         # )
 
-        self.new_content.append(el_products_header(d_width))  # table header
+        self.new_content.append(el_products_header(d_column_width))  # table header
         # ---rows---
         for product in req.get_all_products():
             l_controls.append(
                 ProductRow(
                     page=self.page,
-                    d_width=d_width,
+                    d_column_width=d_column_width,
                     d_error_messages={"error_pk_item_no": error_message_pk_item_no, "error_pk_name": error_message_pk_name, "validation_error": error_message_validation},
                     product=product,
                     #product_id=product.product_id,

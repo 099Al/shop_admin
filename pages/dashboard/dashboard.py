@@ -26,7 +26,7 @@ class DashboardPage:
         page.title = "Панель управления"
         page.window.width = defaultWidthWindow
         page.window.height = defaultHeightWindow
-        page.window.min_width = 900
+        page.window.min_width = 1200
         page.window.min_height = 400
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
 
