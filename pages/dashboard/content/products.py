@@ -9,11 +9,9 @@ import flet as ft
 class ProductsContent:
 
     def __init__(self, instance):
-        self.instance = instance
         self.page = instance.page
         self.user_role = instance.user_role
-        self.content_header = instance.content_header
-        self.body_content = instance.body_content
+        self.new_content = []
 
     def build(self):
         error_message_pk_name = ft.SnackBar(
@@ -31,9 +29,9 @@ class ProductsContent:
             bgcolor=inputBgErrorColor
         )
 
-        self.body_content.clear()
-        self.content_header = header(label_name="Список Продуктов", user_role=self.user_role)
-        self.body_content.append(self.content_header)
+
+        content_header = header(label_name="Список Продуктов", user_role=self.user_role)
+        self.new_content.append(content_header)
 
         # resul append to body_content
         req = ReqProduct()
@@ -43,8 +41,8 @@ class ProductsContent:
 
         l_controls = []
 
-        # кнопка "Добавить новый продукт"
-        # self.body_content.append(
+        # кнопка "Добавить новый продукт"  TODO
+        # self.new_content.append(
         #     AddProductButton(page=self.page,
         #                       d_width=d_width,
         #                       error_message=error_message,
@@ -53,7 +51,7 @@ class ProductsContent:
         #                       )
         # )
 
-        self.body_content.append(el_products_header(d_width))  # table header
+        self.new_content.append(el_products_header(d_width))  # table header
         # ---rows---
         for product in req.get_all_products():
             l_controls.append(
@@ -73,9 +71,10 @@ class ProductsContent:
                     # p_img=product.r_image,
                     l_elements=l_controls
                 )
+
             )
 
-        self.body_content.append(ft.Column(
+        self.new_content.append(ft.Column(
             controls=l_controls,
             spacing=1,
             # height=600,     #scroll не будет работать, если изменить размер окна
@@ -84,6 +83,8 @@ class ProductsContent:
         ))
         # --rows-----------
 
-        self.body_content.append(error_message_validation)
-        self.body_content.append(error_message_pk_item_no)
-        self.body_content.append(error_message_pk_name)
+        self.new_content.append(error_message_validation)
+        self.new_content.append(error_message_pk_item_no)
+        self.new_content.append(error_message_pk_name)
+
+        return self.new_content

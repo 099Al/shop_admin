@@ -74,8 +74,13 @@ class DashboardPage:
             )
 
         #body_content = [header(self.user_role)]
-        ds_content = Dash_Content(page, self.user_role)  #Здесь происходит заполнение body_content
-
+        self.container_for_change_data = ft.Container(              #2-й элемент это столбец с контентом
+                            expand=4,
+                            padding=ft.padding.symmetric(15, 10),
+                            content=ft.Column()   #Весь контент помещаем в столбец
+                        )
+        ds_content = Dash_Content(page, self.container_for_change_data, self.user_role)  #Здесь происходит заполнение body_content
+        #ds_content.body_content
         return ft.View(
             "/dashboard",
             controls=[
@@ -91,14 +96,7 @@ class DashboardPage:
                             bgcolor=secondaryBgColor,
                         ),
                         # body center
-                        ft.Container(              #2-й элемент это столбец с контентом
-                            expand=4,
-                            padding=ft.padding.symmetric(15, 10),
-                            content=ft.Column(ds_content.body_content),   #Весь контент помещаем в столбец
-                        ),
-
-
-
+                        self.container_for_change_data,
                     ],
                 ),
 

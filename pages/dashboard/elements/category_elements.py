@@ -259,11 +259,9 @@ def el_category_header(d_width):
     )
 
 
-
-
-class AddCategoryButton(ft.UserControl):
+class AddCategoryButton:
     def __init__(self, **kwargs):
-        super().__init__()
+        #super().__init__()
         self.page = kwargs["page"]
         self.d_width = kwargs["d_width"]
         self.error_message = kwargs["error_message"]
@@ -344,8 +342,8 @@ class AddCategoryButton(ft.UserControl):
             # on_dismiss=lambda e: self.page.add(ft.Text("Modal dialog dismissed"),),
         )
 
-        self.page.dialog = dlg_create
-        dlg_create.open = True
+        self.page.open(dlg_create)
+        # dlg_create.open = True
         self.page.update()
 
 

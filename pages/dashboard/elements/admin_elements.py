@@ -166,7 +166,7 @@ class AdminRow(ft.Row):
         self.r_container_icon.update()
         self.r_name.update()
 
-class AdminHeader(ft.UserControl):
+class AdminHeader():
     def __init__(self, letter_size):
         super().__init__()
 

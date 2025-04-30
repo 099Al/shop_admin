@@ -5,14 +5,15 @@ from pages.style.style import inputBgErrorColor
 import flet as ft
 
 
+
 class CategoriesContent:
 
     def __init__(self, instance):
-        self.instance = instance
+        #self.instance = instance
         self.page = instance.page
         self.user_role = instance.user_role
-        self.content_header = instance.content_header
-        self.body_content = instance.body_content
+        #self.content_header = instance.content_header
+        self.new_content = []
 
     def build(self):
         error_message = ft.SnackBar(
@@ -20,9 +21,9 @@ class CategoriesContent:
             bgcolor=inputBgErrorColor
         )
 
-        self.body_content.clear()
+
         self.content_header = header(label_name="Список Категорий", user_role=self.user_role)
-        self.body_content.append(self.content_header)
+        self.new_content.append(self.content_header)
 
         # resul append to body_content
         req = ReqCategory()
@@ -33,16 +34,16 @@ class CategoriesContent:
         l_controls = []
 
         # кнопка "Добавить новую категорию"
-        self.body_content.append(
+        self.new_content.append(
             AddCategoryButton(page=self.page,
                               d_width=d_width,
                               error_message=error_message,
                               l_elements=l_controls,
                               # передается ссылка на список строк, чтобы к нему добавить новую категорию
-                              )
+                              ).build()
         )
 
-        self.body_content.append(el_category_header(d_width))  # table header
+        self.new_content.append(el_category_header(d_width))  # table header
         # ---rows---
         for id, c_name, c_order, p_cnt in req.category_products_cnt():
             l_controls.append(CategoryRow(page=self.page,
@@ -55,7 +56,7 @@ class CategoriesContent:
                                           l_elements=l_controls,
                                           )
                               )
-        self.body_content.append(ft.Column(
+        self.new_content.append(ft.Column(
             controls=l_controls,
             spacing=1,
             # height=600,     #scroll не будет работать, если изменить размер окна
@@ -64,4 +65,6 @@ class CategoriesContent:
         ))
         # --rows-----------
 
-        self.body_content.append(error_message)
+        self.new_content.append(error_message)
+
+        return self.new_content
