@@ -29,6 +29,11 @@ class ProductsContent:
             bgcolor=inputBgErrorColor
         )
 
+        error_message_image = ft.SnackBar(
+            content=ft.Text('Неверный формат изображения'),
+            bgcolor=inputBgErrorColor
+        )
+
 
         content_header = header(label_name="Список Продуктов", user_role=self.user_role)
         self.new_content.append(content_header)
@@ -66,7 +71,10 @@ class ProductsContent:
                 ProductRow(
                     page=self.page,
                     d_column_width=d_column_width,
-                    d_error_messages={"error_pk_item_no": error_message_pk_item_no, "error_pk_name": error_message_pk_name, "validation_error": error_message_validation},
+                    d_error_messages={"error_pk_item_no": error_message_pk_item_no,
+                                      "error_pk_name": error_message_pk_name,
+                                      "validation_error": error_message_validation,
+                                      "image_error": error_message_image},
                     product=product,
                     #product_id=product.product_id,
                     # p_name=product.name,
@@ -94,5 +102,6 @@ class ProductsContent:
         self.new_content.append(error_message_validation)
         self.new_content.append(error_message_pk_item_no)
         self.new_content.append(error_message_pk_name)
+        self.new_content.append(error_message_image)
 
         return self.new_content

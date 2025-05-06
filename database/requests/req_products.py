@@ -1,8 +1,8 @@
 from sqlalchemy import select, func, update, delete, insert
 
 from database.connect import DataBase
-from database.models.models import Category, Product, Category_Product
-
+from database.models.models import Category, Product, Category_Product, ImagePhoto
+import utils.functions as ut
 
 class ReqProduct:
     def __init__(self) -> None:
@@ -79,3 +79,26 @@ class ReqProduct:
         except Exception as e:
             self.session.rollback()
             return None
+
+    def update_image(self, product_id, image_name):
+        try:
+            image_name_old = self.session.execute(
+                select(ImagePhoto.image_name).where(ImagePhoto.image_id == select(Product.image_id).where(
+                    Product.product_id == product_id).scalar_subquery()
+                )
+            )
+
+            self.session.execute(
+                update(ImagePhoto)
+                .where(ImagePhoto.image_id == select(Product.image_id).where(
+                    Product.product_id == product_id).scalar_subquery())
+                .values(image_name=image_name)
+            )
+
+            self.session.commit()
+
+            return image_name_old.scalars().first(), 1  #картинки могло не быть
+
+        except Exception as e:
+            self.session.rollback()
+            return None, None

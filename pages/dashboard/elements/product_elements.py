@@ -1,3 +1,7 @@
+import json
+import os
+import shutil
+import uuid
 from datetime import datetime
 
 import flet as ft
@@ -7,6 +11,7 @@ from database.models.models import Product
 from database.requests.req_products import ReqProduct
 from pages.style.style import *
 from config import settings
+import utils.functions as ut
 
 el_divider = ft.Container(
                 height=25,
@@ -142,6 +147,8 @@ class ProductRow(ft.Row):
         self.p_promo_desc = self.product.promo_desc
         self.p_img = self.product.r_image.image_name if self.product.r_image else None
 
+        self.tmp_image_name = None
+
         self.l_elements = kwargs["l_elements"]    #ссылка на список продуктов, чтобы отсюда ее модифицировать
 
         # self.error_upd = ft.SnackBar(
@@ -159,16 +166,17 @@ class ProductRow(ft.Row):
             padding=0
         )
 
-        self._img_start = ft.Column(
-                controls=[
-                    ft.Image(
+        if not os.path.isfile(f"{settings.MEDIA}/original/{self.p_img}.jpeg"):
+            self.p_img = None
+
+        self._img_start_1 = ft.Image(
                         src=f"{settings.MEDIA}/original/{self.p_img}.jpeg" if self.p_img else f"{settings.MEDIA}/default/no_product_photo.jpeg",
                         width=self.d_column_width['c_image'],
                         height=100,
                         fit=ft.ImageFit.CONTAIN
-                    ),
-                ]
-            )
+                    )
+
+        self._img_start = ft.Column(controls=[self._img_start_1])
 
         self.r_img = ft.Container(content=self._img_start, padding=ft.padding.only(top=5, bottom=5))
         self.r_name = self._field(text=self.p_name, width=self.d_column_width['c_name'])
@@ -270,44 +278,59 @@ class ProductRow(ft.Row):
         self.p_promo_end = v_promo_end
         self.p_promo_desc = v_promo_desc
 
-        def _save_upload(x, **kwargs):
-            print(x)
-
-        file_picker = ft.FilePicker(on_result=_save_upload)
-        self.page.overlay.append(file_picker)
-
         style_item_button = ft.ButtonStyle(
-            color={
-                ft.ControlState.DEFAULT: ft.colors.BLUE_500,
-            },
-            bgcolor={
-                ft.ControlState.DEFAULT: "white",
-            }
-
+            color={ft.ControlState.DEFAULT: ft.colors.BLUE_500,},
+            bgcolor={ft.ControlState.DEFAULT: "white",}
         )
 
+        #вынесено отдельно, чтобы потом можно было изменить через замену src в другом месте
+        _img_1 = ft.Image(
+                    src=f"{settings.MEDIA}/original/{self.p_img}.jpeg" if self.p_img else f"{settings.MEDIA}/default/no_product_photo.jpeg",
+                    width=100,
+                    height=100,
+                    opacity=0.5,
+                    fit=ft.ImageFit.CONTAIN
+                )
+
         _img_edit = ft.Stack(
-                [
-                    ft.Image(
-                        src=f"{settings.MEDIA}/original/{self.p_img}.jpeg" if self.p_img else f"{settings.MEDIA}/default/no_product_photo.jpeg",
-                        width=100,
-                        height=100,
-                        opacity=0.5,
-                        fit=ft.ImageFit.CONTAIN
-                    ),
-                    ft.Container(
+            controls=[_img_1,
+
+                      ft.Container(
                         content=ft.TextButton(
-                        "Upload",
+                            "Upload",
                             style=style_item_button,
 
-                        scale=0.7,
-                        icon=ft.icons.UPLOAD_FILE,
-                        on_click=lambda _: file_picker.pick_files(allow_multiple=False)
+                            scale=0.7,
+                            icon=ft.icons.UPLOAD_FILE,
+                            on_click=lambda _: file_picker.pick_files(allow_multiple=False)
                         )
-                    )
-                ]
-            , alignment=ft.alignment.center
-            )
+                      )
+                      ],
+            alignment=ft.alignment.center
+        )
+
+
+        def _image_upload(x, **kwargs):
+            try:
+                allowed_extensions = {'.png', '.jpeg', '.jpg'}
+                path_to_src_file = json.loads(x.data)['files'][0]['path']
+                ext = os.path.splitext(path_to_src_file)[1].lower()
+                if ext not in allowed_extensions:
+                    error_image = self.d_error_messages["image_error"]
+                    error_image.open = True
+                    error_image.update()
+                else:
+                    self.tmp_image_name = f"{uuid.uuid4().hex}_{v_name}"
+                    shutil.copy(path_to_src_file, f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")  # копируем во временную директорию (settings.MEDIA_TMP)
+                    _img_1.src = f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg"
+                    self.r_img.update()
+                    self.page.update()
+
+            except Exception as e:
+                pass  #пользователь ничего не выбрал
+
+        file_picker = ft.FilePicker(on_result=_image_upload)
+        self.page.overlay.append(file_picker)
 
 
         self.r_img.content = _img_edit
@@ -338,16 +361,7 @@ class ProductRow(ft.Row):
         )
 
         self.page.update()
-        # self.r_container_icon.update()
-        # self.r_img.update()
-        # self.r_name.update()
-        # self.r_item_no.update()
-        # self.r_price.update()
-        # self.r_desc.update()
-        # self.r_promo_price.update()
-        # self.r_promo_end.update()
-        # self.r_promo_desc.update()
-        # self.r_img.update()
+
 
     def save(self, e):
         v_name = self.r_name.content.value
@@ -377,18 +391,6 @@ class ProductRow(ft.Row):
             req = ReqProduct()
             #TODO: new image
 
-            d_new_values = {
-                "name": v_name,
-                "item_no": v_item_no,
-                "price": float(v_price),
-                "description": v_desc,
-                "promo_price": float(v_promo_price) if v_promo_price else None,
-                "promo_expire_date": v_promo_end if v_promo_end else None,
-                "promo_desc": v_promo_desc
-            }
-
-
-
             is_exists_product = req.check_product_exists(v_name, v_item_no, self.product_id)
             if is_exists_product:
                 if is_exists_product == 1:
@@ -398,40 +400,101 @@ class ProductRow(ft.Row):
                 error_validation.open = True
                 error_validation.update()
             else:
-                upd_res = req.update_product(self.product_id, **d_new_values)
 
-                if upd_res is None:
+                if self.tmp_image_name:
+                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
 
-                    self.r_name.content = ft.TextField(self.p_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-                    self.r_item_no.content = ft.TextField(self.p_item_no, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-                    self.r_price.content = ft.TextField(self.p_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-                    self.r_desc.content = ft.TextField(self.p_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-                    self.r_promo_price.content = ft.TextField(self.p_promo_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-                    self.r_promo_end.content = ft.TextField(self.p_promo_end, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-                    self.r_promo_desc.content = ft.TextField(self.p_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+                d_new_values = {
+                    "name": v_name,
+                    "item_no": v_item_no,
+                    "price": float(v_price),
+                    "description": v_desc,
+                    "promo_price": float(v_promo_price) if v_promo_price else None,
+                    "promo_expire_date": v_promo_end if v_promo_end else None,
+                    "promo_desc": v_promo_desc
+                }
+
+                flag_update_attr = (
+                        self.product.name != d_new_values["name"] or
+                        self.product.item_no != d_new_values["item_no"] or
+                        self.product.price != d_new_values["price"] or
+                        self.product.description != d_new_values["description"] or
+                        self.product.promo_price != d_new_values["promo_price"] or
+                        self.product.promo_expire_date != d_new_values["promo_expire_date"] or
+                        self.product.promo_desc != d_new_values["promo_desc"]
+                )
+
+                upd_attr_status = None
+                upd_img_status = None
+
+                if flag_update_attr: # есть изменения в атрибутах
+                    upd_attr_status = req.update_product(self.product_id, **d_new_values)
+                    if upd_attr_status:
+                        # update произошел
+                        self.r_name.content = ft.Text(v_name, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_item_no.content = ft.Text(v_item_no, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_price.content = ft.Text(v_price, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_desc.content = ft.Text(v_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_price.content = ft.Text(v_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_end.content = ft.Text(v_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_desc.content = ft.Text(v_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                    else:
+                        # update не произошел
+                        self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_item_no.content = ft.Text(self.p_item_no, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_price.content = ft.Text(self.p_price, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_desc.content = ft.Text(self.p_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_price.content = ft.Text(self.p_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_end.content = ft.Text(self.p_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_desc.content = ft.Text(self.p_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+
+                if self.tmp_image_name:  # если была загружена новая картинка
+                    old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
+                    if upd_img_status:
+                        # update произошел
+                        if old_image_name:
+                            try:
+                               os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
+                            except:
+                                pass
+                        shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", f"{settings.MEDIA}/original/{self.p_img}.jpeg")
+                        os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
+                        self.tmp_image_name = None
+
+                        self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
+                        self.r_img.content = self._img_start
+                        self.r_img.padding = ft.padding.only(top=5, bottom=5)
+                        self.r_img.update()
+
+                        self.r_name.content = ft.Text(v_name, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_item_no.content = ft.Text(v_item_no, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_price.content = ft.Text(v_price, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_desc.content = ft.Text(v_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_price.content = ft.Text(v_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_end.content = ft.Text(v_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
+                        self.r_promo_desc.content = ft.Text(v_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+
+
+
+                    else:
+                        # update не произошел
+                        self.r_img.content = self._img_start
+                        self.r_img.padding = ft.padding.only(top=5, bottom=5)
                 else:
-                    self.r_name.content = ft.Text(v_name, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_item_no.content = ft.Text(v_item_no, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_price.content = ft.Text(v_price, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_desc.content = ft.Text(v_desc, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_promo_price.content = ft.Text(v_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_promo_end.content = ft.Text(v_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_promo_desc.content = ft.Text(v_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                    #картинка не изменилась, только атрибуты
+                    self.r_img.content = self._img_start
+                    self.r_img.padding = ft.padding.only(top=5, bottom=5)
+                    self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+                    self.r_item_no.content = ft.Text(self.p_item_no, color=defaultFontColor, size=15, font_family="cupurum")
+                    self.r_price.content = ft.Text(self.p_price, color=defaultFontColor, size=15, font_family="cupurum")
+                    self.r_desc.content = ft.Text(self.p_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                    self.r_promo_price.content = ft.Text(self.p_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
+                    self.r_promo_end.content = ft.Text(self.p_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
+                    self.r_promo_desc.content = ft.Text(self.p_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
 
-                    self.r_container_icon.content = self.r_content_edit
-                    self.r_container_icon.update()
-
-
-        # self.r_name.update()
-        # self.r_item_no.update()
-        # self.r_price.update()
-        # self.r_desc.update()
-        # self.r_promo_price.update()
-        # self.r_promo_end.update()
-        # self.r_promo_desc.update()
-
-
-        self.page.update()
+                self.r_container_icon.content = self.r_content_edit
+                self.r_container_icon.update()
+                self.page.update()
 
     def cancel(self, e):
         self.r_img.content = self._img_start
@@ -446,15 +509,10 @@ class ProductRow(ft.Row):
         self.r_promo_desc.content = ft.Text(self.p_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
 
         self.page.update()
-        # self.r_img.update()
-        # self.r_container_icon.update()
-        # self.r_name.update()
-        # self.r_item_no.update()
-        # self.r_price.update()
-        # self.r_desc.update()
-        # self.r_promo_price.update()
-        # self.r_promo_end.update()
-        # self.r_promo_desc.update()
+
+        if os.path.isfile(f"{settings.MEDIA_TMP}/{self.tmp_image_name}"):
+            os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}")
+
 
 
     def delete_dialog(self, e):
@@ -485,8 +543,8 @@ class ProductRow(ft.Row):
             # on_dismiss=lambda e: self.page.add(ft.Text("Modal dialog dismissed"),),
         )
 
-        self.page.dialog = dlg_delete
-        dlg_delete.open = True
+        self.page.open(dlg_delete)
+        # dlg_delete.open = True
         self.page.update()
 
 
