@@ -464,7 +464,7 @@ class ProductRow(ft.Row):
                                os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
                             except:
                                 pass
-                        # self.p_img = None
+                        self.p_img = None
                         self._img_start_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
                         self.r_img.content = self._img_start
 
