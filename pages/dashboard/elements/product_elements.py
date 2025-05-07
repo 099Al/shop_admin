@@ -260,6 +260,9 @@ class ProductRow(ft.Row):
             #bgcolor=ft.colors.DEEP_ORANGE_800
         )
 
+    def _image_delete(self, e):
+        pass
+
 
     def edit(self, e):
         v_name = self.r_name.content.value
@@ -270,13 +273,6 @@ class ProductRow(ft.Row):
         v_promo_end = self.r_promo_end.content.value
         v_promo_desc = self.r_promo_desc.content.value
 
-        self.p_name = v_name
-        self.p_item_no = v_item_no
-        self.p_price = v_price
-        self.p_desc = v_desc
-        self.p_promo_price = v_promo_price
-        self.p_promo_end = v_promo_end
-        self.p_promo_desc = v_promo_desc
 
         style_item_button = ft.ButtonStyle(
             color={ft.ControlState.DEFAULT: ft.colors.BLUE_500,},
@@ -295,19 +291,34 @@ class ProductRow(ft.Row):
         _img_edit = ft.Stack(
             controls=[_img_1,
 
-                      ft.Container(
-                        content=ft.TextButton(
-                            "Upload",
-                            style=style_item_button,
-
-                            scale=0.7,
-                            icon=ft.icons.UPLOAD_FILE,
-                            on_click=lambda _: file_picker.pick_files(allow_multiple=False)
-                        )
+                      ft.Column(
+                          controls=[
+                              ft.Container(
+                                  content=ft.TextButton(
+                                      "Upload",
+                                      style=style_item_button,
+                                      scale=0.7,
+                                      icon=ft.icons.UPLOAD_FILE,
+                                      on_click=lambda _: file_picker.pick_files(allow_multiple=False)
+                                  )
+                              ),
+                              ft.Container(
+                                  content=ft.TextButton(
+                                      "Delete",
+                                      style=style_item_button,
+                                      scale=0.7,
+                                      icon=ft.icons.DELETE_FOREVER,
+                                      on_click=self._image_delete
+                                  )
+                              )
+                          ]
                       )
+
                       ],
             alignment=ft.alignment.center
         )
+
+
 
 
         def _image_upload(x, **kwargs):
@@ -362,8 +373,17 @@ class ProductRow(ft.Row):
 
         self.page.update()
 
+    def _set_attr_Text(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
+        self.r_name.content = ft.Text(name, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_item_no.content = ft.Text(item_no, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_price.content = ft.Text(price, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_desc.content = ft.Text(desc, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_promo_price.content = ft.Text(promo_price, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_promo_end.content = ft.Text(promo_end, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_promo_desc.content = ft.Text(promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
 
     def save(self, e):
+        #значение после изменения в поле
         v_name = self.r_name.content.value
         v_item_no = self.r_item_no.content.value
         v_price = self._cut_price(self.r_price.content.value)
@@ -373,7 +393,7 @@ class ProductRow(ft.Row):
         v_promo_desc = self.r_promo_desc.content.value
 
         flag_valid = True
-        #TODO: check changes
+
         if (
                 not self._is_valid_price(v_price)
                 or (v_promo_price and not self._is_valid_price(v_promo_price))
@@ -389,7 +409,6 @@ class ProductRow(ft.Row):
         else:
 
             req = ReqProduct()
-            #TODO: new image
 
             is_exists_product = req.check_product_exists(v_name, v_item_no, self.product_id)
             if is_exists_product:
@@ -431,22 +450,22 @@ class ProductRow(ft.Row):
                     upd_attr_status = req.update_product(self.product_id, **d_new_values)
                     if upd_attr_status:
                         # update произошел
-                        self.r_name.content = ft.Text(v_name, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_item_no.content = ft.Text(v_item_no, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_price.content = ft.Text(v_price, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_desc.content = ft.Text(v_desc, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_price.content = ft.Text(v_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_end.content = ft.Text(v_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_desc.content = ft.Text(v_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                        self._set_attr_Text(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+
+                        self.p_name = v_name
+                        self.p_item_no = v_item_no
+                        self.p_price = v_price
+                        self.p_desc = v_desc
+                        self.p_promo_price = v_promo_price
+                        self.p_promo_end = v_promo_end
+                        self.p_promo_desc = v_promo_desc
+
                     else:
                         # update не произошел
-                        self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_item_no.content = ft.Text(self.p_item_no, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_price.content = ft.Text(self.p_price, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_desc.content = ft.Text(self.p_desc, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_price.content = ft.Text(self.p_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_end.content = ft.Text(self.p_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_desc.content = ft.Text(self.p_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+                        self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+                else:
+                    # атрибуты не изменились. Возвращаем первоначальные значения
+                    self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
 
                 if self.tmp_image_name:  # если была загружена новая картинка
                     old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
@@ -466,16 +485,6 @@ class ProductRow(ft.Row):
                         self.r_img.padding = ft.padding.only(top=5, bottom=5)
                         self.r_img.update()
 
-                        self.r_name.content = ft.Text(v_name, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_item_no.content = ft.Text(v_item_no, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_price.content = ft.Text(v_price, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_desc.content = ft.Text(v_desc, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_price.content = ft.Text(v_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_end.content = ft.Text(v_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
-                        self.r_promo_desc.content = ft.Text(v_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
-
-
-
                     else:
                         # update не произошел
                         self.r_img.content = self._img_start
@@ -484,13 +493,7 @@ class ProductRow(ft.Row):
                     #картинка не изменилась, только атрибуты
                     self.r_img.content = self._img_start
                     self.r_img.padding = ft.padding.only(top=5, bottom=5)
-                    self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_item_no.content = ft.Text(self.p_item_no, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_price.content = ft.Text(self.p_price, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_desc.content = ft.Text(self.p_desc, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_promo_price.content = ft.Text(self.p_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_promo_end.content = ft.Text(self.p_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
-                    self.r_promo_desc.content = ft.Text(self.p_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+
 
                 self.r_container_icon.content = self.r_content_edit
                 self.r_container_icon.update()
@@ -499,14 +502,9 @@ class ProductRow(ft.Row):
     def cancel(self, e):
         self.r_img.content = self._img_start
         self.r_img.padding = ft.padding.only(top=5, bottom=5)
+        self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+
         self.r_container_icon.content = self.r_content_edit
-        self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_item_no.content = ft.Text(self.p_item_no, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_price.content = ft.Text(self.p_price, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_desc.content = ft.Text(self.p_desc, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_promo_price.content = ft.Text(self.p_promo_price, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_promo_end.content = ft.Text(self.p_promo_end, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_promo_desc.content = ft.Text(self.p_promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
 
         self.page.update()
 
