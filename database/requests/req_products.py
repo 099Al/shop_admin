@@ -86,18 +86,57 @@ class ReqProduct:
                 select(ImagePhoto.image_name).where(ImagePhoto.image_id == select(Product.image_id).where(
                     Product.product_id == product_id).scalar_subquery()
                 )
+            ).scalars().first()
+
+            if image_name_old:
+                self.session.execute(
+                    update(ImagePhoto)
+                    .where(ImagePhoto.image_id == select(Product.image_id).where(
+                        Product.product_id == product_id).scalar_subquery())
+                    .values(image_name=image_name)
+                )
+            else:
+                image = ImagePhoto(image_name=image_name)  # Новое изображение, т.к. новый продукт
+                self.session.add(image)
+                self.session.flush()
+
+                image_id = image.image_id
+
+                self.session.execute(
+                    update(Product).where(Product.product_id == product_id).values(image_id=image_id)
+                )
+
+            self.session.commit()
+
+
+            return image_name_old, 1  #картинки могло не быть
+
+        except Exception as e:
+            self.session.rollback()
+            return None, None
+
+
+    def delete_image(self, product_id):
+        try:
+            image_name = self.session.execute(
+                select(ImagePhoto.image_name).where(ImagePhoto.image_id == select(Product.image_id).where(
+                    Product.product_id == product_id).scalar_subquery()
+                )
+            ).scalars().first()
+
+            self.session.execute(
+                delete(ImagePhoto).where(ImagePhoto.image_id == select(Product.image_id).where(
+                    Product.product_id == product_id).scalar_subquery()
+                )
             )
 
             self.session.execute(
-                update(ImagePhoto)
-                .where(ImagePhoto.image_id == select(Product.image_id).where(
-                    Product.product_id == product_id).scalar_subquery())
-                .values(image_name=image_name)
+                update(Product).where(Product.product_id == product_id).values(image_id=None)
             )
 
             self.session.commit()
 
-            return image_name_old.scalars().first(), 1  #картинки могло не быть
+            return image_name, 1  #картинки могло не быть
 
         except Exception as e:
             self.session.rollback()

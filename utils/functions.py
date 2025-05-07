@@ -25,7 +25,9 @@ def image_name(product_name, article=None):
         return f"{product_name[:50]}_{string_to_12_digit_number(product_name[:50])}"
 
 
-def image_to_16digit_hash(image_path):
+def image_to_16digit_hash(image_path, product_id):
+    #product_id - нужен, т.к. для разных продуктов, может быть одна картинка. Тогда у нее будет одно название.
+    #И при удалении удалится во всех продуктах
     # Load and normalize image
     with Image.open(image_path) as img:
         img = img.convert("L").resize((64, 64))  # Grayscale and resize
@@ -42,7 +44,7 @@ def image_to_16digit_hash(image_path):
     formatted_hash = f"{numeric_hash:016d}"
 
     # Format with underscores: 0000_0000_0000_0000
-    return "_".join(formatted_hash[i:i+4] for i in range(0, 16, 4))
+    return "_".join(formatted_hash[i:i+4] for i in range(0, 16, 4))+f"__{product_id}"
 
 
 if __name__ == '__main__':

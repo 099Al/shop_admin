@@ -148,6 +148,7 @@ class ProductRow(ft.Row):
         self.p_img = self.product.r_image.image_name if self.product.r_image else None
 
         self.tmp_image_name = None
+        self.flag_delete_image = None
 
         self.l_elements = kwargs["l_elements"]    #ссылка на список продуктов, чтобы отсюда ее модифицировать
 
@@ -174,7 +175,7 @@ class ProductRow(ft.Row):
                         width=self.d_column_width['c_image'],
                         height=100,
                         fit=ft.ImageFit.CONTAIN
-                    )
+        )
 
         self._img_start = ft.Column(controls=[self._img_start_1])
 
@@ -261,8 +262,16 @@ class ProductRow(ft.Row):
         )
 
     def _image_delete(self, e):
-        pass
+        self._img_edit_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
+        self.flag_delete_image = True
+        try:
+            os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
+        except:
+            pass
+        self.tmp_image_name = None
 
+        self.r_img.update()
+        self.page.update()
 
     def edit(self, e):
         v_name = self.r_name.content.value
@@ -280,7 +289,7 @@ class ProductRow(ft.Row):
         )
 
         #вынесено отдельно, чтобы потом можно было изменить через замену src в другом месте
-        _img_1 = ft.Image(
+        self._img_edit_1 = ft.Image(
                     src=f"{settings.MEDIA}/original/{self.p_img}.jpeg" if self.p_img else f"{settings.MEDIA}/default/no_product_photo.jpeg",
                     width=100,
                     height=100,
@@ -289,7 +298,7 @@ class ProductRow(ft.Row):
                 )
 
         _img_edit = ft.Stack(
-            controls=[_img_1,
+            controls=[self._img_edit_1,
 
                       ft.Column(
                           controls=[
@@ -333,7 +342,7 @@ class ProductRow(ft.Row):
                 else:
                     self.tmp_image_name = f"{uuid.uuid4().hex}_{v_name}"
                     shutil.copy(path_to_src_file, f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")  # копируем во временную директорию (settings.MEDIA_TMP)
-                    _img_1.src = f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg"
+                    self._img_edit_1.src = f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg"
                     self.r_img.update()
                     self.page.update()
 
@@ -421,7 +430,7 @@ class ProductRow(ft.Row):
             else:
 
                 if self.tmp_image_name:
-                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
+                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", self.product_id)
 
                 d_new_values = {
                     "name": v_name,
@@ -445,6 +454,23 @@ class ProductRow(ft.Row):
 
                 upd_attr_status = None
                 upd_img_status = None
+
+                if self.flag_delete_image:
+                    old_image_name, upd_img_status = req.delete_image(self.product_id)
+                    if upd_img_status:
+                        # update произошел
+                        if old_image_name:
+                            try:
+                               os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
+                            except:
+                                pass
+                        # self.p_img = None
+                        self._img_start_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
+                        self.r_img.content = self._img_start
+
+                    self.r_img.padding = ft.padding.only(top=5, bottom=5)
+                    self.r_img.update()
+
 
                 if flag_update_attr: # есть изменения в атрибутах
                     upd_attr_status = req.update_product(self.product_id, **d_new_values)
@@ -505,6 +531,8 @@ class ProductRow(ft.Row):
         self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
 
         self.r_container_icon.content = self.r_content_edit
+
+        self.flag_delete_image = False
 
         self.page.update()
 
