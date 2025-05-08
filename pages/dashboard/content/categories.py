@@ -29,7 +29,10 @@ class CategoriesContent:
         req = ReqCategory()
         max_length_category = req.get_max_length()
         name_width = max(max_length_category * 8, 100)  # 7 letter size
-        d_width = {"c1": 80, "c2": name_width, "c3": 150, "c4": 90}
+        d_width = {"c_edit": 80,
+                   "c_category": name_width,
+                   "c_cnt": 150,
+                   "c_order_sort": 90}
 
         l_controls = []
 

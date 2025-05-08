@@ -31,8 +31,8 @@ class CategoryRow(ft.Row):
             padding=0
         )
 
-        self.r_name = self.f_field(text=self.p_name, width=self.d_width['c2'])
-        self.r_order = self.f_field(text=self.p_order, width=self.d_width['c2'])
+        self.r_name = self.f_field(text=self.p_name, width=self.d_width['c_category'])
+        self.r_order = self.f_field(text=self.p_order, width=self.d_width['c_order_sort'])
             # ft.Container(
             #     width=self.d_width['c4'],
             #     content=ft.Text(
@@ -56,7 +56,7 @@ class CategoryRow(ft.Row):
         #элемент с редактированием
         self.r_container_icon = ft.Container(
             # bgcolor="orange",
-            width=self.d_width['c1'],
+            width=self.d_width['c_edit'],
             # padding=ft.padding.only(right=30),
             content=self.r_content_edit if self.p_name != "default" else None  #default нельзя изменить
         )
@@ -68,7 +68,7 @@ class CategoryRow(ft.Row):
             self.r_name,
             self.el_divider,
             ft.Container(
-                width=self.d_width['c3'],
+                width=self.d_width['c_cnt'],
                 content=ft.Text(
                     self.p_product_cnt,
                     color=defaultFontColor,
@@ -219,7 +219,7 @@ def el_category_header(d_width):
     return ft.Row(
         controls=[
             ft.Container(
-                width=d_width["c1"],
+                width=d_width["c_edit"],
             ),
             el_divider,
             ft.Container(
@@ -229,7 +229,7 @@ def el_category_header(d_width):
                     size=15,
                     font_family="cupurum",
                 ),
-                width=d_width["c2"],
+                width=d_width["c_category"],
                 alignment=ft.alignment.bottom_left,
             ),
             el_divider,
@@ -240,7 +240,7 @@ def el_category_header(d_width):
                     size=15,
                     font_family="cupurum",
                 ),
-                width=d_width["c3"],
+                width=d_width["c_cnt"],
             ),
             el_divider,
             ft.Container(
@@ -250,7 +250,7 @@ def el_category_header(d_width):
                     size=15,
                     font_family="cupurum",
                 ),
-                width=d_width["c4"],
+                width=d_width["c_order_sort"],
             ),
             el_divider,
         ],
