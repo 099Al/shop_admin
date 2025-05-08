@@ -5,13 +5,14 @@ import uuid
 from datetime import datetime
 
 import flet as ft
-from flet_core.icons import MEDIATION
 
 from database.models.models import Product
 from database.requests.req_products import ReqProduct
 from pages.style.style import *
 from config import settings
 import utils.functions as ut
+from database.connect import DataBase
+
 
 el_divider = ft.Container(
                 height=25,
@@ -429,9 +430,6 @@ class ProductRow(ft.Row):
                 error_validation.update()
             else:
 
-                if self.tmp_image_name:
-                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", self.product_id)
-
                 d_new_values = {
                     "name": v_name,
                     "item_no": v_item_no,
@@ -452,8 +450,6 @@ class ProductRow(ft.Row):
                         self.product.promo_desc != d_new_values["promo_desc"]
                 )
 
-                upd_attr_status = None
-                upd_img_status = None
 
                 if self.flag_delete_image:
                     old_image_name, upd_img_status = req.delete_image(self.product_id)
@@ -468,6 +464,7 @@ class ProductRow(ft.Row):
                         self._img_start_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
                         self.r_img.content = self._img_start
 
+                    self.flag_delete_image = False
                     self.r_img.padding = ft.padding.only(top=5, bottom=5)
                     self.r_img.update()
 
@@ -494,6 +491,7 @@ class ProductRow(ft.Row):
                     self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
 
                 if self.tmp_image_name:  # если была загружена новая картинка
+                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",self.product_id)
                     old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
                     if upd_img_status:
                         # update произошел
@@ -524,6 +522,7 @@ class ProductRow(ft.Row):
                 self.r_container_icon.content = self.r_content_edit
                 self.r_container_icon.update()
                 self.page.update()
+
 
     def cancel(self, e):
         self.r_img.content = self._img_start
