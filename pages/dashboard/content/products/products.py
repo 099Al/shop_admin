@@ -13,6 +13,8 @@ class ProductsContent:
         self.user_role = instance.user_role
         self.new_content = []
 
+
+
     def build(self):
         error_message_pk_name = ft.SnackBar(
             content=ft.Text('Продукт с таким названием уже существует'),
@@ -40,6 +42,14 @@ class ProductsContent:
         )
 
 
+        self.column_with_product_rows = ft.Column(
+            controls=[],
+            spacing=1,
+            # height=600,     #scroll не будет работать, если изменить размер окна
+            scroll=ft.ScrollMode.AUTO,
+            expand=True
+        )
+
         content_header = header(label_name="Список Продуктов", user_role=self.user_role)
         self.new_content.append(content_header)
 
@@ -57,7 +67,7 @@ class ProductsContent:
                           "c_promo_end": 80,
                           "c_promo_desc": 150
                           }
-        l_controls = []
+
 
         # кнопка "Добавить новый продукт"
         self.new_content.append(
@@ -70,7 +80,7 @@ class ProductsContent:
                                                "insert_error": error_insert_product
 
                                                 },
-                              l_elements=l_controls,
+                              column_with_rows=self.column_with_product_rows,
                               # передается ссылка на список строк, чтобы к нему добавить новую категорию
                               ).build()
         )
@@ -78,7 +88,7 @@ class ProductsContent:
         self.new_content.append(el_products_header(d_column_width))  # table header
         # ---rows---
         for product in req.get_all_products():
-            l_controls.append(
+            self.column_with_product_rows.controls.append(
                 ProductRow(
                     page=self.page,
                     d_column_width=d_column_width,
@@ -87,18 +97,14 @@ class ProductsContent:
                                       "validation_error": error_message_validation,
                                       "image_error": error_message_image},
                     product=product,
-                    l_elements=l_controls
+                    column_with_rows=self.column_with_product_rows
                 )
 
             )
 
-        self.new_content.append(ft.Column(
-            controls=l_controls,
-            spacing=1,
-            # height=600,     #scroll не будет работать, если изменить размер окна
-            scroll=ft.ScrollMode.AUTO,
-            expand=True
-        ))
+
+
+        self.new_content.append(self.column_with_product_rows)
         # --rows-----------
 
         self.new_content.append(error_message_validation)

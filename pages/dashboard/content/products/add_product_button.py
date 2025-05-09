@@ -12,7 +12,7 @@ class AddProductButton:
         self.page = kwargs["page"]
         self.d_column_width = kwargs["d_column_width"]
         self.d_error_messages = kwargs["d_error_messages"]
-        self.l_elements = kwargs["l_elements"]
+        self.column_with_rows = kwargs["column_with_rows"]
 
 
     def build(self):
@@ -108,11 +108,11 @@ class AddProductButton:
                                 d_column_width=self.d_column_width,
                                 d_error_messages=self.d_error_messages,
                                 product=new_product,
-                                l_elements=self.l_elements
+                                column_with_rows=self.column_with_rows
                         )
 
 
-                        self.l_elements.append(new_row)
+                        self.column_with_rows.controls.append(new_row)
 
                         dlg_create.open = False
                         self.page.update()

@@ -150,12 +150,7 @@ class ProductRow(ft.Row):
         self.tmp_image_name = None
         self.flag_delete_image = None
 
-        self.l_elements = kwargs["l_elements"]    #ссылка на список продуктов, чтобы отсюда ее модифицировать
-
-        # self.error_upd = ft.SnackBar(
-        #     content=ft.Text('категория с таким названием уже существует'),
-        #     bgcolor=inputBgErrorColor
-        # )
+        self.column_with_rows = kwargs["column_with_rows"]    #ссылка на список продуктов, чтобы отсюда ее модифицировать
 
 
         self.el_divider = ft.Container(
@@ -577,9 +572,9 @@ class ProductRow(ft.Row):
             req = ReqProduct()
             req.delete_product(self.product_id)
 
-            for x in self.l_elements:
-                if x.product_id == self.product_id:
-                    self.l_elements.remove(x)
+            for product_row in self.column_with_rows.controls:
+                if product_row.product_id == self.product_id:
+                    self.column_with_rows.controls.remove(product_row)
 
             dlg_delete.open = False
             self.page.update()
