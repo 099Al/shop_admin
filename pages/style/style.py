@@ -14,3 +14,4 @@ menuFontColor = '#949596'
 #Настройка TextField
 textFieldBgColor = '#1a1a2a'
 textFieldColor = 'blue'
+errorFieldColor = 'red'
