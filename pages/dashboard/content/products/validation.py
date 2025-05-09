@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 
 def cut_price(price):
@@ -9,6 +9,9 @@ def cut_price(price):
 
 def is_valid_date(date_str):
     formats = ["%d-%m-%Y", "%d/%m/%Y", "%Y/%m/%d", "%Y-%m-%d"]
+    if isinstance(date_str, datetime) or isinstance(date_str, date):
+        return date_str
+
     if date_str:
         for fmt in formats:
             try:
@@ -20,6 +23,8 @@ def is_valid_date(date_str):
 
 
 def is_valid_price(price):
+    if type(price) == float:
+        return True
     try:
         float(price)
         return True

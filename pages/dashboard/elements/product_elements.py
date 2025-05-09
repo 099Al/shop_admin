@@ -2,7 +2,6 @@ import json
 import os
 import shutil
 import uuid
-from datetime import datetime
 
 import flet as ft
 
@@ -12,7 +11,6 @@ from pages.dashboard.content.products.validation import cut_price, is_valid_pric
 from pages.style.style import *
 from config import settings
 import utils.functions as ut
-from database.connect import DataBase
 
 
 el_divider = ft.Container(
@@ -139,15 +137,15 @@ class ProductRow(ft.Row):
         # self.p_promo_desc = kwargs["p_promo_desc"]     #описание акции
 
         self.product: Product = kwargs["product"]
-        self.product_id = self.product.product_id
-        self.p_name = self.product.name
-        self.p_item_no = self.product.item_no
-        self.p_price = self.product.price
-        self.p_desc = self.product.description
-        self.p_promo_price = self.product.promo_price
+        self.product_id: int = self.product.product_id
+        self.p_name: str = self.product.name
+        self.p_item_no: str = self.product.item_no
+        self.p_price: float = self.product.price
+        self.p_desc: str = self.product.description
+        self.p_promo_price: float = self.product.promo_price
         self.p_promo_end = self.product.promo_expire_date
-        self.p_promo_desc = self.product.promo_desc
-        self.p_img = self.product.r_image.image_name if self.product.r_image else None
+        self.p_promo_desc: str = self.product.promo_desc
+        self.p_img: str = self.product.r_image.image_name if self.product.r_image else None
 
         self.tmp_image_name = None
         self.flag_delete_image = None
@@ -158,7 +156,6 @@ class ProductRow(ft.Row):
         #     content=ft.Text('категория с таким названием уже существует'),
         #     bgcolor=inputBgErrorColor
         # )
-
 
 
         self.el_divider = ft.Container(
@@ -276,9 +273,10 @@ class ProductRow(ft.Row):
         self.page.update()
 
     def edit(self, e):
+        #тип в строке может меняться
         v_name = self.r_name.content.value
         v_item_no = self.r_item_no.content.value
-        v_price = self.r_price.content.value
+        v_price: [str, float] = self.r_price.content.value
         v_desc = self.r_desc.content.value
         v_promo_price = self.r_promo_price.content.value
         v_promo_end = self.r_promo_end.content.value
@@ -394,18 +392,19 @@ class ProductRow(ft.Row):
         self.r_promo_desc.content = ft.Text(promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
 
 
+
     def validate(self):
         v_name = self.r_name.content.value
         v_item_no = self.r_item_no.content.value
         v_price = self.r_price.content.value
         v_desc = self.r_desc.content.value
         v_promo_price = self.r_promo_price.content.value
-        v_promo_end = self.r_promo_end.content.value
+        v_promo_end = self.r_promo_end.content.value  #если из БД, то тип datetime, если прописываем, то string
         v_promo_desc = self.r_promo_desc.content.value
 
         flag_valid = True
 
-        if not is_valid_price(cut_price(v_price)):
+        if v_price and not is_valid_price(cut_price(v_price)):
             self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor, border_color=errorFieldColor, text_size=15)
             flag_valid = False
         else: #чтобы вернуть в начальное состояние после исправления
@@ -437,17 +436,17 @@ class ProductRow(ft.Row):
 
     def save(self, e):
         #значение после изменения в поле
+
+        if not self.validate():
+            return
+
         v_name = self.r_name.content.value
         v_item_no = self.r_item_no.content.value
-        v_price = cut_price(self.r_price.content.value)
+        v_price: [str, float] = self.r_price.content.value
         v_desc = self.r_desc.content.value
         v_promo_price = cut_price(self.r_promo_price.content.value)
         v_promo_end = self.r_promo_end.content.value
         v_promo_desc = self.r_promo_desc.content.value
-
-
-        if not self.validate():
-            return
 
         req = ReqProduct()
 
@@ -464,14 +463,15 @@ class ProductRow(ft.Row):
             d_new_values = {
                     "name": v_name,
                     "item_no": v_item_no,
-                    "price": float(v_price),
+                    "price": float(v_price) if v_price else None,
                     "description": v_desc,
                     "promo_price": float(v_promo_price) if v_promo_price else None,
-                    "promo_expire_date": v_promo_end if v_promo_end else None,
+                    "promo_expire_date": is_valid_date(v_promo_end) if v_promo_end else None,
                     "promo_desc": v_promo_desc
                 }
 
             flag_update_attr = (
+                        #типры данных совпадают
                         self.product.name != d_new_values["name"] or
                         self.product.item_no != d_new_values["item_no"] or
                         self.product.price != d_new_values["price"] or
@@ -506,12 +506,13 @@ class ProductRow(ft.Row):
                     # update произошел
                     self._set_attr_Text(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
 
+                    #В self приводим к правильному типу
                     self.p_name = v_name
                     self.p_item_no = v_item_no
-                    self.p_price = v_price
+                    self.p_price = float(v_price) if v_price else None
                     self.p_desc = v_desc
-                    self.p_promo_price = v_promo_price
-                    self.p_promo_end = v_promo_end
+                    self.p_promo_price = float(v_promo_price) if v_promo_price else None
+                    self.p_promo_end = is_valid_date(v_promo_end) if v_promo_end else None
                     self.p_promo_desc = v_promo_desc
 
                 else:

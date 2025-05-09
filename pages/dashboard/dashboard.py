@@ -27,7 +27,7 @@ class DashboardPage:
         page.window.width = defaultWidthWindow
         page.window.height = defaultHeightWindow
         page.window.min_width = 1200
-        page.window.min_height = 400
+        page.window.min_height = 600
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
 
 

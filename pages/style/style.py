@@ -7,7 +7,7 @@ hoverBgcolor = '#0068f7'
 
 # Настройки окна
 defaultWidthWindow = '1600'
-defaultHeightWindow = '600'
+defaultHeightWindow = '800'
 inputBgErrorColor = '#291919'
 menuFontColor = '#949596'
 
