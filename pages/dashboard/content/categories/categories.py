@@ -1,5 +1,5 @@
 from database.requests.req_categories import ReqCategory
-from pages.dashboard.elements.category_elements import AddCategoryButton, el_category_header, CategoryRow
+from pages.dashboard.content.categories.category_rows import AddCategoryButton, el_category_header, CategoryRow
 from pages.dashboard.head_elements import header
 from pages.style.style import inputBgErrorColor
 import flet as ft

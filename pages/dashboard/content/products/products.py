@@ -1,5 +1,5 @@
 from database.requests.req_products import ReqProduct
-from pages.dashboard.elements.category_elements import AddCategoryButton, el_category_header, CategoryRow
+from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.elements.product_elements import el_products_header, ProductRow
 from pages.dashboard.head_elements import header
 from pages.style.style import inputBgErrorColor
@@ -34,6 +34,11 @@ class ProductsContent:
             bgcolor=inputBgErrorColor
         )
 
+        error_insert_product = ft.SnackBar(
+            content=ft.Text('Ошибка при добавлении в базу данных'),
+            bgcolor=inputBgErrorColor
+        )
+
 
         content_header = header(label_name="Список Продуктов", user_role=self.user_role)
         self.new_content.append(content_header)
@@ -54,15 +59,21 @@ class ProductsContent:
                           }
         l_controls = []
 
-        # кнопка "Добавить новый продукт"  TODO
-        # self.new_content.append(
-        #     AddProductButton(page=self.page,
-        #                       d_width=d_width,
-        #                       error_message=error_message,
-        #                       l_elements=l_controls,
-        #                       # передается ссылка на список строк, чтобы к нему добавить новую категорию
-        #                       )
-        # )
+        # кнопка "Добавить новый продукт"
+        self.new_content.append(
+            AddProductButton(page=self.page,
+                              d_column_width=d_column_width,
+                              d_error_messages={"error_pk_item_no": error_message_pk_item_no,
+                                               "error_pk_name": error_message_pk_name,
+                                               "validation_error": error_message_validation,
+                                               "image_error": error_message_image,
+                                               "insert_error": error_insert_product
+
+                                                },
+                              l_elements=l_controls,
+                              # передается ссылка на список строк, чтобы к нему добавить новую категорию
+                              ).build()
+        )
 
         self.new_content.append(el_products_header(d_column_width))  # table header
         # ---rows---
@@ -76,15 +87,6 @@ class ProductsContent:
                                       "validation_error": error_message_validation,
                                       "image_error": error_message_image},
                     product=product,
-                    #product_id=product.product_id,
-                    # p_name=product.name,
-                    # p_item_no=product.item_no,
-                    # p_price=product.price,
-                    # p_desc=product.description,
-                    # p_promo_price=product.promo_price,
-                    # p_promo_end=product.promo_expire_date,
-                    # p_promo_desc=product.promo_desc,
-                    # p_img=product.r_image,
                     l_elements=l_controls
                 )
 
@@ -103,5 +105,14 @@ class ProductsContent:
         self.new_content.append(error_message_pk_item_no)
         self.new_content.append(error_message_pk_name)
         self.new_content.append(error_message_image)
+        self.new_content.append(error_insert_product)
 
         return self.new_content
+
+
+
+
+
+
+
+

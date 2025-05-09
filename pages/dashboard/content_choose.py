@@ -2,13 +2,11 @@ import flet as ft
 
 from database.connect import DataBase
 from database.requests.req_admins import ReqAdmins
-from database.requests.req_categories import ReqCategory
-from pages.dashboard.content.categories import CategoriesContent
-from pages.dashboard.content.products import ProductsContent
+from pages.dashboard.content.categories.categories import CategoriesContent
+from pages.dashboard.content.products.products import ProductsContent
 
 #from pages.dashboard.content.categories import set_CategoriesContent
 from pages.dashboard.elements.admin_elements import AdminRow, AdminHeader
-from pages.dashboard.elements.category_elements import AddCategoryButton, CategoryRow, el_category_header
 from pages.dashboard.head_elements import header
 from pages.dashboard.types import EnumDashContent
 from pages.style.style import *

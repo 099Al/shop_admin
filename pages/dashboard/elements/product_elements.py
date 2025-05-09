@@ -8,6 +8,7 @@ import flet as ft
 
 from database.models.models import Product
 from database.requests.req_products import ReqProduct
+from pages.dashboard.content.products.validation import cut_price, is_valid_price, is_valid_date
 from pages.style.style import *
 from config import settings
 import utils.functions as ut
@@ -396,18 +397,18 @@ class ProductRow(ft.Row):
         #значение после изменения в поле
         v_name = self.r_name.content.value
         v_item_no = self.r_item_no.content.value
-        v_price = self._cut_price(self.r_price.content.value)
+        v_price = cut_price(self.r_price.content.value)
         v_desc = self.r_desc.content.value
-        v_promo_price = self._cut_price(self.r_promo_price.content.value)
+        v_promo_price = cut_price(self.r_promo_price.content.value)
         v_promo_end = self.r_promo_end.content.value
         v_promo_desc = self.r_promo_desc.content.value
 
         flag_valid = True
 
         if (
-                not self._is_valid_price(v_price)
-                or (v_promo_price and not self._is_valid_price(v_promo_price))
-                or (v_promo_end and not self._is_valid_date(v_promo_end))
+                not is_valid_price(v_price)
+                or (v_promo_price and not is_valid_price(v_promo_price))
+                or (v_promo_end and not is_valid_date(v_promo_end))
         ):
             flag_valid = False
 
@@ -574,28 +575,6 @@ class ProductRow(ft.Row):
 
 
 
-    def _cut_price(self, price):
-        price = str(price)
-        if '.' in price:
-            price = price.split('.')[0] + '.' + price.split('.')[1][:2]
-        return price
 
-    def _is_valid_date(self, date_str):
-        formats = ["%d-%m-%Y", "%d/%m/%Y", "%Y/%m/%d", "%Y-%m-%d"]
-        for fmt in formats:
-            try:
-                datetime.strptime(date_str, fmt)
-                return True
-            except ValueError:
-                continue
-        return False
-
-
-    def _is_valid_price(self, price):
-        try:
-            float(price)
-            return True
-        except ValueError:
-            return False
 
 

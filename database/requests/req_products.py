@@ -36,7 +36,7 @@ class ReqProduct:
 
     def check_product_exists(self, name, item_no, product_id):
         """
-        Функция отлияается от проекта shop.
+        Функция отличается от проекта shop.
         Смотрим по всей базе, не зависимо от категории
         Если есть артикул, он должен быть уникальным
         Если его нет, то название должно быть уникальным
@@ -65,6 +65,16 @@ class ReqProduct:
         else:
             return False
 
+    def add_product(self, product: Product):
+        try:
+            self.session.add(product)
+            self.session.commit()
+
+            return product.product_id
+        except Exception as e:
+            self.session.rollback()
+            print(e)
+            return None
 
 
 
