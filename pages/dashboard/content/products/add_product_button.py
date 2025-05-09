@@ -1,7 +1,7 @@
 from database.models.models import Product
 from database.requests.req_products import ReqProduct
 from pages.dashboard.content.products.validation import is_valid_price, is_valid_date, cut_price
-from pages.dashboard.elements.product_elements import ProductRow
+from pages.dashboard.content.products.product_elements import ProductRow
 import flet as ft
 
 

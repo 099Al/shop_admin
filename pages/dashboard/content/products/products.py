@@ -1,6 +1,6 @@
 from database.requests.req_products import ReqProduct
 from pages.dashboard.content.products.add_product_button import AddProductButton
-from pages.dashboard.elements.product_elements import el_products_header, ProductRow
+from pages.dashboard.content.products.product_elements import el_products_header, ProductRow
 from pages.dashboard.head_elements import header
 from pages.style.style import inputBgErrorColor
 import flet as ft
