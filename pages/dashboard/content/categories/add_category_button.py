@@ -10,7 +10,7 @@ class AddCategoryButton:
         self.page = kwargs["page"]
         self.d_width = kwargs["d_width"]
         self.error_message = kwargs["error_message"]
-        self.l_elements = kwargs["l_elements"]
+        self.column_with_rows = kwargs["column_with_rows"]
         #self.c_elements_index: CategoryElementsIndex = kwargs["elements_index"]
 
     def build(self):
@@ -54,11 +54,11 @@ class AddCategoryButton:
                     p_name=category_name,
                     p_order=category_order,
                     p_product_cnt=0,
-                    l_elements=self.l_elements,
+                    column_with_rows=self.column_with_rows,
                 )
 
                 #self.c_elements_index.add_element(new_row) #добавление элемента в список
-                self.l_elements.append(new_row)
+                self.column_with_rows.controls.append(new_row)
 
                 dlg_create.open = False
                 self.page.update()
@@ -93,23 +93,23 @@ class AddCategoryButton:
 
 
 
-class AddCategoryButton2(ft.ElevatedButton):
-    """
-    Пример кастомной кнопки
-    В content.py оборачиваем данный элемент в Container и двигаем
-    # el = ft.Row(controls=[
-                #     ft.Container(content=AddCategoryButton(page=self.page), margin=ft.margin.only(right=30, top=40))],
-                #             alignment=ft.MainAxisAlignment.END)
-                # self.body_content.append(el)
-    Внутри данного элемента не работает Container и Row, чтобы задать расположение
-    """
-    def __init__(self, **kwargs):
-        super().__init__()
-        self.page = kwargs["page"]
-        self.text = "Добавить категорию"
-        self.icon = ft.icons.ADD
-        self.on_click = self.add_category
-
-
-    def add_category(self, e):
-        pass
+# class AddCategoryButton2(ft.ElevatedButton):
+#     """
+#     Пример кастомной кнопки
+#     В content.py оборачиваем данный элемент в Container и двигаем
+#     # el = ft.Row(controls=[
+#                 #     ft.Container(content=AddCategoryButton(page=self.page), margin=ft.margin.only(right=30, top=40))],
+#                 #             alignment=ft.MainAxisAlignment.END)
+#                 # self.body_content.append(el)
+#     Внутри данного элемента не работает Container и Row, чтобы задать расположение
+#     """
+#     def __init__(self, **kwargs):
+#         super().__init__()
+#         self.page = kwargs["page"]
+#         self.text = "Добавить категорию"
+#         self.icon = ft.icons.ADD
+#         self.on_click = self.add_category
+#
+#
+#     def add_category(self, e):
+#         pass

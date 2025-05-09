@@ -1,5 +1,6 @@
 from database.requests.req_categories import ReqCategory
-from pages.dashboard.content.categories.category_rows import AddCategoryButton, el_category_header, CategoryRow
+from pages.dashboard.content.categories.add_category_button import AddCategoryButton
+from pages.dashboard.content.categories.category_rows import el_category_header, CategoryRow
 from pages.dashboard.head_elements import header
 from pages.style.style import inputBgErrorColor
 import flet as ft
@@ -21,6 +22,13 @@ class CategoriesContent:
             bgcolor=inputBgErrorColor
         )
 
+        self.column_with_category_rows = ft.Column(
+            controls=[],
+            spacing=1,
+            # height=600,     #scroll не будет работать, если изменить размер окна
+            scroll=ft.ScrollMode.AUTO,
+            expand=True
+        )
 
         self.content_header = header(label_name="Список Категорий", user_role=self.user_role)
         self.new_content.append(self.content_header)
@@ -34,14 +42,13 @@ class CategoriesContent:
                    "c_cnt": 150,
                    "c_order_sort": 90}
 
-        l_controls = []
 
         # кнопка "Добавить новую категорию"
         self.new_content.append(
             AddCategoryButton(page=self.page,
                               d_width=d_width,
                               error_message=error_message,
-                              l_elements=l_controls,
+                              column_with_rows=self.column_with_category_rows,
                               # передается ссылка на список строк, чтобы к нему добавить новую категорию
                               ).build()
         )
@@ -49,23 +56,20 @@ class CategoriesContent:
         self.new_content.append(el_category_header(d_width))  # table header
         # ---rows---
         for id, c_name, c_order, p_cnt in req.category_products_cnt():
-            l_controls.append(CategoryRow(page=self.page,
-                                          d_width=d_width,
-                                          error_message=error_message,
-                                          id=id,
-                                          p_name=c_name,
-                                          p_product_cnt=str(p_cnt),
-                                          p_order=c_order,
-                                          l_elements=l_controls,
-                                          )
-                              )
-        self.new_content.append(ft.Column(
-            controls=l_controls,
-            spacing=1,
-            # height=600,     #scroll не будет работать, если изменить размер окна
-            scroll=ft.ScrollMode.AUTO,
-            expand=True
-        ))
+            self.column_with_category_rows.controls.append(
+                CategoryRow(
+                    page=self.page,
+                    d_width=d_width,
+                    error_message=error_message,
+                    id=id,
+                    p_name=c_name,
+                    p_product_cnt=str(p_cnt),
+                    p_order=c_order,
+                    column_with_rows=self.column_with_category_rows,
+                )
+            )
+
+        self.new_content.append(self.column_with_category_rows)
         # --rows-----------
 
         self.new_content.append(error_message)
