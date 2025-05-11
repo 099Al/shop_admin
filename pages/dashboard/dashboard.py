@@ -1,15 +1,10 @@
 import flet as ft
 from flet_route import Params, Basket
 
+from pages.config.sizes import defaultWidthWindow, defaultHeightWindow, page_min_width, page_min_height
 from pages.dashboard.content_choose import Dash_Content
-from pages.dashboard.head_elements import circle_avatar, header
 from pages.dashboard.menu_elements import logo, sidebar_menu
-from pages.style.style import *
-from dotenv import set_key, load_dotenv
-from pathlib import Path
-import os
-
-
+from pages.config.style import *
 
 
 class DashboardPage:
@@ -26,8 +21,8 @@ class DashboardPage:
         page.title = "Панель управления"
         page.window.width = defaultWidthWindow
         page.window.height = defaultHeightWindow
-        page.window.min_width = 900
-        page.window.min_height = 400
+        page.window.min_width = page_min_width
+        page.window.min_height = page_min_height
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
 
 
@@ -35,7 +30,7 @@ class DashboardPage:
         self.user_role = "admin"  # TEST  TODO:  Убрать после реализации
         # self.check_channel = page.session.get('CHANNEL')
 
-        print('dashboard', self.user_role)
+        print('----dashboard----', self.user_role)
 
 
 
@@ -74,8 +69,13 @@ class DashboardPage:
             )
 
         #body_content = [header(self.user_role)]
-        ds_content = Dash_Content(page, self.user_role)  #Здесь происходит заполнение body_content
-
+        self.container_for_change_data = ft.Container(              #2-й элемент это столбец с контентом
+                            expand=4,
+                            padding=ft.padding.symmetric(15, 10),
+                            content=ft.Column()   #Весь контент помещаем в столбец
+                        )
+        ds_content = Dash_Content(page, self.container_for_change_data, self.user_role)  #Здесь происходит заполнение body_content
+        #ds_content.body_content
         return ft.View(
             "/dashboard",
             controls=[
@@ -91,14 +91,7 @@ class DashboardPage:
                             bgcolor=secondaryBgColor,
                         ),
                         # body center
-                        ft.Container(              #2-й элемент это столбец с контентом
-                            expand=4,
-                            padding=ft.padding.symmetric(15, 10),
-                            content=ft.Column(ds_content.body_content),   #Весь контент помещаем в столбец
-                        ),
-
-
-
+                        self.container_for_change_data,
                     ],
                 ),
 

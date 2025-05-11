@@ -6,7 +6,7 @@ from database.models.models import Admin
 from database.requests.req_login import ReqAdmins
 from pages.login.login_elements import email_input, password_input, error_message
 from utils.functions import hash_password_
-from pages.style.style import *
+from pages.config.style import *
 
 
 class LoginPage:
@@ -75,8 +75,10 @@ class LoginPage:
                         ),
                         ft.Container(
                             expand=3,
-                            image_src="/images/bg_login.jpg",
-                            image_fit=ft.ImageFit.COVER,
+                            image=ft.DecorationImage(
+                                src="/images/bg_login.jpg",
+                                fit=ft.ImageFit.COVER,
+                            ),
                             content=ft.Column(
                                 alignment=ft.MainAxisAlignment.CENTER,
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
