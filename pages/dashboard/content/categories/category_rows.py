@@ -1,7 +1,7 @@
 import flet as ft
 
 from database.requests.req_categories import ReqCategory
-from pages.style.style import *
+from pages.config.style import *
 
 
 class CategoryRow(ft.Row):

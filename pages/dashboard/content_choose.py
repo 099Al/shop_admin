@@ -9,7 +9,7 @@ from pages.dashboard.content.products.products import ProductsContent
 from pages.dashboard.elements.admin_elements import AdminRow, AdminHeader
 from pages.dashboard.head_elements import header
 from pages.dashboard.types import EnumDashContent
-from pages.style.style import *
+from pages.config.style import *
 
 
 class Dash_Content:

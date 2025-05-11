@@ -1,5 +1,5 @@
 import flet as ft
-from pages.style.style import *
+from pages.config.style import *
 
 email_input = ft.Container(
         content=ft.TextField(

@@ -2,7 +2,7 @@ from database.requests.req_products import ReqProduct
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import el_products_header, ProductRow
 from pages.dashboard.head_elements import header
-from pages.style.style import inputBgErrorColor
+from pages.config.style import inputBgErrorColor
 import flet as ft
 
 
@@ -59,7 +59,7 @@ class ProductsContent:
         name_width = max(max_length_product * 9, 100)  # 7 letter size
         d_column_width = {"c_edit": 100,
                           "c_image": 100,
-                          "c_name": name_width,
+                          "c_name": 150,
                           "с_item_no": 90,
                           "c_price": 80,
                           "c_desc": 150,

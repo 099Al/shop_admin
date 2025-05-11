@@ -2,7 +2,7 @@ import flet as ft
 
 from pages.dashboard.content_choose import Dash_Content
 from pages.dashboard.types import EnumDashContent
-from pages.style.style import *
+from pages.config.style import *
 
 # style_menu
 style_menu = ft.ButtonStyle(

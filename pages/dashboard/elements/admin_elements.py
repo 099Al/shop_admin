@@ -2,7 +2,7 @@ import flet as ft
 
 from database.connect import DataBase
 from database.requests.req_admins import ReqAdmins
-from pages.style.style import *
+from pages.config.style import *
 
 
 class AdminRow(ft.Row):

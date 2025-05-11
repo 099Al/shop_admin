@@ -2,7 +2,7 @@ from database.requests.req_categories import ReqCategory
 from pages.dashboard.content.categories.add_category_button import AddCategoryButton
 from pages.dashboard.content.categories.category_rows import el_category_header, CategoryRow
 from pages.dashboard.head_elements import header
-from pages.style.style import inputBgErrorColor
+from pages.config.style import inputBgErrorColor
 import flet as ft
 
 

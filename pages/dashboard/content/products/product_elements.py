@@ -7,8 +7,10 @@ import flet as ft
 
 from database.models.models import Product
 from database.requests.req_products import ReqProduct
+from pages.config.sizes import pr_name_max_length, pr_item_no_max_length, pr_description_max_length, \
+    pr_promo_desc_max_length
 from pages.dashboard.content.products.validation import cut_price, is_valid_price, is_valid_date
-from pages.style.style import *
+from pages.config.style import *
 from config import settings
 import utils.functions as ut
 
@@ -174,13 +176,18 @@ class ProductRow(ft.Row):
         self._img_start = ft.Column(controls=[self._img_start_1])
 
         self.r_img = ft.Container(content=self._img_start, padding=ft.padding.only(top=5, bottom=5))
-        self.r_name = self._field(text=self.p_name, width=self.d_column_width['c_name'])
-        self.r_item_no = self._field(text=self.p_item_no, width=self.d_column_width['с_item_no'])
-        self.r_price = self._field(text=self.p_price, width=self.d_column_width['c_price'])
-        self.r_desc = self._field(text=self.p_desc, width=self.d_column_width['c_desc'])
-        self.r_promo_price = self._field(text=self.p_promo_price, width=self.d_column_width['c_price'])
-        self.r_promo_end = self._field(text=self.p_promo_end, width=self.d_column_width['c_promo_end'])
-        self.r_promo_desc = self._field(text=self.p_promo_desc, width=self.d_column_width['c_promo_desc'])
+        self.r_name = ft.Container(width=self.d_column_width['c_name'], alignment=ft.alignment.bottom_left)
+        self.r_item_no = ft.Container(width=self.d_column_width['с_item_no'], alignment=ft.alignment.bottom_left)
+        self.r_price = ft.Container(width=self.d_column_width['c_price'], alignment=ft.alignment.bottom_left)
+        self.r_desc = ft.Container(width=self.d_column_width['c_desc'], alignment=ft.alignment.bottom_left)
+        self.r_promo_price = ft.Container(width=self.d_column_width['c_price'], alignment=ft.alignment.bottom_left)
+        self.r_promo_end = ft.Container(width=self.d_column_width['c_promo_end'], alignment=ft.alignment.bottom_left)
+        self.r_promo_desc = ft.Container(width=self.d_column_width['c_promo_desc'], alignment=ft.alignment.bottom_left)
+
+
+        self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+
+
 
         self.r_content_edit = ft.Row(controls=[
             ft.Container(
@@ -239,21 +246,25 @@ class ProductRow(ft.Row):
 
 
 
-
-    def _field(self, text, width):
-        return ft.Container(
-            content=ft.Text(
+    def _field(self, text, width, max_lines=2):
+        return ft.Text(
                 text,
                 color=defaultFontColor,
                 size=15,
                 font_family="cupurum",
+                width=width,
+                max_lines=max_lines,
+                overflow=ft.TextOverflow.ELLIPSIS,
+            )
 
-            ),
-            # height=25,
-            width=width,
-            alignment=ft.alignment.bottom_left,
-            #bgcolor=ft.colors.DEEP_ORANGE_800
-        )
+    def _set_attr_Text(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
+        self.r_name.content = self._field(name, self.d_column_width['c_name'], max_lines=2)
+        self.r_item_no.content = self._field(item_no, self.d_column_width['с_item_no'])
+        self.r_price.content = self._field(price, self.d_column_width['c_price'])
+        self.r_desc.content = self._field(desc, self.d_column_width['c_desc'], max_lines=4)
+        self.r_promo_price.content = self._field(promo_price, self.d_column_width['c_price'])
+        self.r_promo_end.content = self._field(promo_end, self.d_column_width['c_promo_end'])
+        self.r_promo_desc.content = self._field(promo_desc, self.d_column_width['c_promo_desc'], max_lines=4)
 
     def _image_delete(self, e):
         self._img_edit_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
@@ -350,13 +361,13 @@ class ProductRow(ft.Row):
 
         self.r_img.content = _img_edit
         self.r_img.padding = ft.padding.only(top=15, bottom=5)
-        self.r_name.content = ft.TextField(v_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,text_size=15)
-        self.r_item_no.content = ft.TextField(v_item_no, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_name.content = ft.TextField(v_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,text_size=15, multiline=True, max_length=pr_name_max_length, max_lines=3)
+        self.r_item_no.content = ft.TextField(v_item_no, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, max_length=pr_item_no_max_length, text_size=15)
         self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-        self.r_desc.content = ft.TextField(v_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_length=1000, shift_enter=True)
+        self.r_desc.content = ft.TextField(v_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_length=pr_description_max_length)
         self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-        self.r_promo_desc.content = ft.TextField(v_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, max_length=1000)
+        self.r_promo_desc.content = ft.TextField(v_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_length=pr_promo_desc_max_length)
 
         self.r_container_icon.content = ft.Row(
             spacing=0,
@@ -377,14 +388,7 @@ class ProductRow(ft.Row):
 
         self.page.update()
 
-    def _set_attr_Text(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
-        self.r_name.content = ft.Text(name, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_item_no.content = ft.Text(item_no, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_price.content = ft.Text(price, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_desc.content = ft.Text(desc, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_promo_price.content = ft.Text(promo_price, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_promo_end.content = ft.Text(promo_end, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_promo_desc.content = ft.Text(promo_desc, color=defaultFontColor, size=15, font_family="cupurum")
+
 
 
 

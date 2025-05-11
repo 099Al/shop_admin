@@ -1,5 +1,5 @@
 import flet as ft
-from pages.style.style import *
+from pages.config.style import *
 
 
 def circle_avatar(role, **kwargs):

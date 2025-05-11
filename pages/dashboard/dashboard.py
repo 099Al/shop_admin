@@ -1,15 +1,10 @@
 import flet as ft
 from flet_route import Params, Basket
 
+from pages.config.sizes import defaultWidthWindow, defaultHeightWindow, page_min_width, page_min_height
 from pages.dashboard.content_choose import Dash_Content
-from pages.dashboard.head_elements import circle_avatar, header
 from pages.dashboard.menu_elements import logo, sidebar_menu
-from pages.style.style import *
-from dotenv import set_key, load_dotenv
-from pathlib import Path
-import os
-
-
+from pages.config.style import *
 
 
 class DashboardPage:
@@ -26,8 +21,8 @@ class DashboardPage:
         page.title = "Панель управления"
         page.window.width = defaultWidthWindow
         page.window.height = defaultHeightWindow
-        page.window.min_width = 1200
-        page.window.min_height = 600
+        page.window.min_width = page_min_width
+        page.window.min_height = page_min_height
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
 
 
@@ -35,7 +30,7 @@ class DashboardPage:
         self.user_role = "admin"  # TEST  TODO:  Убрать после реализации
         # self.check_channel = page.session.get('CHANNEL')
 
-        print('dashboard', self.user_role)
+        print('----dashboard----', self.user_role)
 
 
 
