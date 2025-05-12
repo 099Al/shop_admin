@@ -24,100 +24,176 @@ el_divider = ft.Container(
             )
 
 
-def el_products_header(d_width):
-    return ft.Row(
-        controls=[
-            ft.Container(
-                width=d_width["c_edit"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Изображение",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_image"],
-                alignment=ft.alignment.bottom_left,
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Наименование",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_name"],
-                alignment=ft.alignment.bottom_left,
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Артикул",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["с_item_no"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Цена",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_price_promo"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Описание",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_desc"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Цена по Акции",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_price_promo"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Акция до",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_promo_end"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Акция Описание",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_promo_desc"],
-            ),
-            el_divider,
 
-        ],
-        height=50,
-        vertical_alignment=ft.CrossAxisAlignment.END,
-    )
+
+
+class Product_Header:
+
+    def __init__(self, page, rows_controls):
+        #self.d_width = d_width
+        self.page = page
+        self.rows_controls: list[ProductRow] = rows_controls
+        self.sort_name_state = 0
+
+        self.icon_sort_by_name_desc = ft.Container(
+            content=ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=1.57, color=ft.colors.WHITE, size=20),
+            alignment=ft.alignment.bottom_right, padding=0)
+
+        self.icon_sort_by_name_asc = ft.Container(
+            content=ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=4.71, color=ft.colors.WHITE, size=20),
+            alignment=ft.alignment.bottom_right, padding=0)
+
+        self.container_sort_by_name = ft.Container(
+            content=ft.Text(""),
+            alignment=ft.alignment.bottom_right,
+            padding=ft.padding.only(left=20),
+            )
+
+
+    def sort_by_name(self, e):
+        if self.sort_name_state == 0:
+            self.container_sort_by_name.content = self.icon_sort_by_name_desc
+            self.container_sort_by_name.padding = ft.padding.only(left=0)
+            self.sort_name_state = 1
+            self.rows_controls.sort(key=lambda x: x.p_name, reverse=True)
+        elif self.sort_name_state == 1:
+            self.container_sort_by_name.content = self.icon_sort_by_name_asc
+            self.container_sort_by_name.padding = ft.padding.only(left=0)
+            self.sort_name_state = 2
+            self.rows_controls.sort(key=lambda x: x.p_name)
+        elif self.sort_name_state == 2:
+            self.container_sort_by_name.content = ft.Text("")
+            self.container_sort_by_name.padding = ft.padding.only(left=20)
+            self.sort_name_state = 0
+            self.rows_controls.sort(key=lambda x: x.product_id)
+
+        self.page.update()
+
+
+
+
+
+    def el_products_header(self, d_width):
+
+
+
+        return ft.Row(
+            controls=[
+                ft.Container(
+                    width=d_width["c_edit"],
+                ),
+                el_divider,
+                ft.Container(
+                    content=ft.Text(
+                        "Изображение",
+                        color=defaultFontColor,
+                        size=15,
+                        font_family="cupurum",
+                    ),
+                    width=d_width["c_image"],
+                    alignment=ft.alignment.bottom_left,
+                ),
+                el_divider,
+                ft.Container(
+                    ft.Row(
+                        controls=[
+                            ft.Container(content=ft.Text(
+                                        "Наименование",
+                                        color=defaultFontColor,
+                                        size=15,
+                                        font_family="cupurum",
+                                        ),
+                            #height=25,
+                            alignment=ft.alignment.bottom_left
+                            ),
+
+                            self.container_sort_by_name,
+
+                            ft.Container(
+                            content=ft.Icon(name=ft.icons.ARROW_DROP_DOWN, size=20),
+                            alignment=ft.alignment.bottom_right, padding=0,
+                            on_click=self.sort_by_name)
+
+
+                             ],
+                        spacing=0
+                ),
+                padding=0,
+                width=d_width["c_name"],
+
+                #alignment=ft.alignment.bottom_left,
+                ),
+
+
+
+
+                el_divider,
+                ft.Container(
+                    content=ft.Text(
+                        "Артикул",
+                        color=defaultFontColor,
+                        size=15,
+                        font_family="cupurum",
+                    ),
+                    width=d_width["с_item_no"],
+
+                ),
+                el_divider,
+                ft.Container(
+                    content=ft.Text(
+                        "Цена",
+                        color=defaultFontColor,
+                        size=15,
+                        font_family="cupurum",
+                    ),
+                    width=d_width["c_price_promo"],
+                ),
+                el_divider,
+                ft.Container(
+                    content=ft.Text(
+                        "Описание",
+                        color=defaultFontColor,
+                        size=15,
+                        font_family="cupurum",
+                    ),
+                    width=d_width["c_desc"],
+                ),
+                el_divider,
+                ft.Container(
+                    content=ft.Text(
+                        "Цена по Акции",
+                        color=defaultFontColor,
+                        size=15,
+                        font_family="cupurum",
+                    ),
+                    width=d_width["c_price_promo"],
+                ),
+                el_divider,
+                ft.Container(
+                    content=ft.Text(
+                        "Акция до",
+                        color=defaultFontColor,
+                        size=15,
+                        font_family="cupurum",
+                    ),
+                    width=d_width["c_promo_end"],
+                ),
+                el_divider,
+                ft.Container(
+                    content=ft.Text(
+                        "Акция Описание",
+                        color=defaultFontColor,
+                        size=15,
+                        font_family="cupurum",
+                    ),
+                    width=d_width["c_promo_desc"],
+                ),
+                el_divider,
+
+            ],
+            height=50,
+            vertical_alignment=ft.CrossAxisAlignment.END,
+        )
 
 
 
