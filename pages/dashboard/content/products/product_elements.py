@@ -34,6 +34,7 @@ class Product_Header:
         self.page = page
         self.rows_controls: list[ProductRow] = rows_controls
         self.sort_name_state = 0
+        self.sort_item_no_state = 0
 
         self.icon_sort_by_name_desc = ft.Container(
             content=ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=1.57, color=ft.colors.WHITE, size=20),
@@ -49,8 +50,25 @@ class Product_Header:
             padding=ft.padding.only(left=20),
             )
 
+        self.icon_sort_by_item_no_desc = ft.Container(
+            content=ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=1.57, color=ft.colors.WHITE, size=20),
+            alignment=ft.alignment.bottom_right, padding=0)
+
+        self.icon_sort_by_item_no_asc = ft.Container(
+            content=ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=4.71, color=ft.colors.WHITE, size=20),
+            alignment=ft.alignment.bottom_right, padding=0)
+
+        self.container_sort_by_item_no = ft.Container(
+            content=ft.Text(""),
+            alignment=ft.alignment.bottom_right,
+            padding=ft.padding.only(left=20),
+        )
+
 
     def sort_by_name(self, e):
+        self.sort_item_no_state = 0
+        self.container_sort_by_item_no.content = ft.Text("")
+        self.container_sort_by_item_no.padding = ft.padding.only(left=20)
         if self.sort_name_state == 0:
             self.container_sort_by_name.content = self.icon_sort_by_name_desc
             self.container_sort_by_name.padding = ft.padding.only(left=0)
@@ -69,6 +87,27 @@ class Product_Header:
 
         self.page.update()
 
+    def sort_by_item_no(self, e):
+        self.sort_name_state = 0
+        self.container_sort_by_name.content = ft.Text("")
+        self.container_sort_by_name.padding = ft.padding.only(left=20)
+        if self.sort_item_no_state == 0:
+            self.container_sort_by_item_no.content = self.icon_sort_by_item_no_desc
+            self.container_sort_by_item_no.padding = ft.padding.only(left=0)
+            self.sort_item_no_state = 1
+            self.rows_controls.sort(key=lambda x: x.p_item_no if x.p_item_no is not None else '0', reverse=True)
+        elif self.sort_item_no_state == 1:
+            self.container_sort_by_item_no.content = self.icon_sort_by_item_no_asc
+            self.container_sort_by_item_no.padding = ft.padding.only(left=0)
+            self.sort_item_no_state = 2
+            self.rows_controls.sort(key=lambda x: x.p_item_no if x.p_item_no is not None else '0')
+        elif self.sort_item_no_state == 2:
+            self.container_sort_by_item_no.content = ft.Text("")
+            self.container_sort_by_item_no.padding = ft.padding.only(left=20)
+            self.sort_item_no_state = 0
+            self.rows_controls.sort(key=lambda x: x.product_id)
+
+        self.page.update()
 
 
 
@@ -121,23 +160,44 @@ class Product_Header:
                 padding=0,
                 width=d_width["c_name"],
 
-                #alignment=ft.alignment.bottom_left,
+
                 ),
-
-
 
 
                 el_divider,
+
                 ft.Container(
-                    content=ft.Text(
-                        "Артикул",
-                        color=defaultFontColor,
-                        size=15,
-                        font_family="cupurum",
+                    ft.Row(
+                        controls=[
+                            ft.Container(content=ft.Text(
+                                "Артикул",
+                                color=defaultFontColor,
+                                size=15,
+                                font_family="cupurum",
+                            ),
+                                # height=25,
+
+                                alignment=ft.alignment.bottom_left
+                            ),
+
+                            self.container_sort_by_item_no,
+
+                            ft.Container(
+                                content=ft.Icon(name=ft.icons.ARROW_DROP_DOWN, size=20),
+                                alignment=ft.alignment.bottom_right, padding=0,
+                                on_click=self.sort_by_item_no)
+
+                        ],
+                        spacing=0
                     ),
+                    padding=0,
                     width=d_width["с_item_no"],
 
                 ),
+
+
+
+
                 el_divider,
                 ft.Container(
                     content=ft.Text(
