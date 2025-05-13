@@ -64,7 +64,7 @@ class ProductsContent:
                           "c_price": 80,
                           "c_desc": 150,
                           "c_price_promo": 80,
-                          "c_promo_end": 80,
+                          "c_promo_end": 95,
                           "c_promo_desc": 150
                           }
 
