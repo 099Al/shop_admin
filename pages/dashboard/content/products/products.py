@@ -1,4 +1,5 @@
 from database.requests.req_products import ReqProduct
+from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
 from pages.dashboard.head_elements import header
@@ -57,16 +58,7 @@ class ProductsContent:
         req = ReqProduct()
         max_length_product = max(req.get_max_length(), len("Наименование"))
         name_width = max(max_length_product * 9, 100)  # 7 letter size
-        d_column_width = {"c_edit": 100,
-                          "c_image": 100,
-                          "c_name": 150,
-                          "с_item_no": 90,
-                          "c_price": 80,
-                          "c_desc": 150,
-                          "c_price_promo": 80,
-                          "c_promo_end": 98,
-                          "c_promo_desc": 150
-                          }
+        d_column_width = d_product_column_size
 
 
         # кнопка "Добавить новый продукт"

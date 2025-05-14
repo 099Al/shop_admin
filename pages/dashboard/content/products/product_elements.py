@@ -48,8 +48,10 @@ class Product_Header:
     def _create_sort_cell(self):
         return ft.Container(
             content=ft.Text(""),
-            alignment=ft.alignment.bottom_right,
-            padding=ft.padding.only(left=20),
+            alignment=ft.alignment.bottom_left,
+            width=20,
+            #padding=ft.padding.only(left=20),
+            #bgcolor='red'
         )
 
     def _create_sort_icon(self, rotation):
@@ -62,7 +64,8 @@ class Product_Header:
         return ft.Container(
             content=sort_icon,
             alignment=ft.alignment.bottom_right,
-            padding=0
+            padding=0,
+            #bgcolor='orange'
         )
 
 
@@ -132,21 +135,32 @@ class Product_Header:
                             color=defaultFontColor,
                             size=15,
                             font_family="cupurum",
+                            #bgcolor='blue'
                         ),
                         alignment=ft.alignment.bottom_left
                     ),
-                    sort_container,
-                    ft.Container(
-                        content=ft.Icon(name=ft.icons.ARROW_DROP_DOWN, size=20),
-                        alignment=ft.alignment.bottom_right,
-                        padding=0,
-                        on_click=on_click_handler
-                    )
+
+                    ft.Row(
+                        controls=[
+                            sort_container,
+                            ft.Container(
+                                content=ft.Icon(name=ft.icons.ARROW_DROP_DOWN, size=20),
+                                alignment=ft.alignment.bottom_right,
+                                padding=0,
+                                on_click=on_click_handler,
+                                #bgcolor='green'
+                            )
+                        ],
+                        spacing=0
+                    )    #два элемента в строку, чтобы прижать к правому краю
                 ],
-                spacing=0
+                spacing=0,
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
             ),
             padding=0,
             width=width,
+            #bgcolor='yellow',
+
         )
 
     def el_products_header(self, d_width):
@@ -185,7 +199,7 @@ class Product_Header:
         return ft.Row(
             controls=header_controls,
             height=50,
-            vertical_alignment=ft.CrossAxisAlignment.END,
+            vertical_alignment=ft.CrossAxisAlignment.END
         )
 
 
