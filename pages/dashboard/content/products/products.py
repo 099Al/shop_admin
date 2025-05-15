@@ -2,6 +2,7 @@ from database.requests.req_products import ReqProduct
 from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
+from pages.dashboard.content.products.product_filter import Product_Filter
 from pages.dashboard.head_elements import header
 from pages.config.style import inputBgErrorColor
 import flet as ft
@@ -77,7 +78,9 @@ class ProductsContent:
                               ).build()
         )
 
-        self.new_content.append(Product_Header(self.page, self.column_with_product_rows.controls).el_products_header(d_column_width))  # table header
+        self.new_content.append(Product_Filter(self.page, self.column_with_product_rows.controls, d_column_width).build())
+
+        self.new_content.append(Product_Header(self.page, self.column_with_product_rows.controls).build(d_column_width))  # table header
         # ---rows---
         for product in req.get_all_products():
             self.column_with_product_rows.controls.append(

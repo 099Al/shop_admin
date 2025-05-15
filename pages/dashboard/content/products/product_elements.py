@@ -163,7 +163,7 @@ class Product_Header:
 
         )
 
-    def el_products_header(self, d_width):
+    def build(self, d_width):
 
 
 
@@ -327,6 +327,32 @@ class ProductRow(ft.Row):
             ),
 
         ]
+
+
+    def filter_name(self, text):
+        if self.p_name is None or self.p_name == "":
+            lv_name = ""
+        else:
+            lv_name = self.p_name
+
+        if text.lower() in lv_name.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def filter_item_no(self, text):
+        if self.p_item_no is None or self.p_item_no == "":
+            lv_item_no = ""
+        else:
+            lv_item_no = self.p_item_no
+
+        if text.lower() in lv_item_no.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def drop_filter(self):
+        self.visible = True
 
 
 

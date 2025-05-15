@@ -27,7 +27,8 @@ class AddProductButton:
 
                 )
             ],
-            alignment=ft.MainAxisAlignment.END,
+            alignment=ft.MainAxisAlignment.END,  #Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
+
         )
 
     def add_product(self, e):
