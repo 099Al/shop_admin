@@ -2,6 +2,7 @@ import json
 import os
 import shutil
 import uuid
+from datetime import datetime, date
 
 import flet as ft
 
@@ -24,100 +25,183 @@ el_divider = ft.Container(
             )
 
 
-def el_products_header(d_width):
-    return ft.Row(
-        controls=[
-            ft.Container(
-                width=d_width["c_edit"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Изображение",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_image"],
-                alignment=ft.alignment.bottom_left,
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Наименование",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_name"],
-                alignment=ft.alignment.bottom_left,
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Артикул",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["с_item_no"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Цена",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_price_promo"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Описание",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_desc"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Цена по Акции",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_price_promo"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Акция до",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_promo_end"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Акция Описание",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_promo_desc"],
-            ),
-            el_divider,
 
-        ],
-        height=50,
-        vertical_alignment=ft.CrossAxisAlignment.END,
-    )
+
+
+class Product_Header:
+
+    def __init__(self, page, rows_controls):
+        #self.d_width = d_width
+        self.page = page
+        self.rows_controls: list[ProductRow] = rows_controls
+        self.sort_name_state = 0
+        self.sort_item_no_state = 0
+        self.sort_price_state = 0
+        self.sort_promo_end_state = 0
+
+
+        self.container_sort_by_name = self._create_sort_cell()
+        self.container_sort_by_item_no = self._create_sort_cell()
+        self.container_sort_by_price = self._create_sort_cell()
+        self.container_sort_by_promo_end = self._create_sort_cell()
+
+    def _create_sort_cell(self):
+        return ft.Container(
+            content=ft.Text(""),
+            alignment=ft.alignment.bottom_left,
+            width=20,
+            #padding=ft.padding.only(left=20),
+            #bgcolor='red'
+        )
+
+    def _create_sort_icon(self, rotation):
+
+        if rotation is not None:
+            sort_icon = ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=rotation, color=ft.colors.WHITE, size=20)
+        else:
+            sort_icon = ft.Text("")
+
+        return ft.Container(
+            content=sort_icon,
+            alignment=ft.alignment.bottom_right,
+            padding=0,
+            #bgcolor='orange'
+        )
+
+
+    def _update_sort(self, sort_type, state):
+
+        d_sort_type = {"name": lambda x: x.p_name,
+                       "item_no": lambda x: x.p_item_no if x.p_item_no is not None else '0',
+                       "price": lambda x: x.p_price if x.p_price is not None else 0,
+                       "promo_end": lambda x: x.p_promo_end if x.p_promo_end is not None else date(2000, 1, 1),
+                       }
+
+        container = getattr(self, f"container_sort_by_{sort_type}")
+        state_attr = f"sort_{sort_type}_state"
+
+        if state == 1:
+            container.content = self._create_sort_icon(1.57)
+            key = d_sort_type[sort_type]
+            self.rows_controls.sort(key=key, reverse=True)
+        elif state == 2:
+            container.content = self._create_sort_icon(4.71)
+            key = d_sort_type[sort_type]
+            self.rows_controls.sort(key=key)
+        else:
+            container.content = self._create_sort_icon(None)
+            self.rows_controls.sort(key=lambda x: x.product_id)
+
+        #сдинуть треугольник, если стрелок нет
+        container.padding = ft.padding.only(left=0) if state != 0 else ft.padding.only(left=20)
+        setattr(self, state_attr, state)
+        self.page.update()
+
+    def _reset_other_sort(self, sort_type):
+        # Reset all sort states except the one being specified
+        for st in ["name", "item_no", "price", "promo_end"]:
+            if st != sort_type:
+                setattr(self, f"sort_{st}_state", 0)
+                container = getattr(self, f"container_sort_by_{st}")
+                container.content = ft.Text("")
+                container.padding = ft.padding.only(left=20)
+
+
+    def sort_by(self, e, sort_type):
+        self._reset_other_sort(sort_type)
+        current_state = getattr(self, f"sort_{sort_type}_state")
+        next_state = (current_state + 1) % 3
+        self._update_sort(sort_type, next_state)
+
+    def _create_header_cell(self, text, width):
+        return ft.Container(
+            content=ft.Text(
+                text,
+                color=defaultFontColor,
+                size=15,
+                font_family="cupurum",
+            ),
+            width=width,
+            alignment=ft.alignment.bottom_left,
+        )
+
+    def _create_sortable_header_cell(self, text, width, sort_container, on_click_handler):
+        return ft.Container(
+            ft.Row(
+                controls=[
+                    ft.Container(
+                        content=ft.Text(
+                            text,
+                            color=defaultFontColor,
+                            size=15,
+                            font_family="cupurum",
+                            #bgcolor='blue'
+                        ),
+                        alignment=ft.alignment.bottom_left
+                    ),
+
+                    ft.Row(
+                        controls=[
+                            sort_container,
+                            ft.Container(
+                                content=ft.Icon(name=ft.icons.ARROW_DROP_DOWN, size=20),
+                                alignment=ft.alignment.bottom_right,
+                                padding=0,
+                                on_click=on_click_handler,
+                                #bgcolor='green'
+                            )
+                        ],
+                        spacing=0
+                    )    #два элемента в строку, чтобы прижать к правому краю
+                ],
+                spacing=0,
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+            ),
+            padding=0,
+            width=width,
+            #bgcolor='yellow',
+
+        )
+
+    def build(self, d_width):
+
+
+
+        header_controls = [
+                ft.Container(
+                    width=d_width["c_edit"],
+                ),
+                el_divider,
+                self._create_header_cell("Изображение", d_width["c_image"]),
+                el_divider,
+
+                self._create_sortable_header_cell("Наименование", d_width["c_name"], self.container_sort_by_name, lambda e: self.sort_by(e, "name")),
+
+                el_divider,
+
+                self._create_sortable_header_cell("Артикул", d_width["с_item_no"], self.container_sort_by_item_no, lambda e: self.sort_by(e, "item_no")),
+
+                el_divider,
+                self._create_sortable_header_cell("Цена", d_width["c_price"], self.container_sort_by_price, lambda e: self.sort_by(e, "price")),
+                el_divider,
+                self._create_header_cell("Описание", d_width["c_desc"]),
+                el_divider,
+                self._create_header_cell("Цена по Акции", d_width["c_price_promo"]),
+                el_divider,
+                self._create_sortable_header_cell("Акция до", d_width["c_promo_end"], self.container_sort_by_promo_end, lambda e: self.sort_by(e, "promo_end")),
+
+                el_divider,
+                self._create_header_cell("Акция Описание", d_width["c_promo_desc"]),
+                el_divider,
+
+            ]
+
+        return ft.Row(
+            controls=header_controls,
+            height=50,
+            vertical_alignment=ft.CrossAxisAlignment.END
+        )
+
 
 
 
@@ -243,6 +327,32 @@ class ProductRow(ft.Row):
             ),
 
         ]
+
+
+    def filter_name(self, text):
+        if self.p_name is None or self.p_name == "":
+            lv_name = ""
+        else:
+            lv_name = self.p_name
+
+        if text.lower() in lv_name.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def filter_item_no(self, text):
+        if self.p_item_no is None or self.p_item_no == "":
+            lv_item_no = ""
+        else:
+            lv_item_no = self.p_item_no
+
+        if text.lower() in lv_item_no.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def drop_filter(self):
+        self.visible = True
 
 
 
