@@ -70,7 +70,7 @@ class DashboardPage:
 
         #body_content = [header(self.user_role)]
         self.container_for_change_data = ft.Container(              #2-й элемент это столбец с контентом
-                            expand=4,
+                            expand=6,
                             padding=ft.padding.symmetric(15, 10),
                             content=ft.Column()   #Весь контент помещаем в столбец
                         )
@@ -92,7 +92,8 @@ class DashboardPage:
                         ),
                         # body center
                         self.container_for_change_data,
-                    ],
+                    ]
+                    #,scroll=ft.ScrollMode.AUTO
                 ),
 
 

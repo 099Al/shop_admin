@@ -19,7 +19,7 @@ class Dash_Content:
         self.container_data = container_data
         self.user_role = user_role
         self.content_header = header(label_name="Панель управления", user_role=user_role)
-        print('init', self.content_header.content)
+        #print('init', self.content_header.content)
         #self.body_content = [self.content_header]
 
         self.container_data.content = ft.Column(controls=[self.content_header])
