@@ -68,7 +68,6 @@ class DashboardPage:
                 color=secondaryFontColor,
             )
 
-        #body_content = [header(self.user_role)]
         self.container_for_change_data = ft.Container(              #2-й элемент это столбец с контентом
                             expand=6,
                             padding=ft.padding.symmetric(15, 10),
@@ -87,13 +86,12 @@ class DashboardPage:
                         ft.Container(       #1-й элемент это столбец с лого и меню
                             expand=1,
                             # content=ft.Column(controls=[logo, sidebar_menu(page, body_content)]),
-                            content=ft.Column(controls=[logo, sidebar_menu(ds_content)]),  #Здесь выбираем контент   TODO в Row и добавить scroll
+                            content=ft.Column(controls=[logo, sidebar_menu(ds_content)]),  #Здесь выбираем контент
                             bgcolor=secondaryBgColor,
                         ),
                         # body center
-                        self.container_for_change_data,
+                        self.container_for_change_data,  # 2-й элемент это столбец с контентом
                     ]
-                    #,scroll=ft.ScrollMode.AUTO
                 ),
 
 
