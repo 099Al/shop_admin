@@ -21,7 +21,7 @@ class AddProductButton:
                 ft.Container(
                     content=ft.ElevatedButton("Добавить продукт",
                                               icon=ft.icons.ADD,
-                                              on_click=self.add_product),
+                                              on_click=self.add_product2),
                     margin=ft.margin.only(right=30, top=100),
                     #width=250,
 
@@ -30,6 +30,32 @@ class AddProductButton:
             alignment=ft.MainAxisAlignment.END,  #Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
 
         )
+
+
+    def add_product2(self, e):
+        new_product = Product(
+            product_id=None,
+            name=None,
+            item_no=None,
+            price=None,
+            description=None,
+            promo_price=None,
+            promo_expire_date=None,
+            promo_desc=None
+        )
+
+        new_product_row = ProductRow(
+            page=self.page,
+            d_error_messages=self.d_error_messages,
+            product=new_product,
+            column_with_rows=self.column_with_rows
+        )
+
+        self.column_with_rows.controls.insert(0, new_product_row)
+
+        self.page.update()
+
+
 
     def add_product(self, e):
         def add_product_handle_yes(e):

@@ -93,7 +93,7 @@ class ProductsContent:
             self.column_with_product_rows.controls.append(
                 ProductRow(
                     page=self.page,
-                    d_column_width=d_column_width,
+                    #d_column_width=d_column_width,
                     d_error_messages={"error_pk_item_no": error_message_pk_item_no,
                                       "error_pk_name": error_message_pk_name,
                                       "validation_error": error_message_validation,

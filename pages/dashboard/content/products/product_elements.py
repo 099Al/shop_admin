@@ -10,6 +10,7 @@ from database.models.models import Product
 from database.requests.req_products import ReqProduct
 from pages.config.sizes import pr_name_max_length, pr_item_no_max_length, pr_description_max_length, \
     pr_promo_desc_max_length
+from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.validation import cut_price, is_valid_price, is_valid_date
 from pages.config.style import *
 from config import settings
@@ -211,7 +212,8 @@ class ProductRow(ft.Row):
     def __init__(self, **kwargs):
         super().__init__()
         self.page = kwargs["page"]
-        self.d_column_width = kwargs["d_column_width"]
+        #self.d_column_width = kwargs["d_column_width"]
+        self.d_column_width = d_product_column_size
         self.d_error_messages = kwargs["d_error_messages"]
         # self.product_id = kwargs["product_id"]                 #id продукта в БД
         # self.p_name = kwargs["p_name"]         #название категории
@@ -559,110 +561,136 @@ class ProductRow(ft.Row):
 
         req = ReqProduct()
 
-        is_exists_product = req.check_product_exists(v_name, v_item_no, self.product_id)
-        if is_exists_product:
-            if is_exists_product == 1:
-                error_validation = self.d_error_messages["error_pk_item_no"]
-            else:
-                error_validation = self.d_error_messages["error_pk_name"]
-            error_validation.open = True
-            error_validation.update()
+        if self.product_id == None:
+            #новый продукт
+            new_product = Product(
+                name=v_name,
+                item_no=v_item_no,
+                price=float(v_price) if v_price else None,
+                description=v_desc,
+                promo_price=float(v_promo_price) if v_promo_price else None,
+                promo_expire_date=is_valid_date(v_promo_end) if v_promo_end else None,
+                promo_desc=v_promo_desc
+            )
+            self.product_id = req.add_product(new_product)
+
+            if self.product_id is None:
+                error_validation = self.d_error_messages["insert_error"]
+                error_validation.open = True
+                error_validation.update()
+                return
+
+            if self.tmp_image_name:
+                req.add_image(self.product_id, self.tmp_image_name)
+
+
         else:
+            #редактирование продукта
 
-            d_new_values = {
-                    "name": v_name,
-                    "item_no": v_item_no,
-                    "price": float(v_price) if v_price else None,
-                    "description": v_desc,
-                    "promo_price": float(v_promo_price) if v_promo_price else None,
-                    "promo_expire_date": is_valid_date(v_promo_end) if v_promo_end else None,
-                    "promo_desc": v_promo_desc
-                }
-
-            flag_update_attr = (
-                        #типры данных совпадают
-                        self.product.name != d_new_values["name"] or
-                        self.product.item_no != d_new_values["item_no"] or
-                        self.product.price != d_new_values["price"] or
-                        self.product.description != d_new_values["description"] or
-                        self.product.promo_price != d_new_values["promo_price"] or
-                        self.product.promo_expire_date != d_new_values["promo_expire_date"] or
-                        self.product.promo_desc != d_new_values["promo_desc"]
-                )
-
-
-            if self.flag_delete_image:
-                old_image_name, upd_img_status = req.delete_image(self.product_id)
-                if upd_img_status:
-                    # update произошел
-                    if old_image_name:
-                        try:
-                            os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
-                        except:
-                            pass
-                    self.p_img = None
-                    self._img_start_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
-                    self.r_img.content = self._img_start
-
-                self.flag_delete_image = False
-                self.r_img.padding = ft.padding.only(top=5, bottom=5)
-                self.r_img.update()
-
-
-            if flag_update_attr: # есть изменения в атрибутах
-                upd_attr_status = req.update_product(self.product_id, **d_new_values)
-                if upd_attr_status:
-                    # update произошел
-                    self._set_attr_Text(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
-
-                    #В self приводим к правильному типу
-                    self.p_name = v_name
-                    self.p_item_no = v_item_no
-                    self.p_price = float(v_price) if v_price else None
-                    self.p_desc = v_desc
-                    self.p_promo_price = float(v_promo_price) if v_promo_price else None
-                    self.p_promo_end = is_valid_date(v_promo_end) if v_promo_end else None
-                    self.p_promo_desc = v_promo_desc
-
+            is_exists_product = req.check_product_exists(v_name, v_item_no, self.product_id)
+            if is_exists_product:
+                if is_exists_product == 1:
+                    error_validation = self.d_error_messages["error_pk_item_no"]
                 else:
-                    # update не произошел
-                    self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+                    error_validation = self.d_error_messages["error_pk_name"]
+                error_validation.open = True
+                error_validation.update()
             else:
-                # атрибуты не изменились. Возвращаем первоначальные значения
-                self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
 
-            if self.tmp_image_name:  # если была загружена новая картинка
-                self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",self.product_id)
-                old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
-                if upd_img_status:
-                    # update произошел
-                    if old_image_name:
-                        try:
-                            os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
-                        except:
-                            pass
-                    shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", f"{settings.MEDIA}/original/{self.p_img}.jpeg")
-                    os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
-                    self.tmp_image_name = None
+                d_new_values = {
+                        "name": v_name,
+                        "item_no": v_item_no,
+                        "price": float(v_price) if v_price else None,
+                        "description": v_desc,
+                        "promo_price": float(v_promo_price) if v_promo_price else None,
+                        "promo_expire_date": is_valid_date(v_promo_end) if v_promo_end else None,
+                        "promo_desc": v_promo_desc
+                    }
 
-                    self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
-                    self.r_img.content = self._img_start
+                flag_update_attr = (
+                            #типры данных совпадают
+                            self.product.name != d_new_values["name"] or
+                            self.product.item_no != d_new_values["item_no"] or
+                            self.product.price != d_new_values["price"] or
+                            self.product.description != d_new_values["description"] or
+                            self.product.promo_price != d_new_values["promo_price"] or
+                            self.product.promo_expire_date != d_new_values["promo_expire_date"] or
+                            self.product.promo_desc != d_new_values["promo_desc"]
+                    )
+
+
+                if self.flag_delete_image:
+                    old_image_name, upd_img_status = req.delete_image(self.product_id)
+                    if upd_img_status:
+                        # update произошел
+                        if old_image_name:
+                            try:
+                                os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
+                            except:
+                                pass
+                        self.p_img = None
+                        self._img_start_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
+                        self.r_img.content = self._img_start
+
+                    self.flag_delete_image = False
                     self.r_img.padding = ft.padding.only(top=5, bottom=5)
                     self.r_img.update()
 
+
+                if flag_update_attr: # есть изменения в атрибутах
+                    upd_attr_status = req.update_product(self.product_id, **d_new_values)
+                    if upd_attr_status:
+                        # update произошел
+                        self._set_attr_Text(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+
+                        #В self приводим к правильному типу
+                        self.p_name = v_name
+                        self.p_item_no = v_item_no
+                        self.p_price = float(v_price) if v_price else None
+                        self.p_desc = v_desc
+                        self.p_promo_price = float(v_promo_price) if v_promo_price else None
+                        self.p_promo_end = is_valid_date(v_promo_end) if v_promo_end else None
+                        self.p_promo_desc = v_promo_desc
+
+                    else:
+                        # update не произошел
+                        self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
                 else:
-                    # update не произошел
+                    # атрибуты не изменились. Возвращаем первоначальные значения
+                    self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+
+                if self.tmp_image_name:  # если была загружена новая картинка
+                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",self.product_id)
+                    old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
+                    if upd_img_status:
+                        # update произошел
+                        if old_image_name:
+                            try:
+                                os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
+                            except:
+                                pass
+                        shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", f"{settings.MEDIA}/original/{self.p_img}.jpeg")
+                        os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
+                        self.tmp_image_name = None
+
+                        self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
+                        self.r_img.content = self._img_start
+                        self.r_img.padding = ft.padding.only(top=5, bottom=5)
+                        self.r_img.update()
+
+                    else:
+                        # update не произошел
+                        self.r_img.content = self._img_start
+                        self.r_img.padding = ft.padding.only(top=5, bottom=5)
+                else:
+                    #картинка не изменилась, только атрибуты
                     self.r_img.content = self._img_start
                     self.r_img.padding = ft.padding.only(top=5, bottom=5)
-            else:
-                #картинка не изменилась, только атрибуты
-                self.r_img.content = self._img_start
-                self.r_img.padding = ft.padding.only(top=5, bottom=5)
 
 
-            self.r_container_icon.content = self.r_content_edit
-            self.r_container_icon.update()
-            self.page.update()
+        self.r_container_icon.content = self.r_content_edit
+        self.r_container_icon.update()
+        self.page.update()
 
 
     def cancel(self, e):
