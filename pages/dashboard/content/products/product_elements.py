@@ -413,7 +413,7 @@ class ProductRow(ft.Row):
                     height=100,
                     opacity=0.5,
                     fit=ft.ImageFit.CONTAIN
-                )
+        )
 
         _img_edit = ft.Stack(
             controls=[self._img_edit_1,
@@ -718,9 +718,9 @@ class ProductRow(ft.Row):
                     self.r_img.padding = ft.padding.only(top=5, bottom=5)
 
 
-            self.r_container_icon.content = self.r_content_edit
-            self.r_container_icon.update()
-            self.page.update()
+                self.r_container_icon.content = self.r_content_edit
+                self.r_container_icon.update()
+                self.page.update()
 
 
     def cancel(self, e):
