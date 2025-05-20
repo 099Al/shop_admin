@@ -1,5 +1,7 @@
 from database.models.models import Product
 from database.requests.req_products import ReqProduct
+from pages.config.errors import d_error_messages
+from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.validation import is_valid_price, is_valid_date, cut_price
 from pages.dashboard.content.products.product_elements import ProductRow
 import flet as ft
@@ -7,13 +9,11 @@ import flet as ft
 
 
 class AddProductButton:
-    def __init__(self, **kwargs):
-        #super().__init__()
-        self.page = kwargs["page"]
-        self.d_column_width = kwargs["d_column_width"]
-        self.d_error_messages = kwargs["d_error_messages"]
-        self.column_with_rows = kwargs["column_with_rows"]
-
+    def __init__(self, page, column_with_rows, **kwargs):
+        self.page = page
+        self.column_with_rows = column_with_rows
+        self.d_column_width = d_product_column_size
+        self.d_error_messages = d_error_messages
 
     def build(self):
         return ft.Row(
