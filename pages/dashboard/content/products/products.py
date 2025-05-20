@@ -13,7 +13,7 @@ class ProductsContent:
     def __init__(self, instance):
         self.page = instance.page
         self.user_role = instance.user_role
-        self.new_content = []
+        self.view_content = []
 
 
 
@@ -53,7 +53,7 @@ class ProductsContent:
         )
 
         content_header = header(label_name="Список Продуктов", user_role=self.user_role)
-        self.new_content.append(content_header)
+        self.view_content.append(content_header)
 
         # resul append to body_content
         req = ReqProduct()
@@ -63,7 +63,7 @@ class ProductsContent:
 
 
         # кнопка "Добавить новый продукт"
-        self.new_content.append(
+        self.view_content.append(
             AddProductButton(page=self.page,
                               d_column_width=d_column_width,
                               d_error_messages={"error_pk_item_no": error_message_pk_item_no,
@@ -78,15 +78,22 @@ class ProductsContent:
                               ).build()
         )
 
-        self.new_content.append(Product_Filter(self.page, self.column_with_product_rows.controls, d_column_width).build())
+        self.column_1 = ft.Column(
+            controls=[
+                Product_Filter(self.page, self.column_with_product_rows.controls, d_column_width).build(),
+                Product_Header(self.page, self.column_with_product_rows.controls).build(d_column_width),
+                self.column_with_product_rows
+            ],
+            expand=True  #без expand scroll не работает
+        )
 
-        self.new_content.append(Product_Header(self.page, self.column_with_product_rows.controls).build(d_column_width))  # table header
-        # ---rows---
+
+        # ---rows--- заполнене списка продукатами
         for product in req.get_all_products():
             self.column_with_product_rows.controls.append(
                 ProductRow(
                     page=self.page,
-                    d_column_width=d_column_width,
+                    #d_column_width=d_column_width,
                     d_error_messages={"error_pk_item_no": error_message_pk_item_no,
                                       "error_pk_name": error_message_pk_name,
                                       "validation_error": error_message_validation,
@@ -97,18 +104,22 @@ class ProductsContent:
 
             )
 
+        self.row_scroll = ft.Row(controls=[self.column_1],
+                                 expand=True,                #без expand scroll не работает
+                                 scroll=ft.ScrollMode.AUTO
+                                 )
 
+        self.view_content.append(self.row_scroll)
 
-        self.new_content.append(self.column_with_product_rows)
         # --rows-----------
 
-        self.new_content.append(error_message_validation)
-        self.new_content.append(error_message_pk_item_no)
-        self.new_content.append(error_message_pk_name)
-        self.new_content.append(error_message_image)
-        self.new_content.append(error_insert_product)
+        self.view_content.append(error_message_validation)
+        self.view_content.append(error_message_pk_item_no)
+        self.view_content.append(error_message_pk_name)
+        self.view_content.append(error_message_image)
+        self.view_content.append(error_insert_product)
 
-        return self.new_content
+        return self.view_content
 
 
 

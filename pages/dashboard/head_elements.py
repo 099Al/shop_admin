@@ -24,8 +24,7 @@ def circle_avatar(role, **kwargs):
 
 # start_header
 def header(label_name, user_role):
-    return ft.Container(
-            content=ft.Row(
+    return ft.Row(
                 controls=[
                     ft.Text(
                         label_name,
@@ -40,4 +39,3 @@ def header(label_name, user_role):
                 ],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             )
-        )

@@ -90,6 +90,26 @@ class ReqProduct:
             self.session.rollback()
             return None
 
+    def add_image(self, product_id, image_name):
+        try:
+            image = ImagePhoto(image_name=image_name)  # Новое изображение, т.к. новый продукт
+            self.session.add(image)
+            self.session.flush()
+
+            image_id = image.image_id
+
+            self.session.execute(
+                update(Product).where(Product.product_id == product_id).values(image_id=image_id)
+            )
+
+            self.session.commit()
+
+            return image_name, 1  #картинки могло не быть
+
+        except Exception as e:
+            self.session.rollback()
+            return None, None
+
     def update_image(self, product_id, image_name):
         try:
             image_name_old = self.session.execute(
