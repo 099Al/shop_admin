@@ -742,7 +742,18 @@ class ProductRow(ft.Row):
     def delete_dialog(self, e):
         def delete_category_handle_yes(e):
             req = ReqProduct()
+
+            image_name, upd_img_status = req.delete_image(self.product_id)
+
+            if image_name:
+                try:
+                    os.remove(f"{settings.MEDIA}/original/{image_name}.jpeg")
+                except:
+                    pass
+
             req.delete_product(self.product_id)
+
+
 
             for product_row in self.column_with_rows.controls:
                 if product_row.product_id == self.product_id:
