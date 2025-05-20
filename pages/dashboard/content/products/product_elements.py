@@ -220,6 +220,7 @@ class ProductRow(ft.Row):
 
 
         self.product: Product = product
+
         self.product_id: int = self.product.product_id
         self.p_name: str = self.product.name
         self.p_item_no: str = self.product.item_no
@@ -232,9 +233,6 @@ class ProductRow(ft.Row):
 
         self.tmp_image_name = None
         self.flag_delete_image = None
-
-
-
 
         self.el_divider = ft.Container(
             height=98,
@@ -326,30 +324,7 @@ class ProductRow(ft.Row):
         ]
 
 
-    def filter_name(self, text):
-        if self.p_name is None or self.p_name == "":
-            lv_name = ""
-        else:
-            lv_name = self.p_name
 
-        if text.lower() in lv_name.lower():
-            self.visible = True
-        else:
-            self.visible = False
-
-    def filter_item_no(self, text):
-        if self.p_item_no is None or self.p_item_no == "":
-            lv_item_no = ""
-        else:
-            lv_item_no = self.p_item_no
-
-        if text.lower() in lv_item_no.lower():
-            self.visible = True
-        else:
-            self.visible = False
-
-    def drop_filter(self):
-        self.visible = True
 
 
 
@@ -442,7 +417,6 @@ class ProductRow(ft.Row):
 
 
 
-
         def _image_upload(x, **kwargs):
             try:
                 allowed_extensions = {'.png', '.jpeg', '.jpg'}
@@ -494,49 +468,6 @@ class ProductRow(ft.Row):
         )
 
         self.page.update()
-
-
-
-
-
-    def validate(self):
-        v_name = self.r_name.content.value
-        v_item_no = self.r_item_no.content.value
-        v_price = self.r_price.content.value
-        v_desc = self.r_desc.content.value
-        v_promo_price = self.r_promo_price.content.value
-        v_promo_end = self.r_promo_end.content.value  #если из БД, то тип datetime, если прописываем, то string
-        v_promo_desc = self.r_promo_desc.content.value
-
-        flag_valid = True
-
-        if v_price and not is_valid_price(cut_price(v_price)):
-            self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor, border_color=errorFieldColor, text_size=15)
-            flag_valid = False
-        else: #чтобы вернуть в начальное состояние после исправления
-            self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor,border_color=textFieldColor, text_size=15)
-        if v_promo_price and not is_valid_price(cut_price(v_promo_price)):
-            self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor, border_color=errorFieldColor, text_size=15)
-            flag_valid = False
-        else:
-            self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor,border_color=textFieldColor, text_size=15)
-
-        if v_promo_end and not is_valid_date(v_promo_end):
-            self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor, border_color=errorFieldColor, text_size=15)
-            flag_valid = False
-        else:
-            self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor,border_color=textFieldColor, text_size=15)
-
-        if not flag_valid:
-            error_validation = self.d_error_messages["validation_error"]
-            error_validation.open = True
-            error_validation.update()
-
-            self.page.update()
-
-        return flag_valid
-
-
 
 
 
@@ -613,11 +544,10 @@ class ProductRow(ft.Row):
             #редактирование продукта
 
             is_exists_product = req.check_product_exists(v_name, v_item_no, self.product_id)
+
             if is_exists_product:
-                if is_exists_product == 1:
-                    error_validation = self.d_error_messages["error_pk_item_no"]
-                else:
-                    error_validation = self.d_error_messages["error_pk_name"]
+                key = "error_pk_item_no" if is_exists_product == 1 else "error_pk_name"
+                error_validation = self.d_error_messages[key]
                 error_validation.open = True
                 error_validation.update()
             else:
@@ -632,16 +562,11 @@ class ProductRow(ft.Row):
                         "promo_desc": v_promo_desc
                     }
 
-                flag_update_attr = (
-                            #типры данных совпадают
-                            self.product.name != d_new_values["name"] or
-                            self.product.item_no != d_new_values["item_no"] or
-                            self.product.price != d_new_values["price"] or
-                            self.product.description != d_new_values["description"] or
-                            self.product.promo_price != d_new_values["promo_price"] or
-                            self.product.promo_expire_date != d_new_values["promo_expire_date"] or
-                            self.product.promo_desc != d_new_values["promo_desc"]
-                    )
+                # Проверка на изменения в любом из полей
+                flag_update_attr = any(
+                    getattr(self.product, key) != value
+                    for key, value in d_new_values.items()
+                )
 
 
                 if self.flag_delete_image:
@@ -662,55 +587,46 @@ class ProductRow(ft.Row):
                     self.r_img.update()
 
 
-                if flag_update_attr: # есть изменения в атрибутах
-                    upd_attr_status = req.update_product(self.product_id, **d_new_values)
-                    if upd_attr_status:
-                        # update произошел
-                        self._set_attr_Text(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+                if flag_update_attr and req.update_product(self.product_id, **d_new_values):
+                    # есть изменения в атрибутах
+                    # Обновление прошло успешно
+                    self._set_attr_Text(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
 
-                        #В self приводим к правильному типу
-                        self.p_name = v_name
-                        self.p_item_no = v_item_no
-                        self.p_price = float(v_price) if v_price else None
-                        self.p_desc = v_desc
-                        self.p_promo_price = float(v_promo_price) if v_promo_price else None
-                        self.p_promo_end = is_valid_date(v_promo_end) if v_promo_end else None
-                        self.p_promo_desc = v_promo_desc
-
-                    else:
-                        # update не произошел
-                        self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+                    # Приводим к правильным типам и сохраняем
+                    self.p_name = v_name
+                    self.p_item_no = v_item_no
+                    self.p_price = float(v_price) if v_price else None
+                    self.p_desc = v_desc
+                    self.p_promo_price = float(v_promo_price) if v_promo_price else None
+                    self.p_promo_end = is_valid_date(v_promo_end) if v_promo_end else None
+                    self.p_promo_desc = v_promo_desc
                 else:
-                    # атрибуты не изменились. Возвращаем первоначальные значения
-                    self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+                    # Обновление не требуется или не удалось — возвращаем текущие значения
+                    self._set_attr_Text(
+                        self.p_name, self.p_item_no, self.p_price, self.p_desc,
+                        self.p_promo_price, self.p_promo_end, self.p_promo_desc
+                    )
 
                 if self.tmp_image_name:  # если была загружена новая картинка
-                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", self.product_id)
+                    tmp_path = f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg"
+                    self.p_img = ut.image_to_16digit_hash(tmp_path , self.product_id)
                     old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
                     if upd_img_status:
-                        # update произошел
+                        # update произошел. Удаляем старое изображение
                         if old_image_name:
                             try:
                                 os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
                             except:
                                 pass
-                        shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", f"{settings.MEDIA}/original/{self.p_img}.jpeg")
-                        os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
+                        shutil.copy(tmp_path, f"{settings.MEDIA}/original/{self.p_img}.jpeg")
+                        os.remove(tmp_path)
                         self.tmp_image_name = None
 
                         self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
-                        self.r_img.content = self._img_start
-                        self.r_img.padding = ft.padding.only(top=5, bottom=5)
-                        self.r_img.update()
-
-                    else:
-                        # update не произошел
-                        self.r_img.content = self._img_start
-                        self.r_img.padding = ft.padding.only(top=5, bottom=5)
-                else:
-                    #картинка не изменилась, только атрибуты
-                    self.r_img.content = self._img_start
-                    self.r_img.padding = ft.padding.only(top=5, bottom=5)
+                # Обновляем отображение картинки (в любом случае)
+                self.r_img.content = self._img_start
+                self.r_img.padding = ft.padding.only(top=5, bottom=5)
+                self.r_img.update()
 
 
                 self.r_container_icon.content = self.r_content_edit
@@ -779,6 +695,65 @@ class ProductRow(ft.Row):
 
 
 
+    def validate(self):
+        v_name = self.r_name.content.value
+        v_item_no = self.r_item_no.content.value
+        v_price = self.r_price.content.value
+        v_desc = self.r_desc.content.value
+        v_promo_price = self.r_promo_price.content.value
+        v_promo_end = self.r_promo_end.content.value  #если из БД, то тип datetime, если прописываем, то string
+        v_promo_desc = self.r_promo_desc.content.value
+
+        flag_valid = True
+
+        if v_price and not is_valid_price(cut_price(v_price)):
+            self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor, border_color=errorFieldColor, text_size=15)
+            flag_valid = False
+        else: #чтобы вернуть в начальное состояние после исправления
+            self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor,border_color=textFieldColor, text_size=15)
+        if v_promo_price and not is_valid_price(cut_price(v_promo_price)):
+            self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor, border_color=errorFieldColor, text_size=15)
+            flag_valid = False
+        else:
+            self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor,border_color=textFieldColor, text_size=15)
+
+        if v_promo_end and not is_valid_date(v_promo_end):
+            self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor, border_color=errorFieldColor, text_size=15)
+            flag_valid = False
+        else:
+            self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor,border_color=textFieldColor, text_size=15)
+
+        if not flag_valid:
+            error_validation = self.d_error_messages["validation_error"]
+            error_validation.open = True
+            error_validation.update()
+
+            self.page.update()
+
+        return flag_valid
 
 
+    def filter_name(self, text):
+        if self.p_name is None or self.p_name == "":
+            lv_name = ""
+        else:
+            lv_name = self.p_name
 
+        if text.lower() in lv_name.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def filter_item_no(self, text):
+        if self.p_item_no is None or self.p_item_no == "":
+            lv_item_no = ""
+        else:
+            lv_item_no = self.p_item_no
+
+        if text.lower() in lv_item_no.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def drop_filter(self):
+        self.visible = True
