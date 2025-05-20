@@ -1,4 +1,5 @@
 from database.requests.req_products import ReqProduct
+from pages.config.errors import d_error_messages
 from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
@@ -18,32 +19,8 @@ class ProductsContent:
 
 
     def build(self):
-        error_message_pk_name = ft.SnackBar(
-            content=ft.Text('Продукт с таким названием уже существует'),
-            bgcolor=inputBgErrorColor
-        )
 
-        error_message_pk_item_no = ft.SnackBar(
-            content=ft.Text('Продукт с таким артикулом уже существует'),
-            bgcolor=inputBgErrorColor
-        )
-
-        error_message_validation = ft.SnackBar(
-            content=ft.Text('Неверный формат данных'),
-            bgcolor=inputBgErrorColor
-        )
-
-        error_message_image = ft.SnackBar(
-            content=ft.Text('Неверный формат изображения'),
-            bgcolor=inputBgErrorColor
-        )
-
-        error_insert_product = ft.SnackBar(
-            content=ft.Text('Ошибка при добавлении в базу данных'),
-            bgcolor=inputBgErrorColor
-        )
-
-
+        
         self.column_with_product_rows = ft.Column(
             controls=[],
             spacing=1,
@@ -65,15 +42,7 @@ class ProductsContent:
         # кнопка "Добавить новый продукт"
         self.view_content.append(
             AddProductButton(page=self.page,
-                              d_column_width=d_column_width,
-                              d_error_messages={"error_pk_item_no": error_message_pk_item_no,
-                                               "error_pk_name": error_message_pk_name,
-                                               "validation_error": error_message_validation,
-                                               "image_error": error_message_image,
-                                               "insert_error": error_insert_product
-
-                                                },
-                              column_with_rows=self.column_with_product_rows,
+                             column_with_rows=self.column_with_product_rows,
                               # передается ссылка на список строк, чтобы к нему добавить новую категорию
                               ).build()
         )
@@ -93,11 +62,6 @@ class ProductsContent:
             self.column_with_product_rows.controls.append(
                 ProductRow(
                     page=self.page,
-                    #d_column_width=d_column_width,
-                    d_error_messages={"error_pk_item_no": error_message_pk_item_no,
-                                      "error_pk_name": error_message_pk_name,
-                                      "validation_error": error_message_validation,
-                                      "image_error": error_message_image},
                     product=product,
                     column_with_rows=self.column_with_product_rows
                 )
@@ -113,11 +77,11 @@ class ProductsContent:
 
         # --rows-----------
 
-        self.view_content.append(error_message_validation)
-        self.view_content.append(error_message_pk_item_no)
-        self.view_content.append(error_message_pk_name)
-        self.view_content.append(error_message_image)
-        self.view_content.append(error_insert_product)
+        self.view_content.append(d_error_messages["validation_error"])
+        self.view_content.append(d_error_messages["error_pk_item_no"])
+        self.view_content.append(d_error_messages["error_pk_name"])
+        self.view_content.append(d_error_messages["image_error"])
+        self.view_content.append(d_error_messages["insert_error"])
 
         return self.view_content
 

@@ -8,6 +8,7 @@ import flet as ft
 
 from database.models.models import Product
 from database.requests.req_products import ReqProduct
+from pages.config.errors import d_error_messages
 from pages.config.sizes import pr_name_max_length, pr_item_no_max_length, pr_description_max_length, \
     pr_promo_desc_max_length
 from pages.config.sizes import d_product_column_size
@@ -209,22 +210,16 @@ class Product_Header:
 
 
 class ProductRow(ft.Row):
-    def __init__(self, **kwargs):
+    def __init__(self, page, product, column_with_rows, **kwargs):
         super().__init__()
-        self.page = kwargs["page"]
-        #self.d_column_width = kwargs["d_column_width"]
-        self.d_column_width = d_product_column_size
-        self.d_error_messages = kwargs["d_error_messages"]
-        # self.product_id = kwargs["product_id"]                 #id продукта в БД
-        # self.p_name = kwargs["p_name"]         #название категории
-        # self.p_item_no = kwargs["p_item_no"]   #Артикул
-        # self.p_price = kwargs["p_price"]       #цена
-        # self.p_desc = kwargs["p_desc"]         #описание
-        # self.p_promo_price = kwargs["p_promo_price"]   #цена по акции
-        # self.p_promo_end = kwargs["p_promo_end"]       #дата окончания акции
-        # self.p_promo_desc = kwargs["p_promo_desc"]     #описание акции
+        self.page = page
+        self.column_with_rows = column_with_rows  # ссылка на список продуктов, чтобы отсюда ее модифицировать
 
-        self.product: Product = kwargs["product"]
+        self.d_column_width = d_product_column_size
+        self.d_error_messages = d_error_messages
+
+
+        self.product: Product = product
         self.product_id: int = self.product.product_id
         self.p_name: str = self.product.name
         self.p_item_no: str = self.product.item_no
@@ -238,7 +233,7 @@ class ProductRow(ft.Row):
         self.tmp_image_name = None
         self.flag_delete_image = None
 
-        self.column_with_rows = kwargs["column_with_rows"]    #ссылка на список продуктов, чтобы отсюда ее модифицировать
+
 
 
         self.el_divider = ft.Container(
