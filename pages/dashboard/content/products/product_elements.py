@@ -580,8 +580,38 @@ class ProductRow(ft.Row):
                 error_validation.update()
                 return
 
+            self.p_name = v_name
+            self.p_item_no = v_item_no
+            self.p_price = float(v_price) if v_price else None
+            self.p_desc = v_desc
+            self.p_promo_price = float(v_promo_price) if v_promo_price else None
+            self.p_promo_end = is_valid_date(v_promo_end) if v_promo_end else None
+            self.p_promo_desc = v_promo_desc
+
+            self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc,
+                                self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+
+
             if self.tmp_image_name:
+
+                self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
+                                                      self.product_id)
                 req.add_image(self.product_id, self.tmp_image_name)
+                shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
+                            f"{settings.MEDIA}/original/{self.p_img}.jpeg")
+                os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
+                self.tmp_image_name = None
+
+                self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
+
+            self.r_img.content = self._img_start
+            self.r_img.padding = ft.padding.only(top=5, bottom=5)
+            self.r_img.update()
+
+
+            self.r_container_icon.content = self.r_content_edit
+            self.r_container_icon.update()
+            self.page.update()
 
 
         else:
@@ -660,7 +690,7 @@ class ProductRow(ft.Row):
                     self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
 
                 if self.tmp_image_name:  # если была загружена новая картинка
-                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",self.product_id)
+                    self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg", self.product_id)
                     old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
                     if upd_img_status:
                         # update произошел
@@ -688,9 +718,9 @@ class ProductRow(ft.Row):
                     self.r_img.padding = ft.padding.only(top=5, bottom=5)
 
 
-        self.r_container_icon.content = self.r_content_edit
-        self.r_container_icon.update()
-        self.page.update()
+            self.r_container_icon.content = self.r_content_edit
+            self.r_container_icon.update()
+            self.page.update()
 
 
     def cancel(self, e):
