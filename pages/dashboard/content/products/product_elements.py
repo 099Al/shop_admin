@@ -515,9 +515,6 @@ class ProductRow(ft.Row):
 
 
 
-
-
-
     def save(self, e):
         #значение после изменения в поле
 
@@ -658,19 +655,18 @@ class ProductRow(ft.Row):
 
 
     def cancel(self, e):
-        self.r_img.content = self._img_start
-        self.r_img.padding = ft.padding.only(top=5, bottom=5)
-        self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+        # self.r_img.content = self._img_start
+        # self.r_img.padding = ft.padding.only(top=5, bottom=5)
+        # self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+        # self.r_container_icon.content = self.r_content_edit
 
-        self.r_container_icon.content = self.r_content_edit
-
+        self.set_read_view()
         self.flag_delete_image = False
-
-        self.page.update()
 
         if os.path.isfile(f"{settings.MEDIA_TMP}/{self.tmp_image_name}"):
             os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}")
 
+        self.page.update()
 
 
     def delete_dialog(self, e):
