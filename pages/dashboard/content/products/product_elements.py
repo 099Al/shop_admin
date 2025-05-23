@@ -236,7 +236,10 @@ class ProductRow(ft.Row):
 
         self._init_ui_components()
 
-        self.set_read_view()
+        if self.product_id is None:
+            self.set_edit_view(None)
+        else:
+            self.set_read_view()
 
 
     def _init_ui_components(self):
@@ -298,7 +301,7 @@ class ProductRow(ft.Row):
                 scale=0.8,
                 # bgcolor="blue",
                 margin=ft.margin.only(left=47),
-                content=ft.IconButton(ft.icons.EDIT, on_click=self.edit)
+                content=ft.IconButton(ft.icons.EDIT, on_click=self.set_edit_view)
             )
         ])
 
@@ -358,7 +361,7 @@ class ProductRow(ft.Row):
 
 
 
-    def edit(self, e):
+    def set_edit_view(self, e):
         if self.product_id:
             #тип в строке может меняться
             v_name = self.r_name.content.value
