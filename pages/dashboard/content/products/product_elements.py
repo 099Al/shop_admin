@@ -402,10 +402,10 @@ class ProductRow(ft.Row):
         self.r_name.content = ft.TextField(v_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,text_size=15, multiline=True, max_length=pr_name_max_length, max_lines=3)
         self.r_item_no.content = ft.TextField(v_item_no, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, max_length=pr_item_no_max_length, text_size=15)
         self.r_price.content = ft.TextField(v_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-        self.r_desc.content = ft.TextField(v_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_length=pr_description_max_length)
+        self.r_desc.content = ft.TextField(v_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_lines=5, max_length=pr_description_max_length)
         self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-        self.r_promo_desc.content = ft.TextField(v_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_length=pr_promo_desc_max_length)
+        self.r_promo_desc.content = ft.TextField(v_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_lines=5, max_length=pr_promo_desc_max_length)
 
         self.page.update()
 
@@ -492,7 +492,7 @@ class ProductRow(ft.Row):
                 font_family="cupurum",
                 width=width,
                 max_lines=max_lines,
-                overflow=ft.TextOverflow.ELLIPSIS,
+                overflow=ft.TextOverflow.FADE,  #не работает с max_lines
             )
 
     def _set_attr_Text(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
