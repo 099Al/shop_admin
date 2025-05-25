@@ -537,8 +537,12 @@ class ProductRow(ft.Row):
             self._handle_new_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
         else:
             #редактирование продукта
-            self._handle_existing_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
-            self._handle_image_changes()
+            res = self._handle_existing_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+            if res:
+                self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+                self._handle_image_changes()
+            else:
+                return
 
         self.set_read_view()
         self.page.update()
@@ -588,10 +592,14 @@ class ProductRow(ft.Row):
             key = "error_pk_item_no" if is_exists_product == 1 else "error_pk_name"
             error_validation = self.d_error_messages[key]
             error_validation.open = True
-            error_validation.update()
+            self.page.update()
+            #error_validation.update()
+            return None
         else:
-            self._update_existing_product(req, name, item_no, price, desc, promo_price, promo_end, promo_desc)
-
+            if self._update_existing_product(req, name, item_no, price, desc, promo_price, promo_end, promo_desc):
+                return 1
+            else:
+                return 2
 
     def _update_existing_product(self, req, name, item_no, price, desc, promo_price, promo_end, promo_desc):
         d_new_values = {
@@ -605,13 +613,16 @@ class ProductRow(ft.Row):
         }
 
         # Проверка на изменения в любом из полей
+
         flag_update_attr = any(
             getattr(self.product, key) != value
             for key, value in d_new_values.items()
         )
 
         if flag_update_attr and req.update_product(self.product_id, **d_new_values):
-            self._update_product_attributes(name, item_no, price, desc, promo_price, promo_end, promo_desc)
+            self.product = req.get_product_by_id(self.product_id) #для обновления значений Product внутри ProductRow
+            return 1
+            # self._update_product_attributes(name, item_no, price, desc, promo_price, promo_end, promo_desc)
 
 
     def _handle_new_product_save(self, v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc):
