@@ -92,7 +92,7 @@ class Product_Header:
             self.rows_controls.sort(key=key)
         else:
             container.content = self._create_sort_icon(None)
-            self.rows_controls.sort(key=lambda x: x.product_id)
+            self.rows_controls.sort(key=lambda x: x.product_id, reverse=True)
 
         #сдинуть треугольник, если стрелок нет
         container.padding = ft.padding.only(left=0) if state != 0 else ft.padding.only(left=20)
@@ -635,10 +635,12 @@ class ProductRow(ft.Row):
                 error_validation.update()
                 return
 
+            self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+
             if self.tmp_image_name:
                 self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
                                                       self.product_id)
-                req.add_image(self.product_id, self.tmp_image_name)
+                req.add_image(self.product_id, self.p_img)
                 shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
                             f"{settings.MEDIA}/original/{self.p_img}.jpeg")
                 os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")

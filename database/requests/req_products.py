@@ -9,7 +9,7 @@ class ReqProduct:
         self.session = DataBase().get_session()
 
     def get_all_products(self):
-        stmt = select(Product).order_by(Product.product_id)
+        stmt = select(Product).order_by(Product.product_id.desc())
         return self.session.execute(stmt).scalars().all()
 
     def get_product_by_category(self, category_id):
