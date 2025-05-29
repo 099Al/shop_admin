@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update, delete, insert
+from sqlalchemy import select, func, update, delete, or_
 
 from database.connect import DataBase
 from database.models.models import Category, Product, Category_Product, ImagePhoto
@@ -9,8 +9,12 @@ class ReqProduct:
         self.session = DataBase().get_session()
 
     def get_all_products(self):
-        stmt = select(Product).order_by(Product.product_id)
+        stmt = select(Product).order_by(Product.product_id.desc())
         return self.session.execute(stmt).scalars().all()
+
+    def get_product_by_id(self, product_id):
+        stmt = select(Product).where(Product.product_id == product_id)
+        return self.session.execute(stmt).scalars().first()
 
     def get_product_by_category(self, category_id):
         stmt = select(Product).join(Category_Product).where(Category_Product.category_fk == category_id).order_by(Product.product_id)
@@ -44,7 +48,7 @@ class ReqProduct:
         query = (
             select(Product).filter_by(item_no=item_no)
             if item_no
-            else select(Product).where((Product.name == name) & (Product.item_no.is_(None)))
+            else select(Product).where((Product.name == name) & or_(Product.item_no.is_(None), func.trim(Product.item_no) == ""))
         )
 
         products = self.session.execute(query).scalars().all()
