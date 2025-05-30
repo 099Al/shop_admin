@@ -61,6 +61,12 @@ def sidebar_menu(content_template: Dash_Content):
                         , on_click=lambda e: content_template.update_content(EnumDashContent.PRODUCTS),
                     ),
                     ft.TextButton(
+                        "Товар и Категории"
+                        , icon=ft.Icons.FEATURED_PLAY_LIST_OUTLINED
+                        , style=style_menu
+                        , on_click=lambda e: content_template.update_content(EnumDashContent.PRODUCTS_AND_CATEGORIES),
+                    ),
+                    ft.TextButton(
                         "Пользователи"
                         , icon=ft.icons.ADMIN_PANEL_SETTINGS
                         , style=style_menu

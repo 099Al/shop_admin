@@ -4,6 +4,7 @@ from database.connect import DataBase
 from database.requests.req_admins import ReqAdmins
 from pages.dashboard.content.categories.categories import CategoriesContent
 from pages.dashboard.content.products.products import ProductsContent
+from pages.dashboard.content.products_categories.product_categories import ProductsAndCategoriesContent
 
 #from pages.dashboard.content.categories import set_CategoriesContent
 from pages.dashboard.elements.admin_elements import AdminRow, AdminHeader
@@ -41,6 +42,10 @@ class Dash_Content:
                 new_content = product_content.build()
                 self.container_data.content = ft.Column(controls=new_content)
 
+            case EnumDashContent.PRODUCTS_AND_CATEGORIES:
+                product_categories_content = ProductsAndCategoriesContent(self)
+                content = product_categories_content.build()
+                self.container_data.content = ft.Column(controls=content)
 
 
             case EnumDashContent.ADMINS:
