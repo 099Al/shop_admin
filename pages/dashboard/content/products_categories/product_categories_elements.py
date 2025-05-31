@@ -7,7 +7,7 @@ from config import settings
 from database.models.models import Product
 from database.models.result_objects import CategoryProducts
 from pages.config.sizes import d_category_product_column_size
-from pages.config.style import defaultFontColor
+from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
 
 class CategoryProductsRow(ft.Row):
@@ -100,7 +100,11 @@ class CategoryProductsRow(ft.Row):
         self.r_delete_container = ft.Container(
                 scale=0.8,
                 margin=ft.margin.only(left=0),
-                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog)
+                content=ft.Row(
+                    controls=[
+                    ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog),
+                    ft.IconButton(ft.icons.ADD, on_click=self._add_category)
+                ])
             )
 
 
@@ -139,9 +143,40 @@ class CategoryProductsRow(ft.Row):
 
 
     def set_edit_view(self, e):
+        v_category_id = self.p_category_id
+        v_category_name = self.r_category_name.content.value
+
+        self.r_edit_container.content = ft.Row(
+            spacing=0,
+            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+            controls=[
+                ft.Container(margin=ft.margin.all(0),
+                             padding=ft.padding.all(0),
+                             adaptive=True,
+                             scale=0.8,
+                             # bgcolor="red",
+                             content=ft.IconButton(ft.icons.SAVE, on_click=self._save)),
+                ft.Container(margin=ft.margin.only(left=0),
+                             scale=0.8,
+                             # bgcolor="green",
+                             content=ft.IconButton(ft.icons.CANCEL, on_click=self._cancel))
+            ]
+        )
+
+        self.r_category_name.content = ft.TextField(v_category_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,
+                                           text_size=15, multiline=True, max_length=d_category_product_column_size['c_category_name'], max_lines=3)
+
+        self.page.update()
+
+    def _save(self, e):
         pass
 
+    def _cancel(self, e):
+        self.set_read_view()
+        self.page.update()
 
+    def _add_category(self, e):
+        pass
 
     def delete_dialog(self):
         pass
