@@ -31,13 +31,6 @@ class CategoryProductsRow(ft.Row):
 
         self.p_image_path: str = self.element.image_path
 
-        self.el_divider = ft.Container(
-                height=25,
-                width=1,
-                bgcolor="white",
-                margin=0,
-                padding=0
-            )
 
         self._init_ui_components()
         self.set_read_view()
@@ -47,7 +40,7 @@ class CategoryProductsRow(ft.Row):
         """Initialize all UI components"""
         # Divider element
         self.el_divider = ft.Container(
-            height=98,
+            height=self.d_column_size['el_height'],
             width=1,
             bgcolor="white",
             margin=0,
@@ -72,7 +65,7 @@ class CategoryProductsRow(ft.Row):
         self._img_start_1 = ft.Image(
                         src=self.p_image_path,
                         width=self.d_column_size['c_image'],
-                        height=100,
+                        height=self.d_column_size['el_height'],
                         fit=ft.ImageFit.CONTAIN
         )
 
@@ -160,13 +153,13 @@ class CategoryProductsRow(ft.Row):
             size=15,
             font_family="cupurum",
             width=width,
+            height=self.d_column_size['el_height'],
             max_lines=max_lines,
             overflow=ft.TextOverflow.FADE,  # не работает с max_lines
         )
 
-
     def _set_attr_Text(self, category_name, name, item_no):
-        self.r_category_name.content = self._field(category_name, self.d_column_size['el_height'], max_lines=2)
-        self.r_product_name.content = self._field(category_name, self.d_column_size['el_height'], max_lines=2)
-        self.r_product_item_no.content = self._field(item_no, self.d_column_size['el_height'], max_lines=1)
+        self.r_category_name.content = self._field(category_name, self.d_column_size['c_category_name'], max_lines=2)
+        self.r_product_name.content = self._field(name, self.d_column_size['c_name'], max_lines=2)
+        self.r_product_item_no.content = self._field(item_no, self.d_column_size['c_item_no'], max_lines=1)
 
