@@ -4,8 +4,10 @@ from datetime import datetime, date
 import flet as ft
 
 from config import settings
-from database.models.models import Product
+from database.models.models import Product, Category
 from database.models.result_objects import CategoryProducts
+from database.requests.req_categories import ReqCategory
+from database.requests.req_catgprod import ReqCategoryProduct
 from pages.config.sizes import d_category_product_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
@@ -30,6 +32,10 @@ class CategoryProductsRow(ft.Row):
         self.p_category_name: str = self.element.category_name
 
         self.p_image_path: str = self.element.image_path
+
+        req = ReqCategory()
+        res: list[Category] = req.get_all_categories()
+        self.d_categories = {category.id: category.name for category in res}
 
 
         self._init_ui_components()
@@ -74,9 +80,12 @@ class CategoryProductsRow(ft.Row):
 
     def _init_attr_containers(self):
         self.r_category_name = ft.Container(width=self.d_column_size['c_category_name'], alignment=ft.alignment.bottom_left)
-        self.r_img = ft.Container(width=self.d_column_size['c_image'], alignment=ft.alignment.bottom_left)
-        self.r_product_name = ft.Container(width=self.d_column_size['c_name'], alignment=ft.alignment.bottom_left)
+
         self.r_product_item_no = ft.Container(width=self.d_column_size['c_item_no'], alignment=ft.alignment.bottom_left)
+        self.r_product_name = ft.Container(width=self.d_column_size['c_name'], alignment=ft.alignment.bottom_left)
+        self.r_img = ft.Container(width=self.d_column_size['c_image'], alignment=ft.alignment.bottom_left)
+
+
 
     def _init_edit_button(self):
         self.r_content_edit = ft.Row(controls=[
@@ -118,11 +127,11 @@ class CategoryProductsRow(ft.Row):
                     self.el_divider,
                     self.r_category_name,
                     self.el_divider,
-                    self.r_img,
+                    self.r_product_item_no,
                     self.el_divider,
                     self.r_product_name,
                     self.el_divider,
-                    self.r_product_item_no,
+                    self.r_img,
                     self.el_divider,
                 ]
             ),
@@ -135,7 +144,12 @@ class CategoryProductsRow(ft.Row):
 
     def set_read_view(self):
         self.r_edit_container.content = self.r_content_edit
-        self._set_attr_Text(self.p_category_name, self.p_name, self.p_item_no)
+
+        self.r_category_name.content = self._field(self.p_category_name, self.d_column_size['c_category_name'], max_lines=2)
+        self.r_product_name.content = self._field(self.p_name, self.d_column_size['c_name'], max_lines=2)
+        self.r_product_item_no.content = self._field(self.p_item_no, self.d_column_size['c_item_no'], max_lines=1)
+
+
         self.r_img.content = self._img_start
         self.r_img.padding = ft.padding.only(top=5, bottom=5)
 
@@ -145,6 +159,33 @@ class CategoryProductsRow(ft.Row):
     def set_edit_view(self, e):
         v_category_id = self.p_category_id
         v_category_name = self.r_category_name.content.value
+
+        req = ReqCategory()
+
+        res: list[Category] = req.get_all_categories()
+
+        l_categories = []
+
+        for ctg_id, ctg_name in self.d_categories.items():
+            l_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
+
+
+
+        self.dd_menu = ft.Dropdown(
+            width=self.d_column_size['c_category_name'],
+            editable=False,
+            border_color=textFieldColor,
+            color="white",
+            hint_text=v_category_name,
+            hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
+            menu_width=self.d_column_size['c_category_name'],
+            menu_height=300,
+            options=l_categories,
+
+            on_change=self._handle_category_change
+        )
+
+        self.r_category_name.content = self.dd_menu
 
         self.r_edit_container.content = ft.Row(
             spacing=0,
@@ -163,13 +204,25 @@ class CategoryProductsRow(ft.Row):
             ]
         )
 
-        self.r_category_name.content = ft.TextField(v_category_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,
-                                           text_size=15, multiline=True, max_length=d_category_product_column_size['c_category_name'], max_lines=3)
 
         self.page.update()
 
     def _save(self, e):
-        pass
+        new_category_id = int(self.dd_menu.value)
+
+        req_catg = ReqCategoryProduct()
+        #TODO: проверка добавлен ли в категорию
+        req_catg.update_category_product(self.p_category_id, new_category_id, self.p_product_id)
+
+        self.p_category_id = new_category_id
+        self.p_category_name = self.d_categories[new_category_id]
+        self.r_category_name.content = self._field(self.p_category_name, self.d_column_size['c_category_name'], max_lines=2)
+        self.set_read_view()
+
+        self.page.update()
+
+
+
 
     def _cancel(self, e):
         self.set_read_view()
@@ -188,13 +241,13 @@ class CategoryProductsRow(ft.Row):
             size=15,
             font_family="cupurum",
             width=width,
-            height=self.d_column_size['el_height'],
             max_lines=max_lines,
             overflow=ft.TextOverflow.FADE,  # не работает с max_lines
+            text_align=ft.TextAlign.START
         )
 
-    def _set_attr_Text(self, category_name, name, item_no):
-        self.r_category_name.content = self._field(category_name, self.d_column_size['c_category_name'], max_lines=2)
-        self.r_product_name.content = self._field(name, self.d_column_size['c_name'], max_lines=2)
-        self.r_product_item_no.content = self._field(item_no, self.d_column_size['c_item_no'], max_lines=1)
 
+
+
+    def _handle_category_change(self, e):
+        pass

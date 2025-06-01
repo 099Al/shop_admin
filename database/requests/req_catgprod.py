@@ -1,7 +1,8 @@
 from sqlalchemy import select, func, update, delete, insert
 
 from database.connect import DataBase
-from database.models.models import Category, Product, ImagePhoto
+from database.models.models import Category, Product, ImagePhoto, Category_Product
+
 
 class ReqCategory:
 
@@ -37,3 +38,17 @@ class ReqCategoryProduct:
         result = self.session.execute(stmt)
         return result.fetchall()
 
+
+    def update_category_product(self, old_category_id, new_category_id, product_id):
+        try:
+            self.session.execute(
+                update(Category_Product)
+                .where((Category_Product.product_fk == product_id) & (Category_Product.category_fk == old_category_id))
+                .values(category_fk=new_category_id)
+            )
+            self.session.commit()
+
+            return True
+        except Exception as e:
+            self.session.rollback()
+            return None

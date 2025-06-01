@@ -22,9 +22,9 @@ d_product_column_size = {"c_edit": 100,
                           }
 
 d_category_product_column_size = {"c_edit": 100,
-                            "c_category_name": 150,
-                            "c_image": 30,
-                            "c_name": 150,
+                            "c_category_name": 300,
+                            "c_image": 70,
+                            "c_name": 300,
                             "c_item_no": 100,
-                            "el_height": 35
+                            "el_height": 40
                           }
