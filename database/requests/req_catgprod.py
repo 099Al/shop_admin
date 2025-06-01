@@ -52,3 +52,11 @@ class ReqCategoryProduct:
         except Exception as e:
             self.session.rollback()
             return None
+
+    def check_if_prodict_exist_in_category(self, category_id, product_id):
+        stmt = select(Category_Product).where((Category_Product.product_fk == product_id) & (Category_Product.category_fk == category_id))
+        result = self.session.execute(stmt)
+        if result.scalar():
+            return True
+        else:
+            return False

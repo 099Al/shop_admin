@@ -1,7 +1,7 @@
 from database.models.result_objects import CategoryProducts
 from database.requests.req_catgprod import ReqCategoryProduct
 from database.requests.req_products import ReqProduct
-from pages.config.errors import d_error_messages
+from pages.config.errors import d_error_messages, d_error_messages_ctg_prod
 from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
@@ -52,6 +52,8 @@ class ProductsAndCategoriesContent:
             )
 
         self.view_content.append(self.column_with_rows_elements)
+
+        self.view_content.append(d_error_messages_ctg_prod)
 
 
 

@@ -8,6 +8,7 @@ from database.models.models import Product, Category
 from database.models.result_objects import CategoryProducts
 from database.requests.req_categories import ReqCategory
 from database.requests.req_catgprod import ReqCategoryProduct
+from pages.config.errors import d_error_messages_ctg_prod
 from pages.config.sizes import d_category_product_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
@@ -211,7 +212,14 @@ class CategoryProductsRow(ft.Row):
         new_category_id = int(self.dd_menu.value)
 
         req_catg = ReqCategoryProduct()
-        #TODO: проверка добавлен ли в категорию
+        is_prodict_exist_in_category = req_catg.check_if_prodict_exist_in_category(new_category_id, self.p_product_id)
+
+        if is_prodict_exist_in_category:
+            d_error_messages_ctg_prod.content = ft.Text(f"Товар уже добавлен в категорию {self.d_categories[new_category_id]}")
+            d_error_messages_ctg_prod.open = True
+            d_error_messages_ctg_prod.update()
+            return
+
         req_catg.update_category_product(self.p_category_id, new_category_id, self.p_product_id)
 
         self.p_category_id = new_category_id
