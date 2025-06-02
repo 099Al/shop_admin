@@ -29,8 +29,8 @@ class ReqCategoryProduct:
                 Product.item_no,
                 ImagePhoto.image_name
             )
-            .select_from(Category)
-            .join(Category.r_products)  # join through relationship (Category → Product via association table)
+            .select_from(Product)
+            .outerjoin(Product.r_categories)  # join through relationship (Category → Product via association table)
             .outerjoin(Product.r_image)  # left join to images (some products may have no image)
             .order_by(Category.id, Product.product_id)
         )
@@ -60,3 +60,15 @@ class ReqCategoryProduct:
             return True
         else:
             return False
+
+    def delete_category_product(self, category_id, product_id):
+        try:
+            self.session.execute(
+                delete(Category_Product).where((Category_Product.product_fk == product_id) & (Category_Product.category_fk == category_id))
+            )
+            self.session.commit()
+
+            return True
+        except Exception as e:
+            self.session.rollback()
+            return None

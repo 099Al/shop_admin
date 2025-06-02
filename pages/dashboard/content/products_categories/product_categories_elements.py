@@ -239,8 +239,34 @@ class CategoryProductsRow(ft.Row):
     def _add_category(self, e):
         pass
 
-    def delete_dialog(self):
-        pass
+    def delete_dialog(self, e):
+        def delete_category_product_handle_yes(e):
+            req = ReqCategoryProduct()
+
+            req.delete_category_product(self.p_category_id, self.p_product_id)
+
+
+            dlg_delete.open = False
+            self.page.update()
+
+
+        def delete_category_product_handle_close(e):
+            dlg_delete.open = False
+            self.page.update()
+
+        dlg_delete = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Подтверждение"),
+            content=ft.Text("Вы действительно хотите удалить товар из категории?"),
+            actions=[
+                ft.TextButton("Yes", on_click=delete_category_product_handle_yes),
+                ft.TextButton("No", on_click=delete_category_product_handle_close),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        self.page.open(dlg_delete)
+        self.page.update()
 
     def _field(self, text, width, max_lines=2):
         return ft.Text(
