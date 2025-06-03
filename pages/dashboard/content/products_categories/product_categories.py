@@ -1,4 +1,6 @@
+from database.models.models import Category
 from database.models.result_objects import CategoryProducts
+from database.requests.req_categories import ReqCategory
 from database.requests.req_catgprod import ReqCategoryProduct
 from database.requests.req_products import ReqProduct
 from pages.config.errors import d_error_messages, d_error_messages_ctg_prod
@@ -32,6 +34,15 @@ class ProductsAndCategoriesContent:
         self.view_content.append(content_header)
 
         req = ReqCategoryProduct()
+        req_ctg = ReqCategory()
+        res: list[Category] = req_ctg.get_all_categories()
+
+        self.d_categories = {category.id: category.name for category in res}
+
+        self.l_categories = []
+
+        for ctg_id, ctg_name in self.d_categories.items():
+            self.l_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
 
         for element in req.get_all_categories_and_products():
             element_p_c = CategoryProducts(category_name=element.category_name,
@@ -46,12 +57,15 @@ class ProductsAndCategoriesContent:
                 CategoryProductsRow(
                     page=self.page,
                     element=element_p_c,
-                    column_with_rows=self.column_with_rows_elements
+                    column_with_rows=self.column_with_rows_elements,
+                    d_categories=self.d_categories,
+                    l_categories=self.l_categories
                 )
 
             )
 
         self.view_content.append(self.column_with_rows_elements)
+
 
         self.view_content.append(d_error_messages_ctg_prod)
 

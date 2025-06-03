@@ -17,7 +17,7 @@ class CategoryProductsRow(ft.Row):
     def __init__(self, page, element, column_with_rows, **kwargs):
         super().__init__()
         self.page = page
-        #self.column_with_rows = column_with_rows  # ссылка на список продуктов, чтобы отсюда ее модифицировать
+        self.column_with_rows = column_with_rows  # ссылка на список продуктов, чтобы отсюда ее модифицировать
 
         self.d_column_size = d_category_product_column_size
         #self.d_error_messages = d_error_messages
@@ -34,13 +34,25 @@ class CategoryProductsRow(ft.Row):
 
         self.p_image_path: str = self.element.image_path
 
-        req = ReqCategory()
-        res: list[Category] = req.get_all_categories()
-        self.d_categories = {category.id: category.name for category in res}
 
+
+        self.is_new_category = kwargs.get('is_new_category', False)
+
+        self.l_categories = kwargs.get('l_categories', [])
+        self.d_categories = kwargs.get('d_categories', {})
 
         self._init_ui_components()
-        self.set_read_view()
+
+        if self.is_new_category:
+            self.set_edit_view(None)
+        else:
+            self.set_read_view()
+
+        #self.set_read_view()
+
+
+    def __repr__(self):
+        return f'CategoryProductsRow(product_id={self.p_product_id}, category_id={self.p_category_id}, name={self.p_name}, item_no={self.p_item_no})'
 
 
     def _init_ui_components(self):
@@ -158,17 +170,24 @@ class CategoryProductsRow(ft.Row):
 
 
     def set_edit_view(self, e):
-        v_category_id = self.p_category_id
-        v_category_name = self.r_category_name.content.value
+        if e:
+            v_category_id = self.p_category_id
+            v_category_name = self.r_category_name.content.value
+        else:
+            v_category_name = None
 
-        req = ReqCategory()
+            self.r_product_name.content = self._field(self.p_name, self.d_column_size['c_name'], max_lines=2)
+            self.r_product_item_no.content = self._field(self.p_item_no, self.d_column_size['c_item_no'], max_lines=1)
 
-        res: list[Category] = req.get_all_categories()
+            #self._img_start_1.src = self.p_image_path
 
-        l_categories = []
+            self.r_img.content = self._img_start
 
-        for ctg_id, ctg_name in self.d_categories.items():
-            l_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
+
+        # l_categories = []
+        #
+        # for ctg_id, ctg_name in self.d_categories.items():
+        #     l_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
 
 
 
@@ -181,7 +200,7 @@ class CategoryProductsRow(ft.Row):
             hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
             menu_width=self.d_column_size['c_category_name'],
             menu_height=300,
-            options=l_categories,
+            options=self.l_categories,
 
             on_change=self._handle_category_change
         )
@@ -220,7 +239,10 @@ class CategoryProductsRow(ft.Row):
             d_error_messages_ctg_prod.update()
             return
 
-        req_catg.update_category_product(self.p_category_id, new_category_id, self.p_product_id)
+        if self.p_category_id:
+            req_catg.update_category_product(self.p_category_id, new_category_id, self.p_product_id)
+        else:
+            req_catg.add_category_product(new_category_id, self.p_product_id)
 
         self.p_category_id = new_category_id
         self.p_category_name = self.d_categories[new_category_id]
@@ -233,11 +255,37 @@ class CategoryProductsRow(ft.Row):
 
 
     def _cancel(self, e):
+        if self.is_new_category:
+            self.column_with_rows.controls.remove(self)
+
         self.set_read_view()
         self.page.update()
 
     def _add_category(self, e):
-        pass
+
+        position = next((i for i, element in enumerate(self.column_with_rows.controls) if element.p_category_id == self.p_category_id and element.p_product_id == self.p_product_id), -1)
+        #cur_element = self.column_with_rows.controls[position]
+
+        new_element = CategoryProducts(
+            category_name=None,
+            category_id=None,
+            product_id=self.element.product_id,
+            name=self.element.name,
+            item_no=self.element.item_no,
+            image_name=self.element.image_name
+        )
+
+        new_row = CategoryProductsRow(
+            page=self.page,
+            element=new_element,
+            column_with_rows=self.column_with_rows,
+            d_categories=self.d_categories,
+            l_categories=self.l_categories,
+            is_new_category=True
+        )
+        self.column_with_rows.controls.insert(position+1, new_row)
+
+        self.page.update()
 
     def delete_dialog(self, e):
         def delete_category_product_handle_yes(e):
