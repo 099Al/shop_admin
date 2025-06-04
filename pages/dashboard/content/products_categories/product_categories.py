@@ -38,6 +38,19 @@ class ProductsAndCategoriesContent:
         req_ctg = ReqCategory()
         res: list[Category] = req_ctg.get_all_categories()
 
+        self.column_1 = ft.Column(
+            controls=[
+                CategoryProducts_Header(
+                    page=self.page,
+                    rows_controls=self.column_with_rows_elements.controls
+                ).build(),
+                self.column_with_rows_elements
+            ],
+            expand=True
+        )
+
+
+
         self.d_categories = {category.id: category.name for category in res}
 
         self.l_categories = []
@@ -45,13 +58,7 @@ class ProductsAndCategoriesContent:
         for ctg_id, ctg_name in self.d_categories.items():
             self.l_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
 
-        self.column_with_rows_elements.controls.append(
-            CategoryProducts_Header(
-                page=self.page,
-                rows_controls=self.column_with_rows_elements.controls
-            )
-            .build()
-        )
+
 
         for element in req.get_all_categories_and_products():
             element_p_c = CategoryProducts(category_name=element.category_name,
@@ -73,7 +80,13 @@ class ProductsAndCategoriesContent:
 
             )
 
-        self.view_content.append(self.column_with_rows_elements)
+        #Горизонтальная прокрутка
+        self.row_scroll = ft.Row(controls=[self.column_1],
+                                 expand=True,  # без expand scroll не работает
+                                 scroll=ft.ScrollMode.AUTO
+                                 )
+
+        self.view_content.append(self.row_scroll)
 
 
         self.view_content.append(d_error_messages_ctg_prod)
