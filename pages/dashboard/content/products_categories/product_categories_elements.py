@@ -236,7 +236,8 @@ class CategoryProductsRow(ft.Row):
         if is_prodict_exist_in_category:
             d_error_messages_ctg_prod.content = ft.Text(f"Товар уже добавлен в категорию {self.d_categories[new_category_id]}")
             d_error_messages_ctg_prod.open = True
-            d_error_messages_ctg_prod.update()
+            #d_error_messages_ctg_prod.update()
+            self.page.update()
             return
 
         if self.p_category_id:
@@ -293,6 +294,7 @@ class CategoryProductsRow(ft.Row):
 
             req.delete_category_product(self.p_category_id, self.p_product_id)
 
+            self.column_with_rows.controls.remove(self)
 
             dlg_delete.open = False
             self.page.update()
