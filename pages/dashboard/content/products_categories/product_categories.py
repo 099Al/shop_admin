@@ -8,7 +8,8 @@ from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
 from pages.dashboard.content.products.product_filter import Product_Filter
-from pages.dashboard.content.products_categories.product_categories_elements import CategoryProductsRow
+from pages.dashboard.content.products_categories.product_categories_elements import CategoryProductsRow, \
+    CategoryProducts_Header
 from pages.dashboard.head_elements import header
 from pages.config.style import inputBgErrorColor
 import flet as ft
@@ -43,6 +44,14 @@ class ProductsAndCategoriesContent:
 
         for ctg_id, ctg_name in self.d_categories.items():
             self.l_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
+
+        self.column_with_rows_elements.controls.append(
+            CategoryProducts_Header(
+                page=self.page,
+                rows_controls=self.column_with_rows_elements.controls
+            )
+            .build()
+        )
 
         for element in req.get_all_categories_and_products():
             element_p_c = CategoryProducts(category_name=element.category_name,

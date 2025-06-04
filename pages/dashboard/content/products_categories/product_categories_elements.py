@@ -13,6 +13,73 @@ from pages.config.sizes import d_category_product_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
 
+class CategoryProducts_Header:
+
+    def __init__(self, page, rows_controls):
+        #self.d_width = d_width
+        self.page = page
+        self.rows_controls: list[CategoryProductsRow] = rows_controls
+        self.d_column_size = d_category_product_column_size
+
+        self.sort_category_state = 0
+        self.sort_item_no_state = 0
+        self.sort_product_state = 0
+
+
+
+
+        self.el_divider = ft.Container(
+                height=25,
+                width=1,
+                bgcolor="white",
+                margin=0,
+                padding=0
+            )
+
+
+        # self.container_sort_by_name = self._create_sort_cell()
+        # self.container_sort_by_item_no = self._create_sort_cell()
+        # self.container_sort_by_price = self._create_sort_cell()
+        # self.container_sort_by_promo_end = self._create_sort_cell()
+        #
+
+    def build(self):
+
+        header_controls = [
+            ft.Container(
+                width=self.d_column_size["c_edit"],
+            ),
+            self.el_divider,
+            self._create_header_cell("Категория", self.d_column_size["c_category_name"]),
+            self.el_divider,
+            self._create_header_cell("Артикул", self.d_column_size["c_item_no"]),
+            self.el_divider,
+            self._create_header_cell("Продукт", self.d_column_size["c_name"]),
+            self.el_divider,
+            self._create_header_cell("Фото", self.d_column_size["c_image"]),
+            self.el_divider,
+            self._create_header_cell("Удалить/Добавить", self.d_column_size["c_dell_add"]),
+        ]
+
+        return ft.Row(
+            controls=header_controls,
+            height=50,
+            vertical_alignment=ft.CrossAxisAlignment.END
+        )
+
+    def _create_header_cell(self, text, width):
+        return ft.Container(
+            content=ft.Text(
+                text,
+                color=defaultFontColor,
+                size=15,
+                font_family="cupurum",
+            ),
+            width=width,
+            alignment=ft.alignment.bottom_left,
+        )
+
+
 class CategoryProductsRow(ft.Row):
     def __init__(self, page, element, column_with_rows, **kwargs):
         super().__init__()
