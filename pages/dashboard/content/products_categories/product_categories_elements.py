@@ -1,16 +1,11 @@
-import os
-from datetime import datetime, date
-
 import flet as ft
 
-from config import settings
-from database.models.models import Product, Category
 from database.models.result_objects import CategoryProducts
-from database.requests.req_categories import ReqCategory
+
 from database.requests.req_catgprod import ReqCategoryProduct
 from pages.config.errors import d_error_messages_ctg_prod
 from pages.config.sizes import d_category_product_column_size
-from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
+from pages.config.style import defaultFontColor, textFieldColor
 
 
 class CategoryProducts_Header:
@@ -517,3 +512,41 @@ class CategoryProductsRow(ft.Row):
 
     def _handle_category_change(self, e):
         pass
+
+
+    def filter_category(self, text):
+        if self.p_category_name is None or self.p_category_name == "":
+            lv_category = ""
+        else:
+            lv_category = self.p_category_name
+
+        if text.lower() in lv_category.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def filter_item_no(self, text):
+        if self.p_item_no is None or self.p_item_no == "":
+            lv_item_no = ""
+        else:
+            lv_item_no = self.p_item_no
+
+        if text.lower() in lv_item_no.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def filter_product(self, text):
+        if self.p_name is None or self.p_name == "":
+            lv_name = ""
+        else:
+            lv_name = self.p_name
+
+        if text.lower() in lv_name.lower():
+            self.visible = True
+        else:
+            self.visible = False
+
+    def drop_filter(self):
+        self.visible = True
+

@@ -8,6 +8,7 @@ from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
 from pages.dashboard.content.products.product_filter import Product_Filter
+from pages.dashboard.content.products_categories.category_products_filter import CategoryProducts_Filter
 from pages.dashboard.content.products_categories.product_categories_elements import CategoryProductsRow, \
     CategoryProducts_Header
 from pages.dashboard.head_elements import header
@@ -32,7 +33,9 @@ class ProductsAndCategoriesContent:
         )
 
         content_header = header(label_name="Продукты в категориях", user_role=self.user_role)
+        self.empty_row = ft.Row(controls=[ft.Container(margin=50)])
         self.view_content.append(content_header)
+        self.view_content.append(self.empty_row)
 
         req = ReqCategoryProduct()
         req_ctg = ReqCategory()
@@ -40,6 +43,7 @@ class ProductsAndCategoriesContent:
 
         self.column_1 = ft.Column(
             controls=[
+                CategoryProducts_Filter(page=self.page, rows_controls=self.column_with_rows_elements.controls).build(),
                 CategoryProducts_Header(
                     page=self.page,
                     rows_controls=self.column_with_rows_elements.controls
