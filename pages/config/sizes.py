@@ -20,3 +20,12 @@ d_product_column_size = {"c_edit": 100,
                           "c_promo_end": 100,
                           "c_promo_desc": 150
                           }
+
+d_category_product_column_size = {"c_edit": 100,
+                            "c_category_name": 300,
+                            "c_image": 70,
+                            "c_name": 300,
+                            "c_item_no": 100,
+                            "c_dell_add": 100,
+                            "el_height": 40
+                          }

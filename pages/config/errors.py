@@ -33,3 +33,6 @@ d_error_messages = {"error_pk_item_no": error_message_pk_item_no,
                     "image_error": error_message_image,
                     "insert_error": error_insert_product
                     }
+
+
+d_error_messages_ctg_prod = ft.SnackBar(content=ft.Text(f"Товар уже находится в категории"), bgcolor=inputBgErrorColor)
