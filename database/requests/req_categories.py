@@ -6,13 +6,25 @@ from database.models.models import Category, Product, Category_Product
 
 class ReqCategory:
 
-    def __init__(self):
-        #self.session = db.get_session()
-        self.session = DataBase().get_session()
+    def __init__(self, session=None):
+        if session:
+            self.session = session
+        else:
+            self.session = DataBase().get_session()
 
     def get_all_categories(self):
         result = self.session.execute(select(Category))
         return result.scalars().all()
+
+    def get_category_by_id(self, category_id):
+        stmt = select(Category).where(Category.id == category_id)
+        res = self.session.execute(stmt).scalars().all()
+        if res:
+            return res
+        else:
+            stmt = select(Category).where(Category.id == 0)  #default Category
+            res = self.session.execute(stmt).scalars().all()
+            return res
 
     def get_max_length(self):
         max_length = self.session.query(func.max(func.length(Category.name))).scalar()

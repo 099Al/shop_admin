@@ -6,7 +6,9 @@ from datetime import datetime, date
 
 import flet as ft
 
-from database.models.models import Product
+from database.connect import DataBase
+from database.models.models import Product, Category
+from database.requests.req_categories import ReqCategory
 from database.requests.req_products import ReqProduct
 from pages.config.errors import d_error_messages
 from pages.config.sizes import pr_name_max_length, pr_item_no_max_length, pr_description_max_length, \
@@ -115,7 +117,7 @@ class Product_Header:
         next_state = (current_state + 1) % 3
         self._update_sort(sort_type, next_state)
 
-    def _create_header_cell(self, text, width):
+    def _create_header_cell(self, text, width, visible=True):
         return ft.Container(
             content=ft.Text(
                 text,
@@ -125,6 +127,7 @@ class Product_Header:
             ),
             width=width,
             alignment=ft.alignment.bottom_left,
+            visible=visible
         )
 
     def _create_sortable_header_cell(self, text, width, sort_container, on_click_handler):
@@ -167,7 +170,7 @@ class Product_Header:
 
     def build(self, d_width):
 
-
+        #self.header_category = self._create_header_cell("Категория", d_width["c_category_name"], visible=False)
 
         header_controls = [
                 ft.Container(
@@ -195,6 +198,7 @@ class Product_Header:
                 el_divider,
                 self._create_header_cell("Акция Описание", d_width["c_promo_desc"]),
                 el_divider,
+                #self.header_category
 
             ]
 
@@ -295,6 +299,9 @@ class ProductRow(ft.Row):
         self.r_promo_end = ft.Container(width=self.d_column_width['c_promo_end'], alignment=ft.alignment.bottom_left)
         self.r_promo_desc = ft.Container(width=self.d_column_width['c_promo_desc'], alignment=ft.alignment.bottom_left)
 
+        #доп столбец для добавления категории
+        self.r_category = ft.Container(width=0, alignment=ft.alignment.bottom_left, content=None, visible=False)
+
     def _init_edit_button(self):
         self.r_content_edit = ft.Row(controls=[
             ft.Container(
@@ -343,7 +350,8 @@ class ProductRow(ft.Row):
                     self.r_promo_end,
                     self.el_divider,
                     self.r_promo_desc,
-                    self.el_divider
+                    self.el_divider,
+                    self.r_category
                 ]
             ),
               border=ft.border.only(bottom=ft.border.BorderSide(0.1, "white")),
@@ -372,6 +380,7 @@ class ProductRow(ft.Row):
             v_promo_end = self.r_promo_end.content.value
             v_promo_desc = self.r_promo_desc.content.value
         else:
+            #добавление продукта
             v_name = ""
             v_item_no = ""
             v_price = ""
@@ -379,6 +388,30 @@ class ProductRow(ft.Row):
             v_promo_price = ""
             v_promo_end = ""
             v_promo_desc = ""
+
+            req_ctg = ReqCategory()
+            res: list[Category] = req_ctg.get_all_categories()
+            self.d_categories = {category.id: category.name for category in res}
+            self.l_key_categories = []
+            for ctg_id, ctg_name in self.d_categories.items():
+                self.l_key_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
+
+            self.r_category.content = self.dd_menu = ft.Dropdown(
+                width=300,
+                editable=False,
+                border_color=textFieldColor,
+                color="white",
+                # hint_text=v_category_name,
+                hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
+                menu_width=300,
+                menu_height=300,
+                label="Категория",
+                options=self.l_key_categories,
+
+            )
+            self.r_category.width = self.d_column_width['c_category_name']
+            self.r_category.visible = True
+
 
         self.r_container_icon.content = ft.Row(
             spacing=0,
@@ -406,6 +439,7 @@ class ProductRow(ft.Row):
         self.r_promo_price.content = ft.TextField(v_promo_price, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         self.r_promo_end.content = ft.TextField(v_promo_end, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         self.r_promo_desc.content = ft.TextField(v_promo_desc, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True, max_lines=5, max_length=pr_promo_desc_max_length)
+
 
         self.page.update()
 
@@ -534,7 +568,9 @@ class ProductRow(ft.Row):
 
         if self.product_id == None:
             #новый продукт
-            self._handle_new_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+            v_category_id = self.r_category.content.value
+            self.r_category.visible = False
+            self._handle_new_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc, v_category_id)
         else:
             #редактирование продукта
             res = self._handle_existing_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
@@ -625,8 +661,14 @@ class ProductRow(ft.Row):
             # self._update_product_attributes(name, item_no, price, desc, promo_price, promo_end, promo_desc)
 
 
-    def _handle_new_product_save(self, v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc):
+    def _handle_new_product_save(self, v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc, v_category_id):
+
+            session = DataBase().get_session()
+            req_ctg = ReqCategory(session)
+            l_categories = req_ctg.get_category_by_id(v_category_id)
+
             new_product = Product(
+                r_categories=l_categories,
                 name=v_name,
                 item_no=v_item_no,
                 price=float(v_price) if v_price else None,
@@ -636,7 +678,7 @@ class ProductRow(ft.Row):
                 promo_desc=v_promo_desc
             )
 
-            req = ReqProduct()
+            req = ReqProduct(session)
 
             self.product_id = req.add_product(new_product)
 
