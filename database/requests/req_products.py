@@ -5,8 +5,11 @@ from database.models.models import Category, Product, Category_Product, ImagePho
 import utils.functions as ut
 
 class ReqProduct:
-    def __init__(self) -> None:
-        self.session = DataBase().get_session()
+    def __init__(self, session=None) -> None:
+        if session:
+            self.session = session
+        else:
+            self.session = DataBase().get_session()
 
     def get_all_products(self):
         stmt = select(Product).order_by(Product.product_id.desc())

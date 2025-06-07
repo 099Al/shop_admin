@@ -18,7 +18,8 @@ d_product_column_size = {"c_edit": 100,
                           "c_desc": 150,
                           "c_price_promo": 80,
                           "c_promo_end": 100,
-                          "c_promo_desc": 150
+                          "c_promo_desc": 150,
+                          "c_category_name": 300
                           }
 
 d_category_product_column_size = {"c_edit": 100,
