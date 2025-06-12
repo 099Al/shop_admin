@@ -6,6 +6,68 @@ from pages.config.errors import d_error_messages
 from pages.config.sizes import d_admin_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
+class AdminHeader(ft.Row):
+    def __init__(self, page, rows_controls, **kwargs):
+        super().__init__()
+        self.page = page
+        self.rows_controls: list[AdminRow] = rows_controls  # ссылка на список
+        self.d_column_size = d_admin_column_size
+
+        self.el_divider = ft.Container(
+            height=25,
+            width=1,
+            bgcolor="white",
+            margin=0,
+            padding=0
+        )
+
+
+    def build(self):
+        header_controls = [
+            ft.Container(
+                width=self.d_column_size["c_edit"],
+            ),
+            self.el_divider,
+            self._create_header_cell("Telegram Name", self.d_column_size["c_telegram_name"]),
+            self.el_divider,
+            self._create_header_cell("Role", self.d_column_size["c_role"]),
+            self.el_divider,
+            self._create_header_cell("Phone", self.d_column_size["c_phone"]),
+            self.el_divider,
+            self._create_header_cell("Email", self.d_column_size["c_email"]),
+            self.el_divider,
+            self._create_header_cell("Name", self.d_column_size["c_name"]),
+            self.el_divider,
+            self._create_header_cell("Telegram Link", self.d_column_size["c_telegram_link"]),
+            self.el_divider
+        ]
+
+        return ft.Row(
+            controls=header_controls,
+            height=50,
+            vertical_alignment=ft.CrossAxisAlignment.END
+        )
+
+    def _create_header_cell(self, text, width, visible=True):
+        return ft.Container(
+            content=ft.Text(
+                text,
+                color=defaultFontColor,
+                size=15,
+                font_family="cupurum",
+            ),
+            width=width,
+            alignment=ft.alignment.bottom_left,
+            visible=visible
+        )
+
+
+
+
+
+
+
+
 
 class AdminRow(ft.Row):
     def __init__(self, page, admin, roles, column_with_rows, **kwargs):
