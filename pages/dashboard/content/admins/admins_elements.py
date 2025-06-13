@@ -1,6 +1,3 @@
-from datetime import date
-from typing import List, Dict
-
 import flet as ft
 
 from database.models.models import Admin
@@ -8,125 +5,7 @@ from database.requests.req_admins import ReqAdmins
 from pages.config.errors import d_error_messages
 from pages.config.sizes import d_admin_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
-
-
-
-class SortHeader:
-
-    def __init__(self, page, rows_controls, default_sort_key, sort_key_type, sort_key_reverse=False):
-        self.page = page
-        self.rows_controls = rows_controls
-        self.sort_state = 0
-
-        self.type_element = None
-        self.key_to_sort = None
-
-        #self.default_sort_key = default_sort_key
-        self.sort_key_reverse = sort_key_reverse
-
-        if sort_key_type == int:
-            self.default_key_to_sort = lambda x: getattr(x, default_sort_key, 0) or 0
-        elif sort_key_type == str:
-            self.default_key_to_sort = lambda x: getattr(x, default_sort_key, '') or ''
-        elif sort_key_type == date:
-            self.default_key_to_sort = lambda x: getattr(x, default_sort_key, date(2000, 1, 1))
-
-        self.sort_arrow_cell = ft.Container(
-            content=ft.Text(""),
-            alignment=ft.alignment.bottom_left,
-            width=20,
-            #padding=ft.padding.only(left=20),
-            #bgcolor='red'
-        )
-
-
-    def _create_sort_icon(self, state):
-
-        if state == 1:
-            rotation = 1.57
-        elif state == 2:
-            rotation = 4.71
-        else:
-            rotation = None
-
-        if rotation is not None:
-            sort_icon = ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=rotation, color=ft.colors.WHITE, size=20)
-        else:
-            sort_icon = ft.Text("")
-
-        return ft.Container(
-            content=sort_icon,
-            alignment=ft.alignment.bottom_right,
-            padding=0,
-            #bgcolor='orange'
-        )
-
-    def on_click_handler(self, e):
-        self.sort_state = (self.sort_state + 1) % 3
-
-        if self.sort_state == 1:
-            self.rows_controls.sort(key=self.key_to_sort)
-        elif self.sort_state == 2:
-            self.rows_controls.sort(key=self.key_to_sort, reverse=True)
-        else:
-            self.rows_controls.sort(key=self.default_key_to_sort, reverse=self.sort_key_reverse)
-
-        self.sort_arrow_cell.content = self._create_sort_icon(self.sort_state)
-        self.page.update()
-
-    def sort_header_cell(self, header_name, width, type_element, element_to_sort):
-        self.type_element = type_element
-
-        if type_element == 'str':
-            self.key_to_sort = lambda x: getattr(x, element_to_sort, '') or ''
-        elif type_element == 'int':
-            self.key_to_sort = lambda x: getattr(x, element_to_sort, 0) or 0
-        elif type_element == 'date':
-            self.key_to_sort = lambda x: getattr(x, element_to_sort, date(2000, 1, 1))
-
-
-
-
-
-        return ft.Container(
-            ft.Row(
-                controls=[
-                    ft.Container(
-                        content=ft.Text(
-                            header_name,
-                            color=defaultFontColor,
-                            size=15,
-                            font_family="cupurum",
-                            # bgcolor='blue'
-                        ),
-                        alignment=ft.alignment.bottom_left
-                    ),
-
-                    ft.Row(
-                        controls=[
-                            self.sort_arrow_cell,
-                            ft.Container(
-                                content=ft.Icon(name=ft.icons.ARROW_DROP_DOWN, size=20),
-                                alignment=ft.alignment.bottom_right,
-                                padding=0,
-                                on_click=self.on_click_handler,
-                                # bgcolor='green'
-                            )
-                        ],
-                        spacing=0
-                    )  # два элемента в строку, чтобы прижать к правому краю
-                ],
-                spacing=0,
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            ),
-            padding=0,
-            width=width,
-            # bgcolor='yellow',
-
-        )
-
-
-
+from pages.dashboard.content.sort_header import SortHeader
 
 
 class AdminHeader(ft.Row):
@@ -147,23 +26,37 @@ class AdminHeader(ft.Row):
 
     def build(self):
 
-        sort_phone = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False)
+        sort_headers = []
+
+        def _reset_all_sort_headers_except(active_header):
+            for hdr in sort_headers:
+                if hdr != active_header:
+                    hdr.reset_sort()
+
+        sort_telegram = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
+        sort_role = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
+        sort_phone = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
+        sort_name = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
+
+        sort_headers.append(sort_telegram)
+        sort_headers.append(sort_role)
+        sort_headers.append(sort_phone)
+        sort_headers.append(sort_name)
 
         header_controls = [
             ft.Container(
                 width=self.d_column_size["c_edit"],
             ),
             self.el_divider,
-            self._create_header_cell("Telegram Name", self.d_column_size["c_telegram_name"]),
+            sort_telegram.attribute_header_with_sort("Telegram", self.d_column_size["c_telegram_name"], str, 'admin_telegram_name'),
             self.el_divider,
-            self._create_header_cell("Role", self.d_column_size["c_role"]),
+            sort_role.attribute_header_with_sort("Role", self.d_column_size["c_role"], str, 'admin_role'),
             self.el_divider,
-            #self._create_header_cell("Phone", self.d_column_size["c_phone"]),
-            sort_phone.sort_header_cell("Phone", self.d_column_size["c_phone"], 'str', 'admin_phone'),
+            sort_phone.attribute_header_with_sort("Phone", self.d_column_size["c_phone"], str, 'admin_phone'),
             self.el_divider,
             self._create_header_cell("Email", self.d_column_size["c_email"]),
             self.el_divider,
-            self._create_header_cell("Name", self.d_column_size["c_name"]),
+            sort_name.attribute_header_with_sort("Name", self.d_column_size["c_name"], str, 'admin_name'),
             self.el_divider,
             self._create_header_cell("Telegram Link", self.d_column_size["c_telegram_link"]),
             self.el_divider
