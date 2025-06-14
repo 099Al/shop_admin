@@ -2,6 +2,13 @@ import flet as ft
 
 from pages.config.style import inputBgErrorColor
 
+
+error_message_categtory = ft.SnackBar(
+            content=ft.Text('Категория с таким названием уже существует'),
+            bgcolor=inputBgErrorColor
+        )
+
+
 error_message_pk_name = ft.SnackBar(
             content=ft.Text('Продукт с таким названием уже существует'),
             bgcolor=inputBgErrorColor

@@ -10,6 +10,11 @@ pr_item_no_max_length = 25
 pr_description_max_length = 350
 pr_promo_desc_max_length = 350
 
+d_category_width = {"c_edit": 80,
+                   "c_category": 150,
+                   "c_cnt": 150,
+                   "c_order_sort": 90}
+
 d_product_column_size = {"c_edit": 100,
                          "c_image": 100,
                          "c_name": 150,
