@@ -680,12 +680,19 @@ class ProductRow(ft.Row):
 
             req = ReqProduct(session)
 
-            self.product_id = req.add_product(new_product)
+            is_exists_product = req.check_product_exists(v_name, v_item_no, None)
+            if is_exists_product:
+                key = "error_pk_item_no" if is_exists_product == 1 else "error_pk_name"
+                error_validation = self.d_error_messages[key]
+                error_validation.open = True
+                self.column_with_rows.controls.remove(self)
+                return
 
+            self.product_id = req.add_product(new_product)
             if self.product_id is None:
                 error_validation = self.d_error_messages["insert_error"]
                 error_validation.open = True
-                error_validation.update()
+                self.column_with_rows.controls.remove(self)
                 return
 
             self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)

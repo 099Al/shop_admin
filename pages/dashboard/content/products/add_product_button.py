@@ -39,9 +39,10 @@ class AddProductButton:
 
         new_product_row = ProductRow(
             page=self.page,
-            d_error_messages=self.d_error_messages,
+            d_error_messages=self.d_error_messages,  #!!!!!!!!!!! todo:
             product=new_product,
             column_with_rows=self.column_with_rows
+
         )
 
         self.column_with_rows.controls.insert(0, new_product_row)
