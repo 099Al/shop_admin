@@ -22,7 +22,7 @@ class AddProductButton:
                     content=ft.ElevatedButton("Добавить продукт",
                                               icon=ft.icons.ADD,
                                               on_click=self.add_product2),
-                    margin=ft.margin.only(right=30, top=100),
+                    margin=ft.margin.only(right=30, top=40),
                     #width=250,
 
                 )
