@@ -1,18 +1,19 @@
 import flet as ft
 
 from database.requests.req_categories import ReqCategory
-from pages.config.errors import d_error_messages
+from pages.config.errors import d_error_messages, error_message_categtory
 from pages.dashboard.content.categories.category_rows import CategoryRow
 
 
 class AddCategoryButton:
-    def __init__(self, page, **kwargs):
+    def __init__(self, page, column_with_rows, **kwargs):
         #super().__init__()
         self.page = page
+        self.column_with_rows = column_with_rows  # ссылка на список категорий, чтобы отсюда ее модифицировать
 
+        self.error_message = error_message_categtory
+        #self.d_column_width =
 
-        self.error_message = d_error_messages
-        self.column_with_rows = kwargs["column_with_rows"]
         #self.c_elements_index: CategoryElementsIndex = kwargs["elements_index"]
 
     def build(self):
@@ -40,13 +41,14 @@ class AddCategoryButton:
 
             if new_id is None:
                 self.error_message.open = True
-                self.error_message.update()
+                #self.error_message.update()
+                self.page.update()
                 return
             else:
                 new_row = CategoryRow(
                     page=self.page,
-                    d_width=self.d_column_width,
-                    error_message=self.error_message,
+                    #d_width=self.d_column_width,
+                    #error_message=self.error_message,
                     id=new_id,
                     p_name=category_name,
                     p_order=category_order,
@@ -55,7 +57,8 @@ class AddCategoryButton:
                 )
 
                 #self.c_elements_index.add_element(new_row) #добавление элемента в список
-                self.column_with_rows.controls.append(new_row)
+                self.column_with_rows.controls.insert(0, new_row)
+
 
                 dlg_create.open = False
                 self.page.update()
