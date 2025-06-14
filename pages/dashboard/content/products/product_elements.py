@@ -55,7 +55,7 @@ class Product_Header:
             alignment=ft.alignment.bottom_left,
             width=20,
             #padding=ft.padding.only(left=20),
-        bgcolor='red'
+            #bgcolor='red'
         )
 
     def _create_sort_icon(self, rotation):
