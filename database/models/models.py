@@ -17,6 +17,9 @@ class Admin(Base):
     login: Mapped[str] = mapped_column(String(100), nullable=True)
     password: Mapped[str] = mapped_column(String(100), nullable=True)
 
+    def __repr__(self):
+        return (f'{self.__class__.__name__} (id={self.telegram_id}, name={self.name}, role={self.role})')
+
 class Category_Product(Base):
     __tablename__ = 'a_category_product'
 

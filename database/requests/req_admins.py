@@ -4,12 +4,19 @@ from database.connect import DataBase
 from database.models.models import Admin
 
 class ReqAdmins:
-    def __init__(self, db: DataBase):
-        self.session = db.get_session()
+    def __init__(self, session=None):
+        if session:
+            self.session = session
+        else:
+            self.session = DataBase().get_session()
 
     def get_all_users(self):
         result = self.session.execute(select(Admin))
         #result = self.session.query(Admin.telegram_id, Admin.telegram_name, Admin.role, Admin.name, Admin.phone, Admin.email, Admin.login).all()
+        return result.scalars().all()
+
+    def get_all_roles(self):
+        result = self.session.execute(select(Admin.role))
         return result.scalars().all()
 
     def delete_admin(self, telegram_id):
