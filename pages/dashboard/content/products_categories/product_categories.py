@@ -33,9 +33,10 @@ class ProductsAndCategoriesContent:
         )
 
         content_header = header(label_name="Продукты в категориях", user_role=self.user_role)
-        self.empty_row = ft.Row(controls=[ft.Container(margin=50)])
         self.view_content.append(content_header)
-        self.view_content.append(self.empty_row)
+
+        self.row_1 = ft.Row(controls=[ft.Container(margin=36)])
+        self.view_content.append(self.row_1)
 
         req = ReqCategoryProduct()
         req_ctg = ReqCategory()

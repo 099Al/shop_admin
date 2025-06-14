@@ -14,7 +14,7 @@ class CategoriesContent:
         self.page = instance.page
         self.user_role = instance.user_role
         #self.content_header = instance.content_header
-        self.new_content = []
+        self.view_content = []
 
     def build(self):
         error_message = ft.SnackBar(
@@ -31,7 +31,7 @@ class CategoriesContent:
         )
 
         self.content_header = header(label_name="Список Категорий", user_role=self.user_role)
-        self.new_content.append(self.content_header)
+        self.view_content.append(self.content_header)
 
         # resul append to body_content
         req = ReqCategory()
@@ -44,16 +44,21 @@ class CategoriesContent:
 
 
         # кнопка "Добавить новую категорию"
-        self.new_content.append(
-            AddCategoryButton(page=self.page,
+        add_button = AddCategoryButton(page=self.page,
                               d_width=d_width,
                               error_message=error_message,
                               column_with_rows=self.column_with_category_rows,
                               # передается ссылка на список строк, чтобы к нему добавить новую категорию
                               ).build()
+        self.row_1 = ft.Row(
+            controls=[add_button],
+            alignment=ft.MainAxisAlignment.END,
+            # Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
         )
+        
+        self.view_content.append(self.row_1)
 
-        self.new_content.append(el_category_header(d_width))  # table header
+        self.view_content.append(el_category_header(d_width))  # table header
         # ---rows---
         for id, c_name, c_order, p_cnt in req.category_products_cnt():
             self.column_with_category_rows.controls.append(
@@ -69,9 +74,9 @@ class CategoriesContent:
                 )
             )
 
-        self.new_content.append(self.column_with_category_rows)
+        self.view_content.append(self.column_with_category_rows)
         # --rows-----------
 
-        self.new_content.append(error_message)
+        self.view_content.append(error_message)
 
-        return self.new_content
+        return self.view_content

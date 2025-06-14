@@ -12,25 +12,18 @@ class AddProductButton:
     def __init__(self, page, column_with_rows, **kwargs):
         self.page = page
         self.column_with_rows = column_with_rows
-        self.d_column_width = d_product_column_size
+        self.d_column_size = d_product_column_size
         self.d_error_messages = d_error_messages
 
     def build(self):
-        return ft.Row(
-            controls=[
-                ft.Container(
+        return ft.Container(
                     content=ft.ElevatedButton("Добавить продукт",
                                               icon=ft.icons.ADD,
                                               on_click=self.add_product2),
-                    margin=ft.margin.only(right=30, top=100),
+                    margin=ft.margin.only(right=30, top=40),
                     #width=250,
 
                 )
-            ],
-            alignment=ft.MainAxisAlignment.END,  #Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
-
-        )
-
 
     def add_product2(self, e):
         new_product = Product(
@@ -132,8 +125,8 @@ class AddProductButton:
                     else:
                         new_row = ProductRow(
                                 page=self.page,
-                                d_column_width=self.d_column_width,
-                                d_error_messages=self.d_error_messages,
+                                #d_column_width=self.d_column_size,
+                                #d_error_messages=self.d_error_messages,
                                 product=new_product,
                                 column_with_rows=self.column_with_rows
                         )

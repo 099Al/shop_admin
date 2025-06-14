@@ -5,7 +5,7 @@ from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
 from pages.dashboard.content.products.product_filter import Product_Filter
 from pages.dashboard.head_elements import header
-from pages.config.style import inputBgErrorColor
+
 import flet as ft
 
 
@@ -16,11 +16,7 @@ class ProductsContent:
         self.user_role = instance.user_role
         self.view_content = []
 
-
-
     def build(self):
-
-        
         self.column_with_product_rows = ft.Column(
             controls=[],
             spacing=1,
@@ -38,14 +34,17 @@ class ProductsContent:
         name_width = max(max_length_product * 9, 100)  # 7 letter size
         d_column_width = d_product_column_size
 
-
-        # кнопка "Добавить новый продукт"
-        self.view_content.append(
-            AddProductButton(page=self.page,
-                             column_with_rows=self.column_with_product_rows,
-                              # передается ссылка на список строк, чтобы к нему добавить новую категорию
-                              ).build()
+        add_button = AddProductButton(
+                                page=self.page,
+                                column_with_rows=self.column_with_product_rows,
+                                # передается ссылка на список строк, чтобы к нему добавить новую категорию
+                                ).build()
+        self.row_1 = ft.Row(
+            controls=[add_button],
+            alignment=ft.MainAxisAlignment.END,  #Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
         )
+        # кнопка "Добавить новый продукт"
+        self.view_content.append(self.row_1)
 
         self.column_1 = ft.Column(
             controls=[

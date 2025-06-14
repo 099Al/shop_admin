@@ -1,6 +1,7 @@
 import flet as ft
 
 from database.requests.req_admins import ReqAdmins
+from pages.dashboard.content.admins.add_button import AddAdminButton
 from pages.dashboard.content.admins.admins_elements import AdminRow, AdminHeader
 from pages.dashboard.head_elements import header
 
@@ -21,6 +22,19 @@ class AdminsContent:
 
         content_header = header(label_name="Пользователи (Администраторы)", user_role=self.user_role)
         self.view_content.append(content_header)
+
+        add_button = AddAdminButton(
+            page=self.page,
+            column_with_rows=self.column_with_rows,
+            # передается ссылка на список строк, чтобы к нему добавить новую категорию
+        ).build()
+
+        self.row_1 = ft.Row(
+            controls=[add_button],
+            alignment=ft.MainAxisAlignment.END,  # Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
+        )
+
+        self.view_content.append(self.row_1)
 
         self.column_1 = ft.Column(
             controls=[

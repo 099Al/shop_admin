@@ -1,22 +1,22 @@
 import flet as ft
 
 from database.requests.req_categories import ReqCategory
+from pages.config.errors import d_error_messages
 from pages.dashboard.content.categories.category_rows import CategoryRow
 
 
 class AddCategoryButton:
-    def __init__(self, **kwargs):
+    def __init__(self, page, **kwargs):
         #super().__init__()
-        self.page = kwargs["page"]
-        self.d_width = kwargs["d_width"]
-        self.error_message = kwargs["error_message"]
+        self.page = page
+
+
+        self.error_message = d_error_messages
         self.column_with_rows = kwargs["column_with_rows"]
         #self.c_elements_index: CategoryElementsIndex = kwargs["elements_index"]
 
     def build(self):
-        return ft.Row(
-            controls=[
-                ft.Container(
+        return ft.Container(
                     content=ft.ElevatedButton("Добавить категорию",
                                               icon=ft.icons.ADD,
                                               on_click=self.add_category),
@@ -24,9 +24,6 @@ class AddCategoryButton:
                     #width=250,
 
                 )
-            ],
-            alignment=ft.MainAxisAlignment.END,
-        )
 
     def add_category(self, e):
         def add_category_handle_yes(e):
@@ -48,7 +45,7 @@ class AddCategoryButton:
             else:
                 new_row = CategoryRow(
                     page=self.page,
-                    d_width=self.d_width,
+                    d_width=self.d_column_width,
                     error_message=self.error_message,
                     id=new_id,
                     p_name=category_name,
