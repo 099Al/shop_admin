@@ -35,13 +35,14 @@ el_divider = ft.Container(
 class Product_Header:
 
     def __init__(self, page, rows_controls):
-        #self.d_width = d_width
         self.page = page
         self.rows_controls: list[ProductRow] = rows_controls
         self.sort_name_state = 0
         self.sort_item_no_state = 0
         self.sort_price_state = 0
         self.sort_promo_end_state = 0
+
+        self.d_column_size = d_product_column_size
 
 
         self.container_sort_by_name = self._create_sort_cell()
@@ -168,35 +169,35 @@ class Product_Header:
 
         )
 
-    def build(self, d_width):
+    def build(self):
 
         #self.header_category = self._create_header_cell("Категория", d_width["c_category_name"], visible=False)
 
         header_controls = [
                 ft.Container(
-                    width=d_width["c_edit"],
+                    width=self.d_column_size["c_edit"],
                 ),
                 el_divider,
-                self._create_header_cell("Изображение", d_width["c_image"]),
+                self._create_header_cell("Изображение", self.d_column_size["c_image"]),
                 el_divider,
 
-                self._create_sortable_header_cell("Наименование", d_width["c_name"], self.container_sort_by_name, lambda e: self.sort_by(e, "name")),
+                self._create_sortable_header_cell("Наименование", self.d_column_size["c_name"], self.container_sort_by_name, lambda e: self.sort_by(e, "name")),
 
                 el_divider,
 
-                self._create_sortable_header_cell("Артикул", d_width["с_item_no"], self.container_sort_by_item_no, lambda e: self.sort_by(e, "item_no")),
+                self._create_sortable_header_cell("Артикул", self.d_column_size["с_item_no"], self.container_sort_by_item_no, lambda e: self.sort_by(e, "item_no")),
 
                 el_divider,
-                self._create_sortable_header_cell("Цена", d_width["c_price"], self.container_sort_by_price, lambda e: self.sort_by(e, "price")),
+                self._create_sortable_header_cell("Цена", self.d_column_size["c_price"], self.container_sort_by_price, lambda e: self.sort_by(e, "price")),
                 el_divider,
-                self._create_header_cell("Описание", d_width["c_desc"]),
+                self._create_header_cell("Описание", self.d_column_size["c_desc"]),
                 el_divider,
-                self._create_header_cell("Цена по Акции", d_width["c_price_promo"]),
+                self._create_header_cell("Цена по Акции", self.d_column_size["c_price_promo"]),
                 el_divider,
-                self._create_sortable_header_cell("Акция до", d_width["c_promo_end"], self.container_sort_by_promo_end, lambda e: self.sort_by(e, "promo_end")),
+                self._create_sortable_header_cell("Акция до", self.d_column_size["c_promo_end"], self.container_sort_by_promo_end, lambda e: self.sort_by(e, "promo_end")),
 
                 el_divider,
-                self._create_header_cell("Акция Описание", d_width["c_promo_desc"]),
+                self._create_header_cell("Акция Описание", self.d_column_size["c_promo_desc"]),
                 el_divider,
                 #self.header_category
 

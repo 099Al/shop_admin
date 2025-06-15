@@ -1,14 +1,15 @@
 import flet as ft
 
+from pages.config.sizes import d_product_column_size
 from pages.config.style import textFieldColor
 from pages.dashboard.content.products.product_elements import ProductRow
 
 
 class Product_Filter:
-    def __init__(self, page, rows_controls, d_colum_size):
+    def __init__(self, page, rows_controls):
         self.page = page
         self.rows_controls: list[ProductRow] = rows_controls
-        self.d_colum_size = d_colum_size
+        self.d_colum_size = d_product_column_size
 
         self.el_divider = ft.Container(
             height=25,
