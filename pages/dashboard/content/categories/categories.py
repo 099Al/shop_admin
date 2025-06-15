@@ -1,5 +1,5 @@
 from database.requests.req_categories import ReqCategory
-from pages.config.errors import error_message_categtory
+from pages.config.errors import error_message_categtory, error_message_category_validate_order
 from pages.config.sizes import d_category_width
 from pages.dashboard.content.categories.add_category_button import AddCategoryButton
 from pages.dashboard.content.categories.category_elements import CategoryRow, Category_Header
@@ -74,5 +74,6 @@ class CategoriesContent:
         # --rows-----------
 
         self.view_content.append(error_message_categtory)
+        self.view_content.append(error_message_category_validate_order)
 
         return self.view_content

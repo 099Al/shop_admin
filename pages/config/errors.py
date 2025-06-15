@@ -7,7 +7,10 @@ error_message_categtory = ft.SnackBar(
             content=ft.Text('Категория с таким названием уже существует'),
             bgcolor=inputBgErrorColor
         )
-
+error_message_category_validate_order = ft.SnackBar(
+            content=ft.Text('Неверный формат данных. Нужно задать число'),
+            bgcolor=inputBgErrorColor
+)
 
 error_message_pk_name = ft.SnackBar(
             content=ft.Text('Продукт с таким названием уже существует'),

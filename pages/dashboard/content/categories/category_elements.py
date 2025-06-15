@@ -2,7 +2,7 @@ import flet as ft
 
 from database.models.models import Category
 from database.requests.req_categories import ReqCategory
-from pages.config.errors import error_message_categtory
+from pages.config.errors import error_message_categtory, error_message_category_validate_order
 from pages.config.sizes import d_category_width
 from pages.config.style import *
 
@@ -68,6 +68,7 @@ class CategoryRow(ft.Row):
 
         self.d_width = d_category_width
         self.error_message = error_message_categtory
+        self.error_message_category_validate_order = error_message_category_validate_order
 
         self.category: Category = category
         self.id = category.id                   #id категории в БД
@@ -85,17 +86,18 @@ class CategoryRow(ft.Row):
             content=ft.Text(""),
         )
 
-        self.r_name = self.f_field(text=self.p_name, width=self.d_width['c_category'])
-        self.r_order = self.f_field(text=self.p_order, width=self.d_width['c_order_sort'])
 
-
+        #init attr containers
+        self.r_name = ft.Container(width=self.d_width['c_category'], alignment=ft.alignment.bottom_left)
+        self.r_cnt = ft.Container(width=self.d_width['c_cnt'], alignment=ft.alignment.bottom_left)
+        self.r_order = ft.Container(width=self.d_width['c_order_sort'], alignment=ft.alignment.bottom_left)
 
         self.r_content_edit = ft.Row(controls=[
             ft.Container(
                 scale=0.8,
                 # bgcolor="blue",
                 margin=ft.margin.only(left=47),
-                content=ft.IconButton(ft.icons.EDIT, on_click=self.edit)
+                content=ft.IconButton(ft.icons.EDIT, on_click=self._edit_view)
             )
         ])
 
@@ -107,35 +109,40 @@ class CategoryRow(ft.Row):
             content=self.r_content_edit if self.p_name != "default" else None  #default нельзя изменить
         )
 
+        #init delete button
+        self.r_delete_container = ft.Container(
+                scale=0.8,
+                margin=ft.margin.only(left=0),
+
+                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog) if self.p_name != "default" else None  #default нельзя удалить
+            )
+
+
         #сборка элементов в строку
         self.controls = [
             self.r_container_icon,
             self.el_divider,
             self.r_name,
             self.el_divider,
-            ft.Container(
-                width=self.d_width['c_cnt'],
-                content=ft.Text(
-                    self.p_product_cnt,
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-            ),
+            self.r_cnt,
             self.el_divider,
             self.r_order,
             self.el_divider,
-            ft.Container(
-                scale=0.8,
-                margin=ft.margin.only(left=0),
-
-                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog) if self.p_name != "default" else None  #default нельзя удалить
-            ),
+            self.r_delete_container
         ]
 
-        #self.category_text = ""  # for save state
+        self._set_read_view()
 
-    def f_field(self, text, width):
+
+    def _set_read_view(self):
+        self.r_container_icon.content = self.r_content_edit
+        self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_cnt.content = ft.Text(self.p_product_cnt, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_order.content = ft.Text(self.p_order, color=defaultFontColor, size=15, font_family="cupurum")
+
+
+
+    def _f_field(self, text, width):
         return ft.Container(
             content=ft.Text(
                 text,
@@ -151,7 +158,7 @@ class CategoryRow(ft.Row):
             #bgcolor=ft.colors.DEEP_ORANGE_800
         )
 
-    def edit(self, e):
+    def _edit_view(self, e):
         v_text = self.r_name.content.value
         v_order = self.r_order.content.value
         # self.category_text = v_text  # save text
@@ -173,11 +180,11 @@ class CategoryRow(ft.Row):
                              adaptive=True,
                              scale=0.8,
                              # bgcolor="red",
-                             content=ft.IconButton(ft.icons.SAVE, on_click=self.save)),
+                             content=ft.IconButton(ft.icons.SAVE, on_click=self._save)),
                 ft.Container(margin=ft.margin.only(left=0),
                              scale=0.8,
                              # bgcolor="green",
-                             content=ft.IconButton(ft.icons.CANCEL, on_click=self.cancel))
+                             content=ft.IconButton(ft.icons.CANCEL, on_click=self._cancel))
             ]
         )
         self.r_container_icon.update()
@@ -186,9 +193,14 @@ class CategoryRow(ft.Row):
 
         # self.page.update()
 
-    def save(self, e):
+    def _save(self, e):
         v_text = self.r_name.content.value
         v_order = self.r_order.content.value
+
+        if v_order and not v_order.isdigit():
+            self.error_message_category_validate_order.open = True
+            self.page.update()
+            return
 
         req = ReqCategory()
         upd_res = req.update_category(self.p_name, v_text, v_order)
@@ -196,28 +208,28 @@ class CategoryRow(ft.Row):
         if upd_res is None:
             self.error_message.open = True
             self.error_message.update()
-            #self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-            self.r_name.content = ft.TextField(self.p_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-            self.r_order.content = ft.TextField(self.p_order, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+            # #self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
+            # self.r_name.content = ft.TextField(self.p_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+            # self.r_order.content = ft.TextField(self.p_order, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         else:
-            self.r_name.content = ft.Text(v_text, color=defaultFontColor, size=15, font_family="cupurum")
-            self.r_order.content = ft.Text(v_order, color=defaultFontColor, size=15, font_family="cupurum")
+            # self.r_name.content = ft.Text(v_text, color=defaultFontColor, size=15, font_family="cupurum")
+            # self.r_order.content = ft.Text(v_order, color=defaultFontColor, size=15, font_family="cupurum")
+            #
             self.r_container_icon.content = self.r_content_edit
             self.r_container_icon.update()
 
+        # обновление параметров Category внутри Category Row
+        self.category = req.get_category_by_id(self.id)
+        self.p_name = v_text
+        self.p_order = v_order
 
-        self.r_name.update()
-        self.r_order.update()
-        # self.page.update()
+        self._set_read_view()
+        self.page.update()
 
-    def cancel(self, e):
+    def _cancel(self, e):
         self.r_container_icon.content = self.r_content_edit
-        self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_order.content = ft.Text(self.p_order, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_container_icon.update()
-        self.r_name.update()
-        self.r_order.update()
-        # self.page.update()
+        self._set_read_view()
+        self.page.update()
 
 
 
