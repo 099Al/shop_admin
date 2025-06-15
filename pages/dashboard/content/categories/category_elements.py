@@ -77,10 +77,12 @@ class CategoryRow(ft.Row):
 
         self.el_divider = ft.Container(
             height=25,
+            #expand=True,
             width=1,
             bgcolor="white",
             margin=0,
-            padding=0
+            padding=0,
+            content=ft.Text(""),
         )
 
         self.r_name = self.f_field(text=self.p_name, width=self.d_width['c_category'])
@@ -140,6 +142,8 @@ class CategoryRow(ft.Row):
                 color=defaultFontColor,
                 size=15,
                 font_family="cupurum",
+                overflow=ft.TextOverflow.ELLIPSIS,
+                max_lines=1
             ),
             # height=25,
             width=width,

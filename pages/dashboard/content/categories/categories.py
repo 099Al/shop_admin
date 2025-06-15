@@ -61,7 +61,7 @@ class CategoriesContent:
                     page=self.page,
                     category=category,
                     p_product_cnt=str(p_cnt),
-                    column_with_rows=self.column_with_category_rows,
+                    column_with_rows=self.column_with_category_rows
                 )
             )
 
