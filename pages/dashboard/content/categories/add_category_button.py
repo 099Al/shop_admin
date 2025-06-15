@@ -1,5 +1,6 @@
 import flet as ft
 
+from database.models.models import Category
 from database.requests.req_categories import ReqCategory
 from pages.config.errors import d_error_messages, error_message_categtory
 from pages.dashboard.content.categories.category_rows import CategoryRow
@@ -38,20 +39,16 @@ class AddCategoryButton:
                 category_order = None
 
             new_id = req.new_category(category_name, category_order)
+            new_category = Category(id=new_id, name=category_name, order_number=category_order)
 
             if new_id is None:
                 self.error_message.open = True
-                #self.error_message.update()
                 self.page.update()
                 return
             else:
                 new_row = CategoryRow(
                     page=self.page,
-                    #d_width=self.d_column_width,
-                    #error_message=self.error_message,
-                    id=new_id,
-                    p_name=category_name,
-                    p_order=category_order,
+                    category=new_category,
                     p_product_cnt=0,
                     column_with_rows=self.column_with_rows,
                 )

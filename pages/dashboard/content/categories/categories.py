@@ -52,16 +52,12 @@ class CategoriesContent:
 
         self.view_content.append(el_category_header(d_category_width))  # table header
         # ---rows---
-        for id, c_name, c_order, p_cnt in req.category_products_cnt():
+        for category, p_cnt in req.category_products_cnt():
             self.column_with_category_rows.controls.append(
                 CategoryRow(
                     page=self.page,
-                    #d_width=d_width,
-                    #error_message=error_message,
-                    id=id,
-                    p_name=c_name,
+                    category=category,
                     p_product_cnt=str(p_cnt),
-                    p_order=c_order,
                     column_with_rows=self.column_with_category_rows,
                 )
             )

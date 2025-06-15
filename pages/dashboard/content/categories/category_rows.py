@@ -1,5 +1,6 @@
 import flet as ft
 
+from database.models.models import Category
 from database.requests.req_categories import ReqCategory
 from pages.config.errors import error_message_categtory
 from pages.config.sizes import d_category_width
@@ -7,7 +8,7 @@ from pages.config.style import *
 
 
 class CategoryRow(ft.Row):
-    def __init__(self, page, column_with_rows, **kwargs):
+    def __init__(self, page, category, p_product_cnt, column_with_rows, **kwargs):
         super().__init__()
         self.page = page
         self.column_with_rows = column_with_rows  # ссылка на список категорий, чтобы отсюда ее модифицировать
@@ -15,13 +16,11 @@ class CategoryRow(ft.Row):
         self.d_width = d_category_width
         self.error_message = error_message_categtory
 
-
-
-        self.id = kwargs["id"]                 #id категории в БД
-        self.p_name = kwargs["p_name"]         #название категории
-        self.p_product_cnt = kwargs["p_product_cnt"]   #количество продуктов в категории
-        self.p_order = kwargs["p_order"]           #порядковый номер для сортировки
-
+        self.category: Category = category
+        self.id = category.id                   #id категории в БД
+        self.p_name = category.name             #название категории
+        self.p_order = category.order_number    #порядковый номер для сортировки
+        self.p_product_cnt = p_product_cnt  # количество продуктов в категории
 
         self.el_divider = ft.Container(
             height=25,
