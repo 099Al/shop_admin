@@ -82,13 +82,6 @@ class AdminHeader(ft.Row):
         )
 
 
-
-
-
-
-
-
-
 class AdminRow(ft.Row):
     def __init__(self, page, admin, roles, column_with_rows, **kwargs):
         super().__init__()
@@ -177,6 +170,7 @@ class AdminRow(ft.Row):
         self.r_delete_container = ft.Container(
             scale=0.8,
             margin=ft.margin.only(left=0),
+            padding=ft.padding.only(right=15),
             content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog)
         )
 

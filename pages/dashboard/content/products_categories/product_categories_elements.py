@@ -298,6 +298,7 @@ class CategoryProductsRow(ft.Row):
         self.r_delete_container = ft.Container(
                 scale=0.8,
                 margin=ft.margin.only(left=0),
+                padding=ft.padding.only(right=15),
                 content=ft.Row(
                     controls=[
                     ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog),
