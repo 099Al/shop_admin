@@ -225,6 +225,7 @@ class ProductRow(ft.Row):
         self.r_delete_container = ft.Container(
                 scale=0.8,
                 margin=ft.margin.only(left=0),
+                padding=ft.padding.only(right=15),
                 content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog)
             )
 
@@ -621,10 +622,6 @@ class ProductRow(ft.Row):
 
 
     def cancel(self, e):
-        # self.r_img.content = self._img_start
-        # self.r_img.padding = ft.padding.only(top=5, bottom=5)
-        # self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc, self.p_promo_price, self.p_promo_end, self.p_promo_desc)
-        # self.r_container_icon.content = self.r_content_edit
 
         self.set_read_view()
         self.flag_delete_image = False

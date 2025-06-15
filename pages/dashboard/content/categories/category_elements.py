@@ -5,16 +5,9 @@ from database.requests.req_categories import ReqCategory
 from pages.config.errors import error_message_categtory, error_message_category_validate_order
 from pages.config.sizes import d_category_width
 from pages.config.style import *
+from pages.dashboard.content.sort_header import SortHeader
 
 
-
-el_divider = ft.Container(
-                height=25,
-                width=1,
-                bgcolor="white",
-                margin=0,
-                padding=0
-            )
 
 class Category_Header:
     def __init__(self, page, rows_controls):
@@ -22,6 +15,14 @@ class Category_Header:
         self.page = page
         self.rows_controls: list[CategoryRow] = rows_controls
         self.d_category_width = d_category_width
+
+        self.el_divider = ft.Container(
+                height=35,
+                width=1,
+                bgcolor="white",
+                margin=0,
+                padding=0
+            )
 
     def _create_header_cell(self, text, width, visible=True):
         return ft.Container(
@@ -37,17 +38,31 @@ class Category_Header:
         )
 
     def build(self):
+
+        sort_headers = []
+
+        def _reset_all_sort_headers_except(active_header):
+            for hdr in sort_headers:
+                if hdr != active_header:
+                    hdr.reset_sort()
+
+        sort_category = SortHeader(self.page, self.rows_controls, default_sort_key='id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
+        sort_order = SortHeader(self.page, self.rows_controls, default_sort_key='id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
+
+        sort_headers.append(sort_category)
+        sort_headers.append(sort_order)
+
         category_controls = [
                 ft.Container(
                     width=d_category_width["c_edit"],
                 ),
-                el_divider,
-                self._create_header_cell("Категории", d_category_width["c_category"]),
-                el_divider,
+                self.el_divider,
+                sort_category.attribute_header_with_sort("Категория", d_category_width["c_category"], str, 'p_name'),
+                self.el_divider,
                 self._create_header_cell("Количество позиций", d_category_width["c_cnt"]),
-                el_divider,
-                self._create_header_cell("Сортировка", d_category_width["c_order_sort"]),
-                el_divider,
+                self.el_divider,
+                sort_order.attribute_header_with_sort("Порядковый\nномер", d_category_width["c_order_sort"], int, 'p_order'),
+                self.el_divider,
             ]
 
         return ft.Row(
@@ -55,10 +70,6 @@ class Category_Header:
                 height=50,
                 vertical_alignment=ft.CrossAxisAlignment.END,
             )
-
-
-
-
 
 class CategoryRow(ft.Row):
     def __init__(self, page, category, p_product_cnt, column_with_rows, **kwargs):
@@ -74,7 +85,7 @@ class CategoryRow(ft.Row):
         self.id = category.id                   #id категории в БД
         self.p_name = category.name             #название категории
         self.p_order = category.order_number    #порядковый номер для сортировки
-        self.p_product_cnt = p_product_cnt  # количество продуктов в категории
+        self.p_product_cnt = p_product_cnt      # количество продуктов в категории
 
         self.el_divider = ft.Container(
             height=25,
@@ -85,7 +96,6 @@ class CategoryRow(ft.Row):
             padding=0,
             content=ft.Text(""),
         )
-
 
         #init attr containers
         self.r_name = ft.Container(width=self.d_width['c_category'], alignment=ft.alignment.bottom_left)
@@ -113,6 +123,7 @@ class CategoryRow(ft.Row):
         self.r_delete_container = ft.Container(
                 scale=0.8,
                 margin=ft.margin.only(left=0),
+                padding=ft.padding.only(right=15),
 
                 content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog) if self.p_name != "default" else None  #default нельзя удалить
             )

@@ -13,7 +13,7 @@ pr_promo_desc_max_length = 350
 d_category_width = {"c_edit": 80,
                    "c_category": 300,
                    "c_cnt": 150,
-                   "c_order_sort": 90}
+                   "c_order_sort": 130}
 
 d_product_column_size = {"c_edit": 100,
                          "c_image": 100,
