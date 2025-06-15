@@ -43,11 +43,16 @@ class CategoriesContent:
             alignment=ft.MainAxisAlignment.END,
             # Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
         )
-        
         self.view_content.append(self.row_1)
 
-
-        self.view_content.append(Category_Header(page=self.page, rows_controls=self.column_with_category_rows.controls).build())  # table header
+        self.column_1 = ft.Column(
+            controls=[
+                # Category_Filter(self.page, self.column_with_category_rows.controls, d_category_width).build(),
+                Category_Header(self.page, self.column_with_category_rows.controls).build(),
+                self.column_with_category_rows
+            ],
+            expand=True  #без expand scroll не работает
+        )
 
         # ---rows---
         for category, p_cnt in req.category_products_cnt():
@@ -60,7 +65,12 @@ class CategoriesContent:
                 )
             )
 
-        self.view_content.append(self.column_with_category_rows)
+        self.row_scroll = ft.Row(controls=[self.column_1],
+                                 expand=True,  # без expand scroll не работает
+                                 scroll=ft.ScrollMode.AUTO
+                                 )
+
+        self.view_content.append(self.row_scroll)
         # --rows-----------
 
         self.view_content.append(error_message_categtory)
