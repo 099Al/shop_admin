@@ -18,7 +18,7 @@ from pages.dashboard.content.products.validation import cut_price, is_valid_pric
 from pages.config.style import *
 from config import settings
 import utils.functions as ut
-
+from pages.dashboard.content.sort_header import SortHeader
 
 el_divider = ft.Container(
                 height=25,
@@ -45,78 +45,6 @@ class Product_Header:
         self.d_column_size = d_product_column_size
 
 
-        self.container_sort_by_name = self._create_sort_cell()
-        self.container_sort_by_item_no = self._create_sort_cell()
-        self.container_sort_by_price = self._create_sort_cell()
-        self.container_sort_by_promo_end = self._create_sort_cell()
-
-    def _create_sort_cell(self):
-        return ft.Container(
-            content=ft.Text(""),
-            alignment=ft.alignment.bottom_left,
-            width=20,
-            #padding=ft.padding.only(left=20),
-            #bgcolor='red'
-        )
-
-    def _create_sort_icon(self, rotation):
-
-        if rotation is not None:
-            sort_icon = ft.Icon(name=ft.icons.ARROW_RIGHT_ALT, rotate=rotation, color=ft.colors.WHITE, size=20)
-        else:
-            sort_icon = ft.Text("")
-
-        return ft.Container(
-            content=sort_icon,
-            alignment=ft.alignment.bottom_right,
-            padding=0,
-            #bgcolor='orange'
-        )
-
-
-    def _update_sort(self, sort_type, state):
-
-        d_sort_type = {"name": lambda x: x.p_name,
-                       "item_no": lambda x: x.p_item_no if x.p_item_no is not None else '0',
-                       "price": lambda x: x.p_price if x.p_price is not None else 0,
-                       "promo_end": lambda x: x.p_promo_end if x.p_promo_end is not None else date(2000, 1, 1),
-                       }
-
-        container = getattr(self, f"container_sort_by_{sort_type}")
-        state_attr = f"sort_{sort_type}_state"
-
-        if state == 1:
-            container.content = self._create_sort_icon(1.57)
-            key = d_sort_type[sort_type]
-            self.rows_controls.sort(key=key, reverse=True)
-        elif state == 2:
-            container.content = self._create_sort_icon(4.71)
-            key = d_sort_type[sort_type]
-            self.rows_controls.sort(key=key)
-        else:
-            container.content = self._create_sort_icon(None)
-            self.rows_controls.sort(key=lambda x: x.product_id, reverse=True)
-
-        #сдинуть треугольник, если стрелок нет
-        container.padding = ft.padding.only(left=0) if state != 0 else ft.padding.only(left=20)
-        setattr(self, state_attr, state)
-        self.page.update()
-
-    def _reset_other_sort(self, sort_type):
-        # Reset all sort states except the one being specified
-        for st in ["name", "item_no", "price", "promo_end"]:
-            if st != sort_type:
-                setattr(self, f"sort_{st}_state", 0)
-                container = getattr(self, f"container_sort_by_{st}")
-                container.content = ft.Text("")
-                container.padding = ft.padding.only(left=20)
-
-
-    def sort_by(self, e, sort_type):
-        self._reset_other_sort(sort_type)
-        current_state = getattr(self, f"sort_{sort_type}_state")
-        next_state = (current_state + 1) % 3
-        self._update_sort(sort_type, next_state)
 
     def _create_header_cell(self, text, width, visible=True):
         return ft.Container(
@@ -131,47 +59,24 @@ class Product_Header:
             visible=visible
         )
 
-    def _create_sortable_header_cell(self, text, width, sort_container, on_click_handler):
-        return ft.Container(
-            ft.Row(
-                controls=[
-                    ft.Container(
-                        content=ft.Text(
-                            text,
-                            color=defaultFontColor,
-                            size=15,
-                            font_family="cupurum",
-                            #bgcolor='blue'
-                        ),
-                        alignment=ft.alignment.bottom_left
-                    ),
-
-                    ft.Row(
-                        controls=[
-                            sort_container,
-                            ft.Container(
-                                content=ft.Icon(name=ft.icons.ARROW_DROP_DOWN, size=20),
-                                alignment=ft.alignment.bottom_right,
-                                padding=0,
-                                on_click=on_click_handler,
-                                #bgcolor='green'
-                            )
-                        ],
-                        spacing=0
-                    )    #два элемента в строку, чтобы прижать к правому краю
-                ],
-                spacing=0,
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN
-            ),
-            padding=0,
-            width=width,
-            #bgcolor='yellow',
-
-        )
 
     def build(self):
 
-        #self.header_category = self._create_header_cell("Категория", d_width["c_category_name"], visible=False)
+        sort_headers = []
+        def _reset_all_sort_headers_except(active_header):
+            for hdr in sort_headers:
+                if hdr != active_header:
+                    hdr.reset_sort()
+
+        sort_name = SortHeader(self.page, self.rows_controls, default_sort_key='product_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+        sort_item_no = SortHeader(self.page, self.rows_controls, default_sort_key='product_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+        sort_price = SortHeader(self.page, self.rows_controls, default_sort_key='product_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+        sort_promo = SortHeader(self.page, self.rows_controls, default_sort_key='product_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+
+        sort_headers.append(sort_name)
+        sort_headers.append(sort_item_no)
+        sort_headers.append(sort_price)
+        sort_headers.append(sort_promo)
 
         header_controls = [
                 ft.Container(
@@ -180,22 +85,17 @@ class Product_Header:
                 el_divider,
                 self._create_header_cell("Изображение", self.d_column_size["c_image"]),
                 el_divider,
-
-                self._create_sortable_header_cell("Наименование", self.d_column_size["c_name"], self.container_sort_by_name, lambda e: self.sort_by(e, "name")),
-
+                sort_name.attribute_header_with_sort("Наименование", self.d_column_size["c_name"], str, 'p_name'),
                 el_divider,
-
-                self._create_sortable_header_cell("Артикул", self.d_column_size["с_item_no"], self.container_sort_by_item_no, lambda e: self.sort_by(e, "item_no")),
-
+                sort_item_no.attribute_header_with_sort("Артикул", self.d_column_size["с_item_no"], str, 'p_item_no'),
                 el_divider,
-                self._create_sortable_header_cell("Цена", self.d_column_size["c_price"], self.container_sort_by_price, lambda e: self.sort_by(e, "price")),
+                sort_price.attribute_header_with_sort("Цена", self.d_column_size["c_price"], float, 'p_price'),
                 el_divider,
                 self._create_header_cell("Описание", self.d_column_size["c_desc"]),
                 el_divider,
                 self._create_header_cell("Цена по Акции", self.d_column_size["c_price_promo"]),
                 el_divider,
-                self._create_sortable_header_cell("Акция до", self.d_column_size["c_promo_end"], self.container_sort_by_promo_end, lambda e: self.sort_by(e, "promo_end")),
-
+                sort_promo.attribute_header_with_sort("Акция до", self.d_column_size["c_promo_end"], date, 'p_promo_end'),
                 el_divider,
                 self._create_header_cell("Акция Описание", self.d_column_size["c_promo_desc"]),
                 el_divider,
