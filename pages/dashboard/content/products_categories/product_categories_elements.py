@@ -11,7 +11,6 @@ from pages.config.style import defaultFontColor, textFieldColor
 class CategoryProducts_Header:
 
     def __init__(self, page, rows_controls):
-        #self.d_width = d_width
         self.page = page
         self.rows_controls: list[CategoryProductsRow] = rows_controls
         self.d_column_size = d_category_product_column_size
