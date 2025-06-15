@@ -565,49 +565,51 @@ class ProductRow(ft.Row):
 
     def _handle_new_product_save(self, v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc, v_category_id):
 
-            session = DataBase().get_session()
-            req_ctg = ReqCategory(session)
-            l_categories = req_ctg.get_category_by_id(v_category_id)
+        session = DataBase().get_session()
+        req = ReqProduct(session)
+        is_exists_product = req.check_product_exists(v_name, v_item_no, None)
+        if is_exists_product:
+            key = "error_pk_item_no" if is_exists_product == 1 else "error_pk_name"
+            error_validation = self.d_error_messages[key]
+            error_validation.open = True
+            self.column_with_rows.controls.remove(self)
+            return
 
-            new_product = Product(
-                r_categories=l_categories,
-                name=v_name,
-                item_no=v_item_no,
-                price=float(v_price) if v_price else None,
-                description=v_desc,
-                promo_price=float(v_promo_price) if v_promo_price else None,
-                promo_expire_date=is_valid_date(v_promo_end) if v_promo_end else None,
-                promo_desc=v_promo_desc
-            )
 
-            req = ReqProduct(session)
+        req_ctg = ReqCategory(session)
+        l_categories = req_ctg.get_category_by_id(v_category_id)
 
-            is_exists_product = req.check_product_exists(v_name, v_item_no, None)
-            if is_exists_product:
-                key = "error_pk_item_no" if is_exists_product == 1 else "error_pk_name"
-                error_validation = self.d_error_messages[key]
-                error_validation.open = True
-                self.column_with_rows.controls.remove(self)
-                return
+        new_product = Product(
+            r_categories=l_categories,
+            name=v_name,
+            item_no=v_item_no,
+            price=float(v_price) if v_price else None,
+            description=v_desc,
+            promo_price=float(v_promo_price) if v_promo_price else None,
+            promo_expire_date=is_valid_date(v_promo_end) if v_promo_end else None,
+            promo_desc=v_promo_desc
+        )
 
-            self.product_id = req.add_product(new_product)
-            if self.product_id is None:
-                error_validation = self.d_error_messages["insert_error"]
-                error_validation.open = True
-                self.column_with_rows.controls.remove(self)
-                return
 
-            self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
 
-            if self.tmp_image_name:
-                self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
+        self.product_id = req.add_product(new_product)
+        if self.product_id is None:
+            error_validation = self.d_error_messages["insert_error"]
+            error_validation.open = True
+            self.column_with_rows.controls.remove(self)
+            return
+
+        self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+
+        if self.tmp_image_name:
+            self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
                                                       self.product_id)
-                req.add_image(self.product_id, self.p_img)
-                shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
+            req.add_image(self.product_id, self.p_img)
+            shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
                             f"{settings.MEDIA}/original/{self.p_img}.jpeg")
-                os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
-                self.tmp_image_name = None
-                self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
+            os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
+            self.tmp_image_name = None
+            self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
 
 
 
