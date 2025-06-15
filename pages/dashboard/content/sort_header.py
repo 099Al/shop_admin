@@ -91,8 +91,10 @@ class SortHeader:
             self.key_to_sort = lambda x: getattr(x, element_to_sort, '') or ''
         elif type_element == int:
             self.key_to_sort = lambda x: getattr(x, element_to_sort, 0) or 0
+        elif type_element == float:
+            self.key_to_sort = lambda x: getattr(x, element_to_sort, 0) or 0
         elif type_element == date:
-            self.key_to_sort = lambda x: getattr(x, element_to_sort, date(2000, 1, 1))
+            self.key_to_sort = lambda x: getattr(x, element_to_sort, date(2000, 1, 1)) or date(2000, 1, 1)
 
         return ft.Container(
             ft.Row(
