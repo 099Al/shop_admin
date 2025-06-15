@@ -39,6 +39,9 @@ class Category(Base):
     order_number: Mapped[int] = mapped_column(Integer, nullable=True)
     r_products: Mapped[List['Product']] = relationship(secondary=Category_Product.__tablename__, back_populates='r_categories', lazy="selectin")
 
+    def __repr__(self):
+        return (f'{self.__class__.__name__} (id={self.id}, nm={self.name})')
+
 class Product(Base):
     __tablename__ = 'products'
     """

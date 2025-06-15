@@ -575,7 +575,7 @@ class ProductRow(ft.Row):
             #редактирование продукта
             res = self._handle_existing_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
             if res:
-                self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
+                self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)  #обновление параметров Category внутри Category Row
                 self._handle_image_changes()
             else:
                 return

@@ -1,8 +1,8 @@
 from database.requests.req_categories import ReqCategory
-from pages.config.errors import error_message_categtory
+from pages.config.errors import error_message_categtory, error_message_category_validate_order
 from pages.config.sizes import d_category_width
 from pages.dashboard.content.categories.add_category_button import AddCategoryButton
-from pages.dashboard.content.categories.category_rows import el_category_header, CategoryRow
+from pages.dashboard.content.categories.category_elements import CategoryRow, Category_Header
 from pages.dashboard.head_elements import header
 from pages.config.style import inputBgErrorColor
 import flet as ft
@@ -12,10 +12,8 @@ import flet as ft
 class CategoriesContent:
 
     def __init__(self, instance):
-        #self.instance = instance
         self.page = instance.page
         self.user_role = instance.user_role
-        #self.content_header = instance.content_header
         self.view_content = []
 
     def build(self):
@@ -35,8 +33,6 @@ class CategoriesContent:
         max_length_category = req.get_max_length()
         name_width = max(max_length_category * 8, 100)  # 7 letter size
 
-
-
         # кнопка "Добавить новую категорию"
         add_button = AddCategoryButton(page=self.page,
                               column_with_rows=self.column_with_category_rows,
@@ -47,28 +43,37 @@ class CategoriesContent:
             alignment=ft.MainAxisAlignment.END,
             # Приживается к правому краю. При изменении размеров окна - сдвигается соответственно
         )
-        
         self.view_content.append(self.row_1)
 
-        self.view_content.append(el_category_header(d_category_width))  # table header
+        self.column_1 = ft.Column(
+            controls=[
+                # Category_Filter(self.page, self.column_with_category_rows.controls, d_category_width).build(),
+                Category_Header(self.page, self.column_with_category_rows.controls).build(),
+                self.column_with_category_rows
+            ],
+            expand=True  #без expand scroll не работает
+        )
+
         # ---rows---
-        for id, c_name, c_order, p_cnt in req.category_products_cnt():
+        for category, p_cnt in req.category_products_cnt():
             self.column_with_category_rows.controls.append(
                 CategoryRow(
                     page=self.page,
-                    #d_width=d_width,
-                    #error_message=error_message,
-                    id=id,
-                    p_name=c_name,
+                    category=category,
                     p_product_cnt=str(p_cnt),
-                    p_order=c_order,
-                    column_with_rows=self.column_with_category_rows,
+                    column_with_rows=self.column_with_category_rows
                 )
             )
 
-        self.view_content.append(self.column_with_category_rows)
+        self.row_scroll = ft.Row(controls=[self.column_1],
+                                 expand=True,  # без expand scroll не работает
+                                 scroll=ft.ScrollMode.AUTO
+                                 )
+
+        self.view_content.append(self.row_scroll)
         # --rows-----------
 
         self.view_content.append(error_message_categtory)
+        self.view_content.append(error_message_category_validate_order)
 
         return self.view_content
