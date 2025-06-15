@@ -7,6 +7,59 @@ from pages.config.sizes import d_category_width
 from pages.config.style import *
 
 
+
+el_divider = ft.Container(
+                height=25,
+                width=1,
+                bgcolor="white",
+                margin=0,
+                padding=0
+            )
+
+class Category_Header:
+    def __init__(self, page, rows_controls):
+        super().__init__()
+        self.page = page
+        self.rows_controls: list[CategoryRow] = rows_controls
+        self.d_category_width = d_category_width
+
+    def _create_header_cell(self, text, width, visible=True):
+        return ft.Container(
+            content=ft.Text(
+                text,
+                color=defaultFontColor,
+                size=15,
+                font_family="cupurum",
+            ),
+            width=width,
+            alignment=ft.alignment.bottom_left,
+            visible=visible
+        )
+
+    def build(self):
+        category_controls = [
+                ft.Container(
+                    width=d_category_width["c_edit"],
+                ),
+                el_divider,
+                self._create_header_cell("Категории", d_category_width["c_category"]),
+                el_divider,
+                self._create_header_cell("Количество позиций", d_category_width["c_cnt"]),
+                el_divider,
+                self._create_header_cell("Сортировка", d_category_width["c_order_sort"]),
+                el_divider,
+            ]
+
+        return ft.Row(
+                controls=category_controls,
+                height=50,
+                vertical_alignment=ft.CrossAxisAlignment.END,
+            )
+
+
+
+
+
 class CategoryRow(ft.Row):
     def __init__(self, page, category, p_product_cnt, column_with_rows, **kwargs):
         super().__init__()
@@ -196,57 +249,5 @@ class CategoryRow(ft.Row):
         self.page.open(dlg_delete)
         #dlg_delete.open = True
         self.page.update()
-
-
-el_divider = ft.Container(
-                height=25,
-                width=1,
-                bgcolor="white",
-                margin=0,
-                padding=0
-            )
-
-def el_category_header(d_width):
-    return ft.Row(
-        controls=[
-            ft.Container(
-                width=d_width["c_edit"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Категории",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_category"],
-                alignment=ft.alignment.bottom_left,
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Количество позиций",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_cnt"],
-            ),
-            el_divider,
-            ft.Container(
-                content=ft.Text(
-                    "Сортировка",
-                    color=defaultFontColor,
-                    size=15,
-                    font_family="cupurum",
-                ),
-                width=d_width["c_order_sort"],
-            ),
-            el_divider,
-        ],
-        height=50,
-        vertical_alignment=ft.CrossAxisAlignment.END,
-    )
 
 

@@ -2,7 +2,7 @@ from database.requests.req_categories import ReqCategory
 from pages.config.errors import error_message_categtory
 from pages.config.sizes import d_category_width
 from pages.dashboard.content.categories.add_category_button import AddCategoryButton
-from pages.dashboard.content.categories.category_rows import el_category_header, CategoryRow
+from pages.dashboard.content.categories.category_elements import CategoryRow, Category_Header
 from pages.dashboard.head_elements import header
 from pages.config.style import inputBgErrorColor
 import flet as ft
@@ -12,10 +12,8 @@ import flet as ft
 class CategoriesContent:
 
     def __init__(self, instance):
-        #self.instance = instance
         self.page = instance.page
         self.user_role = instance.user_role
-        #self.content_header = instance.content_header
         self.view_content = []
 
     def build(self):
@@ -35,8 +33,6 @@ class CategoriesContent:
         max_length_category = req.get_max_length()
         name_width = max(max_length_category * 8, 100)  # 7 letter size
 
-
-
         # кнопка "Добавить новую категорию"
         add_button = AddCategoryButton(page=self.page,
                               column_with_rows=self.column_with_category_rows,
@@ -50,7 +46,9 @@ class CategoriesContent:
         
         self.view_content.append(self.row_1)
 
-        self.view_content.append(el_category_header(d_category_width))  # table header
+
+        self.view_content.append(Category_Header(page=self.page, rows_controls=self.column_with_category_rows.controls).build())  # table header
+
         # ---rows---
         for category, p_cnt in req.category_products_cnt():
             self.column_with_category_rows.controls.append(

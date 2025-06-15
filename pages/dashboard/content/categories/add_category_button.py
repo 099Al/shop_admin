@@ -3,7 +3,7 @@ import flet as ft
 from database.models.models import Category
 from database.requests.req_categories import ReqCategory
 from pages.config.errors import d_error_messages, error_message_categtory
-from pages.dashboard.content.categories.category_rows import CategoryRow
+from pages.dashboard.content.categories.category_elements import CategoryRow
 
 
 class AddCategoryButton:
