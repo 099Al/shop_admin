@@ -32,7 +32,7 @@ class ProductsContent:
         req = ReqProduct()
         max_length_product = max(req.get_max_length(), len("Наименование"))
         name_width = max(max_length_product * 9, 100)  # 7 letter size
-        d_column_width = d_product_column_size
+        #d_column_width = d_product_column_size
 
         add_button = AddProductButton(
                                 page=self.page,
@@ -48,8 +48,8 @@ class ProductsContent:
 
         self.column_1 = ft.Column(
             controls=[
-                Product_Filter(self.page, self.column_with_product_rows.controls, d_column_width).build(),
-                Product_Header(self.page, self.column_with_product_rows.controls).build(d_column_width),
+                Product_Filter(self.page, self.column_with_product_rows.controls).build(),
+                Product_Header(self.page, self.column_with_product_rows.controls).build(),
                 self.column_with_product_rows
             ],
             expand=True  #без expand scroll не работает
