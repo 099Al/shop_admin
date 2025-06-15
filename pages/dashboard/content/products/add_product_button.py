@@ -12,7 +12,7 @@ class AddProductButton:
     def __init__(self, page, column_with_rows, **kwargs):
         self.page = page
         self.column_with_rows = column_with_rows
-        self.d_column_size = d_product_column_size
+        #self.d_column_size = d_product_column_size
         self.d_error_messages = d_error_messages
 
     def build(self):
@@ -39,9 +39,9 @@ class AddProductButton:
 
         new_product_row = ProductRow(
             page=self.page,
-            d_error_messages=self.d_error_messages,
             product=new_product,
             column_with_rows=self.column_with_rows
+
         )
 
         self.column_with_rows.controls.insert(0, new_product_row)
@@ -125,12 +125,9 @@ class AddProductButton:
                     else:
                         new_row = ProductRow(
                                 page=self.page,
-                                #d_column_width=self.d_column_size,
-                                #d_error_messages=self.d_error_messages,
                                 product=new_product,
                                 column_with_rows=self.column_with_rows
                         )
-
 
                         self.column_with_rows.controls.append(new_row)
 
