@@ -48,6 +48,9 @@ class AddAdminButton:
             cur_session.add(new_admin)
             cur_session.commit()
 
+            res = req_user.update_user(client.telegram_id, type="admin")  #todo: вынести тип через enum
+            print(res)
+
             dialog.open = False
 
             roles = [ft.DropdownOption(key=str(role), text=str(role)) for role in req.get_all_roles()]

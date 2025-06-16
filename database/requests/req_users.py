@@ -26,3 +26,16 @@ class ReqClients:
         res = self.session.execute(stmt).scalars().first()
         if res:
             return res
+
+    def update_user(self, telegram_id, **kwargs):
+        try:
+            self.session.execute(
+                update(Client)
+                .where(Client.telegram_id == telegram_id)
+                .values(**kwargs)
+            )
+            self.session.commit()
+            return 1
+        except Exception as e:
+            self.session.rollback()
+            return None

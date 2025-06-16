@@ -39,7 +39,7 @@ class Client(Base):
     name:  Mapped[str] = mapped_column(String(25), nullable=True)
     phone: Mapped[str] = mapped_column(String(20), nullable=True)
     email: Mapped[str] = mapped_column(String(20), nullable=True)
-    type = Mapped[str]
+    type: Mapped[str]
     is_banned = Mapped[int]
     ban_reason = Mapped[str]
 
