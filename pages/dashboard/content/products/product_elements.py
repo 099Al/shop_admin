@@ -472,18 +472,22 @@ class ProductRow(ft.Row):
             #новый продукт
             v_category_id = self.r_category.content.value
             self.r_category.visible = False
-            self._handle_new_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc, v_category_id)
+            res = self._handle_new_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc, v_category_id)
+            if res:
+                self.set_read_view()
+                self.page.update()
         else:
             #редактирование продукта
             res = self._handle_existing_product_save(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
             if res:
                 self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)  #обновление параметров Category внутри Category Row
                 self._handle_image_changes()
+                self.set_read_view()
+                self.page.update()
             else:
                 return
 
-        self.set_read_view()
-        self.page.update()
+
 
 
     def _handle_image_changes(self):
@@ -572,7 +576,8 @@ class ProductRow(ft.Row):
             key = "error_pk_item_no" if is_exists_product == 1 else "error_pk_name"
             error_validation = self.d_error_messages[key]
             error_validation.open = True
-            self.column_with_rows.controls.remove(self)
+            self.page.update()
+            #self.column_with_rows.controls.remove(self)
             return
 
 
@@ -611,6 +616,7 @@ class ProductRow(ft.Row):
             self.tmp_image_name = None
             self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
 
+        return 1
 
 
     def _update_product_attributes(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
@@ -624,6 +630,9 @@ class ProductRow(ft.Row):
 
 
     def cancel(self, e):
+
+        if not self.product_id:
+            self.column_with_rows.controls.remove(self)
 
         self.set_read_view()
         self.flag_delete_image = False
