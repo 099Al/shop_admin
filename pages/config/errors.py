@@ -46,3 +46,17 @@ d_error_messages = {"error_pk_item_no": error_message_pk_item_no,
 
 
 d_error_messages_ctg_prod = ft.SnackBar(content=ft.Text(f"Товар уже находится в категории"), bgcolor=inputBgErrorColor)
+
+
+error_message_admin_exists = ft.SnackBar(
+            content=ft.Text('Пользователь уже добавлен в администраторы'),
+            bgcolor=inputBgErrorColor
+        )
+error_message_admin_not_exists = ft.SnackBar(
+            content=ft.Text('Пользователь не зарегестрирован'),
+            bgcolor=inputBgErrorColor
+        )
+
+d_error_messages_admin = {"admin_exists": error_message_admin_exists,
+                          "admin_not_exists": error_message_admin_not_exists
+                          }

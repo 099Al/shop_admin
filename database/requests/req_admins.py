@@ -10,12 +10,16 @@ class ReqAdmins:
         else:
             self.session = DataBase().get_session()
 
+    def get_session(self):
+        return self.session
+
     def get_all_users(self):
         result = self.session.execute(select(Admin))
         #result = self.session.query(Admin.telegram_id, Admin.telegram_name, Admin.role, Admin.name, Admin.phone, Admin.email, Admin.login).all()
         return result.scalars().all()
 
     def get_all_roles(self):
+        #todo: Роли должны задаваться через Enum
         result = self.session.execute(select(Admin.role))
         return result.scalars().all()
 
@@ -52,3 +56,17 @@ class ReqAdmins:
         except Exception as e:
             self.session.rollback()
             return None
+
+    def get_admin_by_phone(self, phone):
+        result = self.session.execute(
+            select(Admin)
+            .where(Admin.phone == phone)
+        )
+        return result.scalars().first()
+
+    def get_admin_by_telegram_name(self, telegram_name):
+        result = self.session.execute(
+            select(Admin)
+            .where(Admin.telegram_name == telegram_name)
+        )
+        return result.scalars().first()

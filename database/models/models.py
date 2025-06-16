@@ -1,7 +1,15 @@
-from sqlalchemy import String, Integer, ForeignKey, Float, Date, CheckConstraint
+from sqlalchemy import String, Integer, ForeignKey, Float, Date, CheckConstraint, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List
+import enum
 from database.models.base import Base
+
+
+class AdminRoles(enum.Enum):
+    SUPER_ADMIN = "super_admin"
+    ADMIN = "admin"
+    READ = "read"
+    NO_ROLE = "no_role"
 
 
 class Admin(Base):
@@ -13,12 +21,32 @@ class Admin(Base):
     name:  Mapped[str] = mapped_column(String(25), nullable=True)
     phone: Mapped[str] = mapped_column(String(20), nullable=True)
     email: Mapped[str] = mapped_column(String(20), nullable=True)
-    role: Mapped[str]  # = mapped_column(String(20), nullable=False)
+    role: Mapped[str]  # = mapped_column(String(20), nullable=False)   #todo Роли должны задаваться через Enum
+    # role: Mapped[AdminRoles] = mapped_column(SQLEnum(AdminRoles), name="role", native_enum=False, values_callable=lambda x: [e.value for e in AdminRoles])
     login: Mapped[str] = mapped_column(String(100), nullable=True)
     password: Mapped[str] = mapped_column(String(100), nullable=True)
 
     def __repr__(self):
         return (f'{self.__class__.__name__} (id={self.telegram_id}, name={self.name}, role={self.role})')
+
+
+class Client(Base):
+    __tablename__ = 'users'
+
+    telegram_id: Mapped[str] = mapped_column(String(30), primary_key=True)
+    telegram_name: Mapped[str] = mapped_column(String(50), nullable=True)
+    telegram_link: Mapped[str] = mapped_column(String(100), nullable=True)
+    name:  Mapped[str] = mapped_column(String(25), nullable=True)
+    phone: Mapped[str] = mapped_column(String(20), nullable=True)
+    email: Mapped[str] = mapped_column(String(20), nullable=True)
+    type = Mapped[str]
+    is_banned = Mapped[int]
+    ban_reason = Mapped[str]
+
+    def __repr__(self):
+        return (f'{self.__class__.__name__} (id={self.telegram_id}, telegram_name={self.telegram_name}, name={self.name})')
+
+
 
 class Category_Product(Base):
     __tablename__ = 'a_category_product'
