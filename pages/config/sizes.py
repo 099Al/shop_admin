@@ -44,5 +44,7 @@ d_admin_column_size = {"c_edit": 100,
                        "c_phone": 130,
                        "c_email": 200,
                        "c_name": 100,
+                       "c_reset_password": 100,
                         "el_height": 40
+
                        }
