@@ -1,5 +1,6 @@
 import flet as ft
 
+from database.models.models import AdminRoles
 from database.requests.req_admins import ReqAdmins
 from pages.config.errors import d_error_messages_admin
 from pages.config.info_messages import snack_message_pass
@@ -49,7 +50,7 @@ class AdminsContent:
 
         req = ReqAdmins()
         admins = req.get_all_users()
-        roles = [ft.DropdownOption(key=str(role), text=str(role)) for role in req.get_all_roles()]
+        roles = [ft.DropdownOption(key=role.value, text=role.name.replace("_", " ").title()) for role in AdminRoles]
         # ---rows--- заполнене списка продукатами
         for user in admins:
             self.column_with_rows.controls.append(
