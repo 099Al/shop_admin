@@ -1,6 +1,6 @@
 import flet as ft
 
-from database.models.models import Client
+from database.models.models import Client, ClientsBan
 from pages.config.sizes import d_client_column_size
 from pages.config.style import defaultFontColor
 
@@ -20,10 +20,10 @@ class ClientRow(ft.Row):
         self.telegram_id: str = self.client.telegram_id
         self.telegram_name: str = self.client.telegram_name
         self.telegram_link: str = self.client.telegram_link
-        self.aname: str = self.client.name
+        self.name: str = self.client.name
         self.phone: str = self.client.phone
         self.email: str = self.client.email
-        self.is_banned: int = self.client.is_banned
+        self.is_banned: int = self.client.is_banned  #значения из db
         self.ban_reason: str = self.client.ban_reason
 
         self._init_ui_components()
@@ -121,14 +121,17 @@ class ClientRow(ft.Row):
 
 
     def set_read_view(self):
+
+        d_ban = {1: "Бан", 0: None}
+
         self.r_container_icon.content = self.r_content_edit
 
-        self.r_name.content = self._field(self.aname, self.d_column_size['c_name'])
+        self.r_name.content = self._field(self.name, self.d_column_size['c_name'])
         self.r_phone.content = self._field(self.phone, self.d_column_size['c_phone'])
         self.r_email.content = self._field(self.email, self.d_column_size['c_email'])
         self.r_telegram_name.content = self._field(self.telegram_name, self.d_column_size['c_telegram_name'])
         self.r_telegram_link.content = self._field(self.telegram_link, self.d_column_size['c_telegram_link'])
-        self.r_is_banned.content = self._field(str(self.is_banned), self.d_column_size['c_is_banned'])
+        self.r_is_banned.content = self._field(d_ban[self.is_banned], self.d_column_size['c_is_banned'])
         self.r_ban_reason.content = self._field(self.ban_reason, self.d_column_size['c_ban_reason'])
 
 
