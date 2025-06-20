@@ -48,3 +48,19 @@ d_admin_column_size = {"c_edit": 100,
                         "el_height": 40
 
                        }
+
+
+
+
+d_client_column_size = {"c_edit": 100,
+                        "c_telegram_name": 130,
+                        "c_role": 100,
+                        "c_telegram_link": 100,
+                        "c_phone": 130,
+                        "c_email": 200,
+                        "c_name": 100,
+                        "c_is_banned": 30,
+                        "c_ban_reason": 200,
+                        "el_height": 40
+
+                        }
