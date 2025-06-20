@@ -3,9 +3,11 @@ import flet as ft
 from database.models.models import Admin
 from database.requests.req_admins import ReqAdmins
 from pages.config.errors import d_error_messages
+from pages.config.info_messages import snack_message_pass
 from pages.config.sizes import d_admin_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 from pages.dashboard.content.sort_header import SortHeader
+from utils.functions import hash_password_
 
 
 class AdminHeader(ft.Row):
@@ -217,73 +219,6 @@ class AdminRow(ft.Row):
         self.r_password_reset.content = ft.CupertinoButton(content=ft.Text("Сбросить", color=ft.Colors.WHITE, size=14), on_click=self.reset_password, width=self.d_column_size['c_reset_password'])
 
 
-    def reset_password(self, e):
-        req = ReqAdmins()
-        # role = page.session.get('auth_role')
-        # if role == 'super_admin':
-
-        def _reset_password_handle_yes(e):
-            new_pass = dlg_reset_password.content.controls[0].value
-            confirm_pass = dlg_reset_password.content.controls[1].value
-            if new_pass == confirm_pass:
-                # req.reset_password(self.admin_telegram_id, new_pass)
-                # dlg_reset_password.open = False
-                # self.page.update()
-                pass
-            else:
-                dlg_reset_password.content.controls[1].border_color = ft.Colors.RED
-                dlg_reset_password.content.controls[2].visible = True
-                dlg_reset_password.content.update()
-                # dlg_reset_password.content.controls[2].update()
-
-        def _reset_password_handle_close(e):
-            dlg_reset_password.open = False
-            self.page.update()
-
-
-        def _set_border_color_focus(e):
-            e.control.border_color = ft.Colors.PRIMARY
-            e.control.update()
-
-        def _set_border_color(e):
-            e.control.border_color = ft.Colors.BLACK
-            e.control.update()
-
-        def _close_message(e):
-            dlg_reset_password.content.controls[2].visible = False
-            dlg_reset_password.content.update()
-
-        def _close_message_1(e):
-            dlg_reset_password.content.controls[1].border_color = ft.Colors.BLACK
-            dlg_reset_password.content.controls[2].visible = False
-            dlg_reset_password.content.update()
-
-
-
-        dlg_reset_password = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Сброс пароля"),
-            content=ft.Column(
-                controls=[
-                ft.TextField(label="новый пароль", password=True, on_change=_close_message_1),
-                ft.TextField(label="повторите пароль", password=True, on_focus=_set_border_color_focus, on_blur=_set_border_color, on_change=_close_message),
-                ft.Text(value="Пароли не совпадают", color=ft.Colors.RED, visible=False),
-            ],
-            height=120,
-            ),
-            actions=[
-                ft.TextButton("Yes", on_click=_reset_password_handle_yes),
-                ft.TextButton("No", on_click=_reset_password_handle_close),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
-        )
-        self.page.open(dlg_reset_password)
-        self.page.update()
-
-
-        # req.reset_password(self.admin_telegram_id)
-
-
     def edit(self, e):
         v_name = self.r_name.content.value
         v_phone = self.r_phone.content.value
@@ -411,6 +346,68 @@ class AdminRow(ft.Row):
         self.page.open(dlg_delete)
         self.page.update()
 
+    def reset_password(self, e):
+        req = ReqAdmins()
+        # role = page.session.get('auth_role')
+        # if role == 'super_admin':
+
+        def _reset_password_handle_yes(e):
+            new_pass = dlg_reset_password.content.controls[0].value
+            confirm_pass = dlg_reset_password.content.controls[1].value
+            if new_pass == confirm_pass:
+                req.set_password(self.admin_telegram_id,  hash_password_(new_pass))
+                dlg_reset_password.open = False
+                snack_message_pass.open = True
+                self.page.update()
+
+            else:
+                dlg_reset_password.content.controls[1].border_color = ft.Colors.RED
+                dlg_reset_password.content.controls[2].visible = True
+                dlg_reset_password.content.update()
+
+        def _reset_password_handle_close(e):
+            dlg_reset_password.open = False
+            self.page.update()
+
+
+        def _set_border_color_focus(e):
+            e.control.border_color = ft.Colors.PRIMARY
+            e.control.update()
+
+        def _set_border_color(e):
+            e.control.border_color = ft.Colors.BLACK
+            e.control.update()
+
+        def _close_message(e):
+            dlg_reset_password.content.controls[2].visible = False
+            dlg_reset_password.content.update()
+
+        def _close_message_1(e):
+            dlg_reset_password.content.controls[1].border_color = ft.Colors.BLACK
+            dlg_reset_password.content.controls[2].visible = False
+            dlg_reset_password.content.update()
+
+
+
+        dlg_reset_password = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Сброс пароля"),
+            content=ft.Column(
+                controls=[
+                ft.TextField(label="новый пароль", password=True, on_change=_close_message_1),
+                ft.TextField(label="повторите пароль", password=True, on_focus=_set_border_color_focus, on_blur=_set_border_color, on_change=_close_message),
+                ft.Text(value="Пароли не совпадают", color=ft.Colors.RED, visible=False),
+            ],
+            height=120,
+            ),
+            actions=[
+                ft.TextButton("Yes", on_click=_reset_password_handle_yes),
+                ft.TextButton("No", on_click=_reset_password_handle_close),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        self.page.open(dlg_reset_password)
+        self.page.update()
 
 
     def __repr__(self):

@@ -2,6 +2,7 @@ import flet as ft
 
 from database.requests.req_admins import ReqAdmins
 from pages.config.errors import d_error_messages_admin
+from pages.config.info_messages import snack_message_pass
 from pages.dashboard.content.admins.add_button import AddAdminButton
 from pages.dashboard.content.admins.admins_elements import AdminRow, AdminHeader
 from pages.dashboard.head_elements import header
@@ -70,6 +71,7 @@ class AdminsContent:
 
         self.view_content.append(self.error_messages["admin_exists"])
         self.view_content.append(self.error_messages["admin_not_exists"])
+        self.view_content.append(snack_message_pass)
 
 
 

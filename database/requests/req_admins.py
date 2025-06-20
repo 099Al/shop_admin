@@ -70,3 +70,11 @@ class ReqAdmins:
             .where(Admin.telegram_name == telegram_name)
         )
         return result.scalars().first()
+
+    def set_password(self, telegram_id, password):
+        self.session.execute(
+            update(Admin)
+            .where(Admin.telegram_id == telegram_id)
+            .values(password=password)
+        )
+        self.session.commit()
