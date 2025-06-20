@@ -51,7 +51,7 @@ class AdminsContent:
         req = ReqAdmins()
         admins = req.get_all_users()
         roles = [ft.DropdownOption(key=role.value, text=role.name.replace("_", " ").title()) for role in AdminRoles]
-        # ---rows--- заполнене списка продукатами
+        # ---rows--- заполнене списка
         for user in admins:
             self.column_with_rows.controls.append(
                 AdminRow(
