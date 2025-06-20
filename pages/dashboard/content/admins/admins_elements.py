@@ -215,7 +215,7 @@ class AdminRow(ft.Row):
         self.r_email.content = self._field(text=self.admin_email, width=self.d_column_size['c_email'])
         self.r_telegram_name.content = self._field(text=self.admin_telegram_name, width=self.d_column_size['c_telegram_name'])
         self.r_telegram_link.content = self._field(text=self.admin_telegram_link, width=self.d_column_size['c_telegram_link'])
-        self.r_role.content = self._field(text=self.admin_role, width=self.d_column_size['c_role'])
+        self.r_role.content = self._field(text=(self.admin_role).replace("_", " ").title(), width=self.d_column_size['c_role'])
         self.r_password_reset.content = ft.CupertinoButton(content=ft.Text("Сбросить", color=ft.Colors.WHITE, size=14), on_click=self.reset_password, width=self.d_column_size['c_reset_password'])
 
 
