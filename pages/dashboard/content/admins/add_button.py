@@ -49,7 +49,6 @@ class AddAdminButton:
             cur_session.commit()
 
             res = req_user.update_client(client.telegram_id, type="admin")  #todo: вынести тип через enum
-            print(res)
 
             dialog.open = False
 
