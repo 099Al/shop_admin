@@ -2,15 +2,16 @@ import flet as ft
 
 from database.models.models import Client, ClientsBan
 from pages.config.sizes import d_client_column_size
-from pages.config.style import defaultFontColor
+from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
 
 class ClientRow(ft.Row):
-    def __init__(self, page, client, column_with_rows, **kwargs):
+    def __init__(self, page, client, column_with_rows, l_ban_options, **kwargs):
         super().__init__()
         self.page = page
         self.column_with_rows = column_with_rows  # ссылка на список продуктов, чтобы отсюда ее модифицировать
 
+        self.l_ban_options = l_ban_options
         self.d_column_size = d_client_column_size
         #self.d_error_messages = d_error_messages
 
@@ -136,7 +137,68 @@ class ClientRow(ft.Row):
 
 
     def set_edit_view(self, e):
+        v_name = self.r_name.content.value
+        v_phone = self.r_phone.content.value
+        v_email = self.r_email.content.value
+        v_telegram_name = self.r_telegram_name.content.value
+        v_telegram_link = self.r_telegram_link.content.value
+        v_is_banned = self.r_is_banned.content.value
+        v_ban_reason = self.r_ban_reason.content.value
+
+
+
         self.r_container_icon.content = self.r_content_edit
+
+        self.r_container_icon.content = ft.Row(
+            spacing=0,
+            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+            controls=[
+                ft.Container(margin=ft.margin.all(0),
+                             padding=ft.padding.all(0),
+                             adaptive=True,
+                             scale=0.8,
+                             # bgcolor="red",
+                             content=ft.IconButton(ft.icons.SAVE, on_click=self.save)),
+                ft.Container(margin=ft.margin.only(left=0),
+                             scale=0.8,
+                             # bgcolor="green",
+                             content=ft.IconButton(ft.icons.CANCEL, on_click=self.cancel))
+            ]
+        )
+
+        self.r_name.content = ft.TextField(v_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15, multiline=True)
+        self.r_phone.content = ft.TextField(v_phone, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_email.content = ft.TextField(v_email, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_telegram_name.content = ft.TextField(v_telegram_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_telegram_link.content = ft.TextField(v_telegram_link, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+
+        self.r_ban_reason.content = ft.TextField(v_ban_reason, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+
+        self.dd_ban = ft.Dropdown(
+            width=self.d_column_size['c_is_banned'],
+            editable=False,
+            border_color=textFieldColor,
+            color="white",
+            hint_text=v_is_banned,
+            hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
+            menu_width=self.d_column_size['c_is_banned'] * 1.5,
+            # menu_height=300,
+            options=self.l_ban_options
+
+        )
+
+        self.r_is_banned.content = self.dd_ban
+
+        self.page.update()
+
+    def save(self, e):
+        pass
+
+    def cancel(self, e):
+        pass
+
+
+
 
     def delete_dialog(self, e):
         self.page.dialog = ft.AlertDialog(

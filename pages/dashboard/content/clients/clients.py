@@ -1,6 +1,6 @@
 import flet as ft
 
-from database.models.models import AdminRoles
+from database.models.models import AdminRoles, ClientsBan
 from database.requests.req_admins import ReqAdmins
 from database.requests.req_clients import ReqClients
 from pages.config.errors import d_error_messages_admin
@@ -42,6 +42,7 @@ class ClientsContent:
             expand=True  # без expand scroll не работает
         )
 
+        d_ban = {1: "Бан", 0: "Снять бан"}
         clients = req.get_all_clients()
         # ---rows--- заполнене списка
         for client in clients:
@@ -49,6 +50,7 @@ class ClientsContent:
                 ClientRow(
                     page=self.page,
                     client=client,
+                    l_ban_options=[ft.DropdownOption(key=status.value, text=d_ban[status.value]) for status in ClientsBan],
                     column_with_rows=self.column_with_rows
                 )
 
