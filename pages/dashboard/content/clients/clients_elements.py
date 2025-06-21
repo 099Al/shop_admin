@@ -1,6 +1,7 @@
 import flet as ft
 
 from database.models.models import Client, ClientsBan
+from database.requests.req_clients import ReqClients
 from pages.config.sizes import d_client_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
@@ -132,7 +133,7 @@ class ClientRow(ft.Row):
         self.r_email.content = self._field(self.email, self.d_column_size['c_email'])
         self.r_telegram_name.content = self._field(self.telegram_name, self.d_column_size['c_telegram_name'])
         self.r_telegram_link.content = self._field(self.telegram_link, self.d_column_size['c_telegram_link'])
-        self.r_is_banned.content = self._field(d_ban[self.is_banned], self.d_column_size['c_is_banned'])
+        self.r_is_banned.content = self._field(d_ban.get(self.is_banned, None), self.d_column_size['c_is_banned'])
         self.r_ban_reason.content = self._field(self.ban_reason, self.d_column_size['c_ban_reason'])
 
 
@@ -192,10 +193,50 @@ class ClientRow(ft.Row):
         self.page.update()
 
     def save(self, e):
-        pass
+        v_name = self.r_name.content.value
+        v_phone = self.r_phone.content.value
+        v_email = self.r_email.content.value
+        v_telegram_name = self.r_telegram_name.content.value
+        v_telegram_link = self.r_telegram_link.content.value
+        v_is_banned = int(self.r_is_banned.content.value)
+        v_ban_reason = self.r_ban_reason.content.value
+
+        if (v_name != self.name or
+                v_phone != self.phone or
+                v_email != self.email or
+                v_telegram_name != self.telegram_name or
+                v_telegram_link != self.telegram_link or
+                v_is_banned != self.is_banned or
+                v_ban_reason != self.ban_reason
+        ):
+
+
+            self.name = v_name
+            self.phone = v_phone
+            self.email = v_email
+            self.telegram_name = v_telegram_name
+            self.telegram_link = v_telegram_link
+            self.is_banned = v_is_banned
+            self.ban_reason = v_ban_reason
+
+            req = ReqClients()
+
+            req.update_client(self.telegram_id,
+                              name=self.name,
+                              phone=self.phone,
+                              email=self.email,
+                              telegram_name=self.telegram_name,
+                              telegram_link=self.telegram_link,
+                              is_banned=self.is_banned,
+                              ban_reason=self.ban_reason)
+
+            self.set_read_view()
+            self.page.update()
+
 
     def cancel(self, e):
-        pass
+        self.set_read_view()
+        self.page.update()
 
 
 
