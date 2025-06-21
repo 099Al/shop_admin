@@ -58,7 +58,7 @@ class ClientHeader(ft.Row):
             self.el_divider,
             sort_telegram_link.attribute_header_with_sort("Telegram Link", self.d_column_size["c_telegram_link"], str, 'telegram_link'),
             self.el_divider,
-            sort_is_banned.attribute_header_with_sort("Бан", self.d_column_size["c_is_banned"], str, 'is_banned'),
+            sort_is_banned.attribute_header_with_sort("Бан", self.d_column_size["c_is_banned"], int, 'is_banned'),
             self.el_divider,
             self._create_header_cell("Причина", self.d_column_size["c_ban_reason"]),
         ]
