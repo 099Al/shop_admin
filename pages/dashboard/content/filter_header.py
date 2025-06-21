@@ -17,11 +17,17 @@ class GenericFilter(ft.Row):
             height=25, width=1, bgcolor=None, margin=0, padding=0, visible=True
         )
 
+    def _filter_row(self, row, field_name, text):
+        value = getattr(row, field_name, "") or ""
+        row.visible = text.lower() in value.lower()
+
+    def _drop_row_filter(self, row):
+        row.visible = True
 
 
     def drop_filter(self, e):
         for row in self.rows_controls:
-            row.drop_filter()
+            self._drop_row_filter(row)
 
         for tf in self.filter_fields.values():
             tf.value = ""
@@ -32,7 +38,7 @@ class GenericFilter(ft.Row):
 
     def filter_by(self, field_name, e):
         for row in self.rows_controls:
-            row.filter_field(field_name, e.data)
+            self._filter_row(row, field_name, e.data)
 
         self.c_drop_filter.content = self.icon_drop_filter
 
