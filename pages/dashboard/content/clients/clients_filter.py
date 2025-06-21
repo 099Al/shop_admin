@@ -25,11 +25,16 @@ class ClientsFilter(ft.Row):
             row.drop_filter()
 
         self.c_drop_filter.content = None
-        self.tf_filter_name.value = ""
-        self.tf_filter_phone.value = ""
-        self.tf_filter_email.value = ""
-        self.tf_filter_telegram.value = ""
-        self.tf_filter_link.value = ""
+
+        for field in [
+            self.tf_filter_name,
+            self.tf_filter_phone,
+            self.tf_filter_email,
+            self.tf_filter_telegram,
+            self.tf_filter_link,
+        ]:
+            field.value = ""
+
         self.page.update()
 
     def filter_by(self, field_name, e):
