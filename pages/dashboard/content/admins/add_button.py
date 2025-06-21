@@ -2,7 +2,7 @@ import flet as ft
 
 from database.models.models import Client, Admin
 from database.requests.req_admins import ReqAdmins
-from database.requests.req_users import ReqClients
+from database.requests.req_clients import ReqClients
 from pages.config.errors import d_error_messages_admin
 from pages.dashboard.content.admins.admins_elements import AdminRow
 
@@ -48,8 +48,7 @@ class AddAdminButton:
             cur_session.add(new_admin)
             cur_session.commit()
 
-            res = req_user.update_user(client.telegram_id, type="admin")  #todo: вынести тип через enum
-            print(res)
+            res = req_user.update_client(client.telegram_id, type="admin")  #todo: вынести тип через enum
 
             dialog.open = False
 

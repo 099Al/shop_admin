@@ -76,7 +76,7 @@ def sidebar_menu(content_template: Dash_Content):
                         "Клиенты"
                         , icon=ft.icons.SUPERVISED_USER_CIRCLE
                         , style=style_menu
-                        , on_click=lambda e: page.go("/post"),
+                        , on_click=lambda e: content_template.update_content(EnumDashContent.CLIENTS),
                     ),
                     ft.TextButton(
                         "Заказы"

@@ -1,8 +1,7 @@
-from sqlalchemy import select, func, update, delete, insert
+from sqlalchemy import select, update, delete
 
 from database.connect import DataBase
-from database.models.models import Admin, Client
-
+from database.models.models import Client
 
 class ReqClients:
     def __init__(self, session=None):
@@ -11,9 +10,14 @@ class ReqClients:
         else:
             self.session = DataBase().get_session()
 
-    def get_all_users(self):
+    def get_session(self):
+        return self.session
+
+    def get_all_clients(self):
         result = self.session.execute(select(Client))
         return result.scalars().all()
+
+
 
     def get_client_by_phone(self, phone):
         stmt = select(Client).where(Client.phone == phone)
@@ -27,7 +31,7 @@ class ReqClients:
         if res:
             return res
 
-    def update_user(self, telegram_id, **kwargs):
+    def update_client(self, telegram_id, **kwargs):
         try:
             self.session.execute(
                 update(Client)
@@ -39,3 +43,10 @@ class ReqClients:
         except Exception as e:
             self.session.rollback()
             return None
+
+    def delete_client(self, telegram_id):
+        self.session.execute(
+            delete(Client)
+            .where(Client.telegram_id == telegram_id)
+        )
+        self.session.commit()

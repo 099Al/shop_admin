@@ -11,6 +11,9 @@ class AdminRoles(enum.Enum):
     READ = "read"
     NO_ROLE = "no_role"
 
+class ClientsBan(enum.Enum):
+    BANNED = 1
+    NOT_BANNED = 0
 
 class Admin(Base):
     __tablename__ = 'admins'
@@ -32,6 +35,9 @@ class Admin(Base):
 
 class Client(Base):
     __tablename__ = 'users'
+    __table_args__ = (
+        CheckConstraint("is_banned IN (0, 1)", name="chk_client_is_banned"),
+    )
 
     telegram_id: Mapped[str] = mapped_column(String(30), primary_key=True)
     telegram_name: Mapped[str] = mapped_column(String(50), nullable=True)
@@ -39,9 +45,10 @@ class Client(Base):
     name:  Mapped[str] = mapped_column(String(25), nullable=True)
     phone: Mapped[str] = mapped_column(String(20), nullable=True)
     email: Mapped[str] = mapped_column(String(20), nullable=True)
-    type: Mapped[str]
-    is_banned = Mapped[int]
-    ban_reason = Mapped[str]
+    type: Mapped[str] = mapped_column(String(20), nullable=True)
+    # is_banned: Mapped[int]
+    is_banned: Mapped[int] = mapped_column(Integer, nullable=False, default=ClientsBan.NOT_BANNED.value)
+    ban_reason: Mapped[str]
 
     def __repr__(self):
         return (f'{self.__class__.__name__} (id={self.telegram_id}, telegram_name={self.telegram_name}, name={self.name})')
@@ -120,3 +127,4 @@ class ImagePhoto(Base):
 
     def __repr__(self):
         return f'ImagePhoto(id={self.image_id}, name={self.image_name}, format={self.img_format})'
+
