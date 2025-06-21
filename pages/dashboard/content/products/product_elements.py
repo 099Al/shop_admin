@@ -2,7 +2,7 @@ import json
 import os
 import shutil
 import uuid
-from datetime import datetime, date
+from datetime import date
 
 import flet as ft
 
@@ -11,8 +11,9 @@ from database.models.models import Product, Category
 from database.requests.req_categories import ReqCategory
 from database.requests.req_products import ReqProduct
 from pages.config.errors import d_error_messages
-from pages.config.sizes import pr_name_max_length, pr_item_no_max_length, pr_description_max_length, \
-    pr_promo_desc_max_length
+from pages.config.sizes import (
+    pr_name_max_length, pr_item_no_max_length, pr_description_max_length,
+    pr_promo_desc_max_length)
 from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.products.validation import cut_price, is_valid_price, is_valid_date
 from pages.config.style import *
@@ -27,9 +28,6 @@ el_divider = ft.Container(
                 margin=0,
                 padding=0
             )
-
-
-
 
 
 class Product_Header:
@@ -127,14 +125,14 @@ class ProductRow(ft.Row):
         self.product: Product = product
 
         self.product_id: int = self.product.product_id
-        self.p_name: str = self.product.name
-        self.p_item_no: str = self.product.item_no
-        self.p_price: float = self.product.price
-        self.p_desc: str = self.product.description
-        self.p_promo_price: float = self.product.promo_price
-        self.p_promo_end = self.product.promo_expire_date
-        self.p_promo_desc: str = self.product.promo_desc
-        self.p_img: str = self.product.r_image.image_name if self.product.r_image else None
+        self.name: str = self.product.name
+        self.item_no: str = self.product.item_no
+        self.price: float = self.product.price
+        self.desc: str = self.product.description
+        self.promo_price: float = self.product.promo_price
+        self.promo_end = self.product.promo_expire_date
+        self.promo_desc: str = self.product.promo_desc
+        self.image: str = self.product.r_image.image_name if self.product.r_image else None
 
         self.tmp_image_name = None
         self.flag_delete_image = None
@@ -177,11 +175,11 @@ class ProductRow(ft.Row):
 
 
     def _init_image_components(self):
-        if not os.path.isfile(f"{settings.MEDIA}/original/{self.p_img}.jpeg"):
-            self.p_img = None
+        if not os.path.isfile(f"{settings.MEDIA}/original/{self.image}.jpeg"):
+            self.image = None
 
         self._img_start_1 = ft.Image(
-                        src=f"{settings.MEDIA}/original/{self.p_img}.jpeg" if self.p_img else f"{settings.MEDIA}/default/no_product_photo.jpeg",
+                        src=f"{settings.MEDIA}/original/{self.image}.jpeg" if self.image else f"{settings.MEDIA}/default/no_product_photo.jpeg",
                         width=self.d_column_width['c_image'],
                         height=100,
                         fit=ft.ImageFit.CONTAIN
@@ -264,8 +262,8 @@ class ProductRow(ft.Row):
 
     def set_read_view(self):
         self.r_container_icon.content = self.r_content_edit
-        self._set_attr_Text(self.p_name, self.p_item_no, self.p_price, self.p_desc,
-                            self.p_promo_price, self.p_promo_end, self.p_promo_desc)
+        self._set_attr_Text(self.name, self.item_no, self.price, self.desc,
+                            self.promo_price, self.promo_end, self.promo_desc)
         self.r_img.content = self._img_start
         self.r_img.padding = ft.padding.only(top=5, bottom=5)
 
@@ -355,7 +353,7 @@ class ProductRow(ft.Row):
 
         # вынесено отдельно, чтобы потом можно было изменить через замену src в другом месте
         self._img_edit_1 = ft.Image(
-            src=f"{settings.MEDIA}/original/{self.p_img}.jpeg" if self.p_img else f"{settings.MEDIA}/default/no_product_photo.jpeg",
+            src=f"{settings.MEDIA}/original/{self.image}.jpeg" if self.image else f"{settings.MEDIA}/default/no_product_photo.jpeg",
             width=100,
             height=100,
             opacity=0.5,
@@ -409,7 +407,7 @@ class ProductRow(ft.Row):
                 error_image.open = True
                 error_image.update()
             else:
-                self.tmp_image_name = f"{uuid.uuid4().hex}_{self.p_name}"
+                self.tmp_image_name = f"{uuid.uuid4().hex}_{self.name}"
                 shutil.copy(path_to_src_file,
                             f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")  # копируем во временную директорию (settings.MEDIA_TMP)
                 self._img_edit_1.src = f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg"
@@ -502,7 +500,7 @@ class ProductRow(ft.Row):
                         os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
                     except:
                         pass
-                self.p_img = None
+                self.image = None
                 self._img_start_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"
                 self.r_img.content = self._img_start
 
@@ -510,8 +508,8 @@ class ProductRow(ft.Row):
 
         if self.tmp_image_name:  # если была загружена новая картинка
             tmp_path = f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg"
-            self.p_img = ut.image_to_16digit_hash(tmp_path, self.product_id)
-            old_image_name, upd_img_status = req.update_image(self.product_id, self.p_img)
+            self.image = ut.image_to_16digit_hash(tmp_path, self.product_id)
+            old_image_name, upd_img_status = req.update_image(self.product_id, self.image)
             if upd_img_status:
                 # update произошел. Удаляем старое изображение
                 if old_image_name:
@@ -519,11 +517,11 @@ class ProductRow(ft.Row):
                         os.remove(f"{settings.MEDIA}/original/{old_image_name}.jpeg")
                     except:
                         pass
-                shutil.copy(tmp_path, f"{settings.MEDIA}/original/{self.p_img}.jpeg")
+                shutil.copy(tmp_path, f"{settings.MEDIA}/original/{self.image}.jpeg")
                 os.remove(tmp_path)
                 self.tmp_image_name = None
 
-                self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
+                self._img_start_1.src = f"{settings.MEDIA}/original/{self.image}.jpeg"
 
 
     def _handle_existing_product_save(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
@@ -607,26 +605,26 @@ class ProductRow(ft.Row):
         self._update_product_attributes(v_name, v_item_no, v_price, v_desc, v_promo_price, v_promo_end, v_promo_desc)
 
         if self.tmp_image_name:
-            self.p_img = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
-                                                      self.product_id)
-            req.add_image(self.product_id, self.p_img)
+            self.image = ut.image_to_16digit_hash(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
+                                                  self.product_id)
+            req.add_image(self.product_id, self.image)
             shutil.copy(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg",
-                            f"{settings.MEDIA}/original/{self.p_img}.jpeg")
+                            f"{settings.MEDIA}/original/{self.image}.jpeg")
             os.remove(f"{settings.MEDIA_TMP}/{self.tmp_image_name}.jpeg")
             self.tmp_image_name = None
-            self._img_start_1.src = f"{settings.MEDIA}/original/{self.p_img}.jpeg"
+            self._img_start_1.src = f"{settings.MEDIA}/original/{self.image}.jpeg"
 
         return 1
 
 
     def _update_product_attributes(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
-        self.p_name = name
-        self.p_item_no = item_no
-        self.p_price = float(price) if price else None
-        self.p_desc = desc
-        self.p_promo_price = float(promo_price) if promo_price else None
-        self.p_promo_end = is_valid_date(promo_end) if promo_end else None
-        self.p_promo_desc = promo_desc
+        self.name = name
+        self.item_no = item_no
+        self.price = float(price) if price else None
+        self.desc = desc
+        self.promo_price = float(promo_price) if promo_price else None
+        self.promo_end = is_valid_date(promo_end) if promo_end else None
+        self.promo_desc = promo_desc
 
 
     def cancel(self, e):
@@ -724,29 +722,3 @@ class ProductRow(ft.Row):
             self.page.update()
 
         return flag_valid
-
-
-    def filter_name(self, text):
-        if self.p_name is None or self.p_name == "":
-            lv_name = ""
-        else:
-            lv_name = self.p_name
-
-        if text.lower() in lv_name.lower():
-            self.visible = True
-        else:
-            self.visible = False
-
-    def filter_item_no(self, text):
-        if self.p_item_no is None or self.p_item_no == "":
-            lv_item_no = ""
-        else:
-            lv_item_no = self.p_item_no
-
-        if text.lower() in lv_item_no.lower():
-            self.visible = True
-        else:
-            self.visible = False
-
-    def drop_filter(self):
-        self.visible = True

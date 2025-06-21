@@ -1,9 +1,9 @@
 from database.requests.req_products import ReqProduct
 from pages.config.errors import d_error_messages
 from pages.config.sizes import d_product_column_size
+from pages.dashboard.content.filter_header import GenericFilter
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
-from pages.dashboard.content.products.product_filter import Product_Filter
 from pages.dashboard.head_elements import header
 
 import flet as ft
@@ -15,6 +15,12 @@ class ProductsContent:
         self.page = instance.page
         self.user_role = instance.user_role
         self.view_content = []
+
+        self.field_definitions = [
+            ("image", False),
+            ("name", True),
+            ("item_no", True),
+        ]
 
     def build(self):
         self.column_with_product_rows = ft.Column(
@@ -48,7 +54,7 @@ class ProductsContent:
 
         self.column_1 = ft.Column(
             controls=[
-                Product_Filter(self.page, self.column_with_product_rows.controls).build(),
+                GenericFilter(self.page, self.column_with_product_rows.controls, self.field_definitions, d_product_column_size).build(),
                 Product_Header(self.page, self.column_with_product_rows.controls).build(),
                 self.column_with_product_rows
             ],
