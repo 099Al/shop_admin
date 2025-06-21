@@ -4,6 +4,90 @@ from database.models.models import Client, ClientsBan
 from database.requests.req_clients import ReqClients
 from pages.config.sizes import d_client_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
+from pages.dashboard.content.sort_header import SortHeader
+
+
+class ClientHeader(ft.Row):
+    def __init__(self, page, rows_controls, **kwargs):
+        super().__init__()
+        self.page = page
+        self.rows_controls: list[ClientRow] = rows_controls  # ссылка на список
+        self.d_column_size = d_client_column_size
+
+        self.el_divider = ft.Container(
+                height=self.d_column_size['el_height'],
+                width=1,
+                bgcolor="white",
+                margin=0,
+                padding=0
+            )
+
+    def build(self):
+        sort_headers = []
+
+        def _reset_all_sort_headers_except(active_header):
+            for hdr in sort_headers:
+                if hdr != active_header:
+                    hdr.reset_sort()
+
+        sort_name = SortHeader(self.page, self.rows_controls, default_sort_key='client_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+        sort_email = SortHeader(self.page, self.rows_controls, default_sort_key='client_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+        sort_telegram_name = SortHeader(self.page, self.rows_controls, default_sort_key='client_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+        sort_telegram_link = SortHeader(self.page, self.rows_controls, default_sort_key='client_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+        sort_is_banned = SortHeader(self.page, self.rows_controls, default_sort_key='client_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
+
+
+        sort_headers.append(sort_name)
+        sort_headers.append(sort_email)
+        sort_headers.append(sort_telegram_name)
+        sort_headers.append(sort_telegram_link)
+        sort_headers.append(sort_is_banned)
+
+        header_controls = [
+            ft.Container(
+                width=self.d_column_size["c_edit"],
+            ),
+            self.el_divider,
+            sort_name.attribute_header_with_sort("Имя", self.d_column_size["c_name"], str, 'name'),
+            self.el_divider,
+            self._create_header_cell("Телефон", self.d_column_size["c_phone"]),
+            self.el_divider,
+            sort_email.attribute_header_with_sort("Email", self.d_column_size["c_email"], str, 'email'),
+            self.el_divider,
+            sort_telegram_name.attribute_header_with_sort("Telegram", self.d_column_size["c_telegram_name"], str, 'telegram_name'),
+            self.el_divider,
+            sort_telegram_link.attribute_header_with_sort("Telegram Link", self.d_column_size["c_telegram_link"], str, 'telegram_link'),
+            self.el_divider,
+            sort_is_banned.attribute_header_with_sort("Бан", self.d_column_size["c_is_banned"], str, 'is_banned'),
+            self.el_divider,
+            self._create_header_cell("Причина", self.d_column_size["c_ban_reason"]),
+        ]
+
+        return ft.Row(
+            controls=header_controls,
+            height=50,
+            vertical_alignment=ft.CrossAxisAlignment.END
+        )
+
+    def _create_header_cell(self, text, width, visible=True):
+        return ft.Container(
+            content=ft.Text(
+                text,
+                color=defaultFontColor,
+                size=15,
+                font_family="cupurum",
+            ),
+            width=width,
+            alignment=ft.alignment.bottom_left,
+            visible=visible
+        )
+
+
+
+
+
+
+
 
 
 class ClientRow(ft.Row):

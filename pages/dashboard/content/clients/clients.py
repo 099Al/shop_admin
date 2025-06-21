@@ -3,8 +3,11 @@ import flet as ft
 from database.models.models import ClientsBan
 from database.requests.req_clients import ReqClients
 from pages.config.errors import d_error_messages_admin
-from pages.dashboard.content.clients.clients_elements import ClientRow
+from pages.dashboard.content.clients.clients_elements import ClientRow, ClientHeader
 from pages.dashboard.head_elements import header
+
+
+
 
 
 class ClientsContent:
@@ -32,7 +35,7 @@ class ClientsContent:
 
         self.column_1 = ft.Column(
             controls=[
-                # ClientHeader(self.page, self.column_with_rows.controls).build(),
+                ClientHeader(self.page, self.column_with_rows.controls).build(),
                 self.column_with_rows
             ],
             expand=True  # без expand scroll не работает
