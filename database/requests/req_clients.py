@@ -43,3 +43,10 @@ class ReqClients:
         except Exception as e:
             self.session.rollback()
             return None
+
+    def delete_client(self, telegram_id):
+        self.session.execute(
+            delete(Client)
+            .where(Client.telegram_id == telegram_id)
+        )
+        self.session.commit()

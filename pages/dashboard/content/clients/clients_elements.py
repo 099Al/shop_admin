@@ -242,23 +242,30 @@ class ClientRow(ft.Row):
 
 
     def delete_dialog(self, e):
-        self.page.dialog = ft.AlertDialog(
-            title=ft.Text("Подтвердите удаление"),
-            content=ft.Text("Вы уверены, что хотите удалить этого клиента?"),
+        def client_delete_handle_close(e):
+            dlg_client_delete.open = False
+            self.page.update()
+
+        def client_delete_handle_yes(e):
+            self.column_with_rows.controls.remove(self)
+            dlg_client_delete.open = False
+
+            req = ReqClients()
+            req.delete_client(self.telegram_id)
+
+            self.page.update()
+
+
+        dlg_client_delete = ft.AlertDialog(
+            title=ft.Text("Подтверждение"),
+            content=ft.Text("Удалить этого клиента?"),
             actions=[
-                ft.TextButton("Отменить", on_click=self.cancel_delete),
-                ft.TextButton("Удалить", on_click=self.delete),
+                ft.TextButton("Yes", on_click=client_delete_handle_yes),
+                ft.TextButton("No", on_click=client_delete_handle_close),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
         )
 
-        self.page.dialog.open = True
+        self.page.open(dlg_client_delete)
         self.page.update()
 
-    def cancel_delete(self, e):
-        self.page.dialog.open = False
-        self.page.update()
-
-    def delete(self, e):
-        self.column_with_rows.controls.remove(self)
-        self.page.dialog.open = False
