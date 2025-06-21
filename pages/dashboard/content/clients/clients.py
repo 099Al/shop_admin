@@ -4,6 +4,7 @@ from database.models.models import ClientsBan
 from database.requests.req_clients import ReqClients
 from pages.config.errors import d_error_messages_admin
 from pages.dashboard.content.clients.clients_elements import ClientRow, ClientHeader
+from pages.dashboard.content.clients.clients_filter import ClientsFilter
 from pages.dashboard.head_elements import header
 
 
@@ -35,6 +36,7 @@ class ClientsContent:
 
         self.column_1 = ft.Column(
             controls=[
+                ClientsFilter(self.page, self.column_with_rows.controls).build(),
                 ClientHeader(self.page, self.column_with_rows.controls).build(),
                 self.column_with_rows
             ],

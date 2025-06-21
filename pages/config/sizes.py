@@ -61,6 +61,7 @@ d_client_column_size = {"c_edit": 100,
                         "c_name": 100,
                         "c_is_banned": 90,
                         "c_ban_reason": 200,
+                        "c_dell": 50,
                         "el_height": 40
 
                         }

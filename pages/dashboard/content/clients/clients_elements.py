@@ -353,3 +353,11 @@ class ClientRow(ft.Row):
         self.page.open(dlg_client_delete)
         self.page.update()
 
+
+
+    def filter_field(self, field_name, text):
+        value = getattr(self, field_name, "") or ""
+        self.visible = text.lower() in value.lower()
+
+    def drop_filter(self):
+        self.visible = True
