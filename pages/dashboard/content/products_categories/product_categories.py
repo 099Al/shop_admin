@@ -2,17 +2,15 @@ from database.models.models import Category
 from database.models.result_objects import CategoryProducts
 from database.requests.req_categories import ReqCategory
 from database.requests.req_catgprod import ReqCategoryProduct
-from database.requests.req_products import ReqProduct
-from pages.config.errors import d_error_messages, d_error_messages_ctg_prod
-from pages.config.sizes import d_product_column_size
-from pages.dashboard.content.products.add_product_button import AddProductButton
-from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
-from pages.dashboard.content.products.product_filter import Product_Filter
-from pages.dashboard.content.products_categories.category_products_filter import CategoryProducts_Filter
-from pages.dashboard.content.products_categories.product_categories_elements import CategoryProductsRow, \
-    CategoryProducts_Header
+from pages.config.errors import d_error_messages_ctg_prod
+from pages.config.sizes import d_category_product_column_size
+from pages.dashboard.content.filter_header import GenericFilter
+
+from pages.dashboard.content.products_categories.product_categories_elements import (
+    CategoryProductsRow,
+    CategoryProducts_Header)
 from pages.dashboard.head_elements import header
-from pages.config.style import inputBgErrorColor
+
 import flet as ft
 
 
@@ -22,6 +20,12 @@ class ProductsAndCategoriesContent:
         self.page = instance.page
         self.user_role = instance.user_role
         self.view_content = []
+
+        self.field_definitions = [
+            ("category_name", True),
+            ("item_no", True),
+            ("name", True),
+        ]
 
     def build(self):
         self.column_with_rows_elements = ft.Column(
@@ -42,9 +46,10 @@ class ProductsAndCategoriesContent:
         req_ctg = ReqCategory()
         res: list[Category] = req_ctg.get_all_categories()
 
+
         self.column_1 = ft.Column(
             controls=[
-                CategoryProducts_Filter(page=self.page, rows_controls=self.column_with_rows_elements.controls).build(),
+                GenericFilter(self.page, self.column_with_rows_elements.controls, self.field_definitions, d_category_product_column_size).build(),
                 CategoryProducts_Header(
                     page=self.page,
                     rows_controls=self.column_with_rows_elements.controls
@@ -54,10 +59,7 @@ class ProductsAndCategoriesContent:
             expand=True
         )
 
-
-
         self.d_categories = {category.id: category.name for category in res}
-
         self.l_categories = []
 
         for ctg_id, ctg_name in self.d_categories.items():

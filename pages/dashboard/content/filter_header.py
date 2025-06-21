@@ -85,7 +85,7 @@ class GenericFilter(ft.Row):
 
         self.c_drop_filter = ft.Container(
             content=None,
-            width=self.d_colum_size["c_dell"]
+            width=50,
         )
 
         return ft.Row(

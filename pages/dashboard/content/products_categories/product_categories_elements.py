@@ -99,14 +99,14 @@ class CategoryProductsRow(ft.Row):
 
         self.element: CategoryProducts = element
 
-        self.p_product_id: int = self.element.product_id
-        self.p_name: str = self.element.name
-        self.p_item_no: str = self.element.item_no
-        self.p_img: str = self.element.image_name
-        self.p_category_id: int = self.element.category_id
-        self.p_category_name: str = self.element.category_name
+        self.product_id: int = self.element.product_id
+        self.name: str = self.element.name
+        self.item_no: str = self.element.item_no
+        self.img: str = self.element.image_name
+        self.category_id: int = self.element.category_id
+        self.category_name: str = self.element.category_name
 
-        self.p_image_path: str = self.element.image_path
+        self.image_path: str = self.element.image_path
 
 
 
@@ -126,7 +126,7 @@ class CategoryProductsRow(ft.Row):
 
 
     def __repr__(self):
-        return f'CategoryProductsRow(product_id={self.p_product_id}, category_id={self.p_category_id}, name={self.p_name}, item_no={self.p_item_no})'
+        return f'CategoryProductsRow(product_id={self.product_id}, category_id={self.category_id}, name={self.name}, item_no={self.item_no})'
 
 
     def _init_ui_components(self):
@@ -156,7 +156,7 @@ class CategoryProductsRow(ft.Row):
         #     self.p_img = None
 
         self._img_start_1 = ft.Image(
-                        src=self.p_image_path,
+                        src=self.image_path,
                         width=self.d_column_size['c_image'],
                         height=self.d_column_size['el_height'],
                         fit=ft.ImageFit.CONTAIN
@@ -233,9 +233,9 @@ class CategoryProductsRow(ft.Row):
     def set_read_view(self):
         self.r_edit_container.content = self.r_content_edit
 
-        self.r_category_name.content = self._field(self.p_category_name, self.d_column_size['c_category_name'], max_lines=2)
-        self.r_product_name.content = self._field(self.p_name, self.d_column_size['c_name'], max_lines=2)
-        self.r_product_item_no.content = self._field(self.p_item_no, self.d_column_size['c_item_no'], max_lines=1)
+        self.r_category_name.content = self._field(self.category_name, self.d_column_size['c_category_name'], max_lines=2)
+        self.r_product_name.content = self._field(self.name, self.d_column_size['c_name'], max_lines=2)
+        self.r_product_item_no.content = self._field(self.item_no, self.d_column_size['c_item_no'], max_lines=1)
 
 
         self.r_img.content = self._img_start
@@ -246,23 +246,16 @@ class CategoryProductsRow(ft.Row):
 
     def set_edit_view(self, e):
         if e:
-            v_category_id = self.p_category_id
+            v_category_id = self.category_id
             v_category_name = self.r_category_name.content.value
         else:
             v_category_name = None
 
-            self.r_product_name.content = self._field(self.p_name, self.d_column_size['c_name'], max_lines=2)
-            self.r_product_item_no.content = self._field(self.p_item_no, self.d_column_size['c_item_no'], max_lines=1)
+            self.r_product_name.content = self._field(self.name, self.d_column_size['c_name'], max_lines=2)
+            self.r_product_item_no.content = self._field(self.item_no, self.d_column_size['c_item_no'], max_lines=1)
 
-            #self._img_start_1.src = self.p_image_path
 
             self.r_img.content = self._img_start
-
-
-        # l_categories = []
-        #
-        # for ctg_id, ctg_name in self.d_categories.items():
-        #     l_categories.append(ft.DropdownOption(key=str(ctg_id), text=str(ctg_name)))
 
 
 
@@ -306,7 +299,7 @@ class CategoryProductsRow(ft.Row):
         new_category_id = int(self.dd_menu.value)
 
         req_catg = ReqCategoryProduct()
-        is_prodict_exist_in_category = req_catg.check_if_prodict_exist_in_category(new_category_id, self.p_product_id)
+        is_prodict_exist_in_category = req_catg.check_if_prodict_exist_in_category(new_category_id, self.product_id)
 
         if is_prodict_exist_in_category:
             d_error_messages_ctg_prod.content = ft.Text(f"Товар уже добавлен в категорию {self.d_categories[new_category_id]}")
@@ -315,14 +308,14 @@ class CategoryProductsRow(ft.Row):
             self.page.update()
             return
 
-        if self.p_category_id:
-            req_catg.update_category_product(self.p_category_id, new_category_id, self.p_product_id)
+        if self.category_id:
+            req_catg.update_category_product(self.category_id, new_category_id, self.product_id)
         else:
-            req_catg.add_category_product(new_category_id, self.p_product_id)
+            req_catg.add_category_product(new_category_id, self.product_id)
 
-        self.p_category_id = new_category_id
-        self.p_category_name = self.d_categories[new_category_id]
-        self.r_category_name.content = self._field(self.p_category_name, self.d_column_size['c_category_name'], max_lines=2)
+        self.category_id = new_category_id
+        self.category_name = self.d_categories[new_category_id]
+        self.r_category_name.content = self._field(self.category_name, self.d_column_size['c_category_name'], max_lines=2)
         self.set_read_view()
 
         self.page.update()
@@ -339,7 +332,7 @@ class CategoryProductsRow(ft.Row):
 
     def _add_category(self, e):
 
-        position = next((i for i, element in enumerate(self.column_with_rows.controls) if element.p_category_id == self.p_category_id and element.p_product_id == self.p_product_id), -1)
+        position = next((i for i, element in enumerate(self.column_with_rows.controls) if element.category_id == self.category_id and element.product_id == self.product_id), -1)
         #cur_element = self.column_with_rows.controls[position]
 
         new_element = CategoryProducts(
@@ -367,7 +360,7 @@ class CategoryProductsRow(ft.Row):
         def delete_category_product_handle_yes(e):
             req = ReqCategoryProduct()
 
-            req.delete_category_product(self.p_category_id, self.p_product_id)
+            req.delete_category_product(self.category_id, self.product_id)
 
             self.column_with_rows.controls.remove(self)
 
@@ -412,39 +405,5 @@ class CategoryProductsRow(ft.Row):
         pass
 
 
-    def filter_category(self, text):
-        if self.p_category_name is None or self.p_category_name == "":
-            lv_category = ""
-        else:
-            lv_category = self.p_category_name
 
-        if text.lower() in lv_category.lower():
-            self.visible = True
-        else:
-            self.visible = False
-
-    def filter_item_no(self, text):
-        if self.p_item_no is None or self.p_item_no == "":
-            lv_item_no = ""
-        else:
-            lv_item_no = self.p_item_no
-
-        if text.lower() in lv_item_no.lower():
-            self.visible = True
-        else:
-            self.visible = False
-
-    def filter_product(self, text):
-        if self.p_name is None or self.p_name == "":
-            lv_name = ""
-        else:
-            lv_name = self.p_name
-
-        if text.lower() in lv_name.lower():
-            self.visible = True
-        else:
-            self.visible = False
-
-    def drop_filter(self):
-        self.visible = True
 
