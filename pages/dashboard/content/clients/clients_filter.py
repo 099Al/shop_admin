@@ -32,69 +32,18 @@ class ClientsFilter(ft.Row):
         self.tf_filter_link.value = ""
         self.page.update()
 
-    def filter_name(self, e):
+    def filter_by(self, field_name, e):
         for row in self.rows_controls:
-            row.filter_field("name", e.data)
+            row.filter_field(field_name, e.data)
 
         self.c_drop_filter.content = self.icon_drop_filter
-        self.tf_filter_phone.value = ""
-        self.tf_filter_email.value = ""
-        self.tf_filter_telegram.value = ""
-        self.tf_filter_link.value = ""
 
-        self.c_drop_filter = ft.Container(
-            content=None,
-            width=self.d_colum_size["c_dell"])
-
-        self.page.update()
-
-    def filter_phone(self, e):
-        for row in self.rows_controls:
-            row.filter_field("phone", e.data)
-
-        self.c_drop_filter.content = self.icon_drop_filter
-        self.tf_filter_name.value = ""
-        self.tf_filter_email.value = ""
-        self.tf_filter_telegram.value = ""
-        self.tf_filter_link.value = ""
-
-        self.c_drop_filter = ft.Container(
-            content=None,
-            width=self.d_colum_size["c_dell"])
-        self.page.update()
-
-    def filter_email(self, e):
-        for row in self.rows_controls:
-            row.filter_field("email", e.data)
-
-        self.c_drop_filter.content = self.icon_drop_filter
-        self.tf_filter_name.value = ""
-        self.tf_filter_phone.value = ""
-        self.tf_filter_telegram.value = ""
-        self.tf_filter_link.value = ""
-        self.page.update()
-
-    def filter_telegram(self, e):
-        for row in self.rows_controls:
-            row.filter_field("telegram_name", e.data)
-
-        self.c_drop_filter.content = self.icon_drop_filter
-        self.tf_filter_name.value = ""
-        self.tf_filter_phone.value = ""
-        self.tf_filter_email.value = ""
-        self.tf_filter_link.value = ""
-        self.page.update()
-
-    def filter_link(self, e):
-        for row in self.rows_controls:
-            row.filter_field("telegram_link", e.data)
-
-        self.c_drop_filter.content = self.icon_drop_filter
-        self.tf_filter_name.value = ""
-        self.tf_filter_phone.value = ""
-        self.tf_filter_email.value = ""
-        self.tf_filter_telegram.value = ""
-        self.page.update()
+        # Clear all filters
+        self.tf_filter_name.value = "" if field_name != "name" else self.tf_filter_name.value
+        self.tf_filter_phone.value = "" if field_name != "phone" else self.tf_filter_phone.value
+        self.tf_filter_email.value = "" if field_name != "email" else self.tf_filter_email.value
+        self.tf_filter_telegram.value = "" if field_name != "telegram_name" else self.tf_filter_telegram.value
+        self.tf_filter_link.value = "" if field_name != "telegram_link" else self.tf_filter_link.value
 
 
         self.c_drop_filter = ft.Container(
@@ -106,11 +55,11 @@ class ClientsFilter(ft.Row):
 
         self.icon_drop_filter = ft.IconButton(icon=ft.icons.CANCEL, scale=0.8, on_click=self.drop_filter)
 
-        self.tf_filter_name = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=self.filter_name)
-        self.tf_filter_phone = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=self.filter_phone)
-        self.tf_filter_email = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=self.filter_email)
-        self.tf_filter_telegram = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=self.filter_telegram)
-        self.tf_filter_link = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=self.filter_link)
+        self.tf_filter_name = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("name", e))
+        self.tf_filter_phone = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("phone", e))
+        self.tf_filter_email = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("email", e))
+        self.tf_filter_telegram = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("telegram_name", e))
+        self.tf_filter_link = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("telegram_link", e))
 
         self.c_drop_filter = ft.Container(
             content=None,
