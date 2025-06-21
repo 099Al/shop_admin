@@ -10,30 +10,30 @@ class ClientsFilter(ft.Row):
         self.page = page
         self.rows_controls: list[ClientRow] = rows_controls
         self.d_colum_size = d_client_column_size
+        self.filter_fields = {}  # field_name -> TextField (only for filterable fields)
 
         self.el_divider = ft.Container(
-            height=25,
-            width=1,
-            bgcolor=None,
-            margin=0,
-            padding=0,
-            visible=True
+            height=25, width=1, bgcolor=None, margin=0, padding=0, visible=True
         )
+
+        # Format: (field_name, column_key, is_filterable)
+        self.field_definitions = [
+            ("name", "c_name", True),
+            ("phone", "c_phone", True),
+            #("some_static_field", "c_static", False),  # not filterable, space reserved
+            ("email", "c_email", True),
+            ("telegram_name", "c_telegram_name", True),
+            ("telegram_link", "c_telegram_link", True),
+        ]
 
     def drop_filter(self, e):
         for row in self.rows_controls:
             row.drop_filter()
 
-        self.c_drop_filter.content = None
+        for tf in self.filter_fields.values():
+            tf.value = ""
 
-        for field in [
-            self.tf_filter_name,
-            self.tf_filter_phone,
-            self.tf_filter_email,
-            self.tf_filter_telegram,
-            self.tf_filter_link,
-        ]:
-            field.value = ""
+        self.c_drop_filter.content = None
 
         self.page.update()
 
@@ -43,59 +43,59 @@ class ClientsFilter(ft.Row):
 
         self.c_drop_filter.content = self.icon_drop_filter
 
-        # Clear all filters
-        self.tf_filter_name.value = "" if field_name != "name" else self.tf_filter_name.value
-        self.tf_filter_phone.value = "" if field_name != "phone" else self.tf_filter_phone.value
-        self.tf_filter_email.value = "" if field_name != "email" else self.tf_filter_email.value
-        self.tf_filter_telegram.value = "" if field_name != "telegram_name" else self.tf_filter_telegram.value
-        self.tf_filter_link.value = "" if field_name != "telegram_link" else self.tf_filter_link.value
+        # Clear other filters
+        for key, tf in self.filter_fields.items():
+            if key != field_name:
+                tf.value = ""
 
-
-        self.c_drop_filter = ft.Container(
-            content=None,
-            width=self.d_colum_size["c_dell"])
         self.page.update()
 
     def build(self):
+        self.icon_drop_filter = ft.IconButton(
+            icon=ft.icons.CANCEL,
+            scale=0.8,
+            on_click=self.drop_filter
+        )
 
-        self.icon_drop_filter = ft.IconButton(icon=ft.icons.CANCEL, scale=0.8, on_click=self.drop_filter)
+        # Dynamically build controls for each field
+        filter_controls = []
+        for i, (field_name, col_key, is_filterable) in enumerate(self.field_definitions):
+            if is_filterable:
+                tf = ft.TextField(
+                    height=40,
+                    read_only=False,
+                    text_size=15,
+                    border_color=textFieldColor,
+                    color="white",
+                    on_submit=lambda e, f=field_name: self.filter_by(f, e)
+                )
+                self.filter_fields[field_name] = tf
+                content = tf
+            else:
+                content = ft.Container()  # Empty placeholder, no filter
 
-        self.tf_filter_name = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("name", e))
-        self.tf_filter_phone = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("phone", e))
-        self.tf_filter_email = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("email", e))
-        self.tf_filter_telegram = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("telegram_name", e))
-        self.tf_filter_link = ft.TextField(height=40, read_only=False, text_size=15, border_color=textFieldColor,  color="white", on_submit=lambda e: self.filter_by("telegram_link", e))
+            if i > 0:
+                filter_controls.append(self.el_divider)
+
+            filter_controls.append(
+                ft.Container(content=content, width=self.d_colum_size[col_key])
+            )
 
         self.c_drop_filter = ft.Container(
             content=None,
-            width=self.d_colum_size["c_dell"])
+            width=self.d_colum_size["c_dell"]
+        )
 
         return ft.Row(
             controls=[
-                ft.Container(content=ft.IconButton(icon=ft.icons.FILTER_ALT, scale=0.8), height=40,
-                             width=self.d_colum_size["c_edit"], alignment=ft.alignment.center_right, padding=0),
-
-                self.el_divider,
                 ft.Container(
-                    content=self.tf_filter_name,
-                    width=self.d_colum_size["c_name"]),
-                self.el_divider,
-                ft.Container(
-                    content=self.tf_filter_phone,
-                    width=self.d_colum_size["c_phone"]),
-                self.el_divider,
-                ft.Container(
-                    content=self.tf_filter_email,
-                    width=self.d_colum_size["c_email"]),
-                self.el_divider,
-                ft.Container(
-                    content=self.tf_filter_telegram,
-                    width=self.d_colum_size["c_telegram_name"]),
-                self.el_divider,
-                ft.Container(
-                    content=self.tf_filter_link,
-                    width=self.d_colum_size["c_telegram_link"]),
-
+                    content=ft.IconButton(icon=ft.icons.FILTER_ALT, scale=0.8),
+                    height=40,
+                    width=self.d_colum_size["c_edit"],
+                    alignment=ft.alignment.center_right,
+                    padding=0
+                ),
+                *filter_controls,
                 self.c_drop_filter
             ],
             vertical_alignment=ft.CrossAxisAlignment.END
