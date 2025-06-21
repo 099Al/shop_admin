@@ -1,4 +1,4 @@
-from sqlalchemy import select, func, update, delete, insert
+from sqlalchemy import select, update, delete
 
 from database.connect import DataBase
 from database.models.models import Client
