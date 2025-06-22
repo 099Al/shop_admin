@@ -6,83 +6,7 @@ from pages.config.errors import d_error_messages
 from pages.config.info_messages import snack_message_pass
 from pages.config.sizes import d_admin_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
-from pages.dashboard.content.sort_header import SortHeader
 from utils.functions import hash_password_
-
-
-class AdminHeader(ft.Row):
-    def __init__(self, page, rows_controls, **kwargs):
-        super().__init__()
-        self.page = page
-        self.rows_controls: list[AdminRow] = rows_controls  # ссылка на список
-        self.d_column_size = d_admin_column_size
-
-        self.el_divider = ft.Container(
-            height=25,
-            width=1,
-            bgcolor="white",
-            margin=0,
-            padding=0
-        )
-
-
-    def build(self):
-
-        sort_headers = []
-
-        def _reset_all_sort_headers_except(active_header):
-            for hdr in sort_headers:
-                if hdr != active_header:
-                    hdr.reset_sort()
-
-        sort_telegram = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-        sort_role = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-        sort_phone = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-        sort_name = SortHeader(self.page, self.rows_controls, default_sort_key='admin_telegram_id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-
-        sort_headers.append(sort_telegram)
-        sort_headers.append(sort_role)
-        sort_headers.append(sort_phone)
-        sort_headers.append(sort_name)
-
-        header_controls = [
-            ft.Container(
-                width=self.d_column_size["c_edit"],
-            ),
-            self.el_divider,
-            sort_telegram.attribute_header_with_sort("Telegram", self.d_column_size["c_telegram_name"], str, 'admin_telegram_name'),
-            self.el_divider,
-            sort_role.attribute_header_with_sort("Role", self.d_column_size["c_role"], str, 'admin_role'),
-            self.el_divider,
-            sort_phone.attribute_header_with_sort("Телефон", self.d_column_size["c_phone"], str, 'admin_phone'),
-            self.el_divider,
-            self._create_header_cell("Email", self.d_column_size["c_email"]),
-            self.el_divider,
-            sort_name.attribute_header_with_sort("Имя", self.d_column_size["c_name"], str, 'admin_name'),
-            self.el_divider,
-            self._create_header_cell("Telegram Link", self.d_column_size["c_telegram_link"]),
-            self.el_divider,
-            self._create_header_cell("Пароль", self.d_column_size["c_reset_password"]),
-        ]
-
-        return ft.Row(
-            controls=header_controls,
-            height=50,
-            vertical_alignment=ft.CrossAxisAlignment.END
-        )
-
-    def _create_header_cell(self, text, width, visible=True):
-        return ft.Container(
-            content=ft.Text(
-                text,
-                color=defaultFontColor,
-                size=15,
-                font_family="cupurum",
-            ),
-            width=width,
-            alignment=ft.alignment.bottom_left,
-            visible=visible
-        )
 
 
 class AdminRow(ft.Row):
@@ -98,13 +22,13 @@ class AdminRow(ft.Row):
 
         self.admin: Admin = admin
 
-        self.admin_telegram_id: str = self.admin.telegram_id
-        self.admin_telegram_name: str = self.admin.telegram_name
-        self.admin_telegram_link: str = self.admin.telegram_link
-        self.admin_name: str = self.admin.name
-        self.admin_phone: str = self.admin.phone
-        self.admin_email: str = self.admin.email
-        self.admin_role: str = self.admin.role
+        self.telegram_id: str = self.admin.telegram_id
+        self.telegram_name: str = self.admin.telegram_name
+        self.telegram_link: str = self.admin.telegram_link
+        self.name: str = self.admin.name
+        self.phone: str = self.admin.phone
+        self.email: str = self.admin.email
+        self.role: str = self.admin.role
 
         self._init_ui_components()
 
@@ -151,7 +75,7 @@ class AdminRow(ft.Row):
         self.r_telegram_name = ft.Container(width=self.d_column_size['c_telegram_name'], alignment=ft.alignment.bottom_left)
         self.r_telegram_link = ft.Container(width=self.d_column_size['c_telegram_link'], alignment=ft.alignment.bottom_left)
         self.r_role = ft.Container(width=self.d_column_size['c_role'], alignment=ft.alignment.bottom_left)
-        self.r_password_reset = ft.Container(width=self.d_column_size['c_reset_password'], alignment=ft.alignment.bottom_left)
+        self.r_password_reset = ft.Container(width=self.d_column_size['c_password'], alignment=ft.alignment.bottom_left)
 
     def _init_edit_button(self):
         self.r_content_edit = ft.Row(controls=[
@@ -210,13 +134,13 @@ class AdminRow(ft.Row):
     def set_read_view(self):
         self.r_container_icon.content = self.r_content_edit
 
-        self.r_name.content = self._field(text=self.admin_name, width=self.d_column_size['c_name'], max_lines=2)
-        self.r_phone.content = self._field(text=self.admin_phone, width=self.d_column_size['c_phone'])
-        self.r_email.content = self._field(text=self.admin_email, width=self.d_column_size['c_email'])
-        self.r_telegram_name.content = self._field(text=self.admin_telegram_name, width=self.d_column_size['c_telegram_name'])
-        self.r_telegram_link.content = self._field(text=self.admin_telegram_link, width=self.d_column_size['c_telegram_link'])
-        self.r_role.content = self._field(text=(self.admin_role).replace("_", " ").title(), width=self.d_column_size['c_role'])  #todo: error while edit name
-        self.r_password_reset.content = ft.CupertinoButton(content=ft.Text("Сбросить", color=ft.Colors.WHITE, size=14), on_click=self.reset_password, width=self.d_column_size['c_reset_password'])
+        self.r_name.content = self._field(text=self.name, width=self.d_column_size['c_name'], max_lines=2)
+        self.r_phone.content = self._field(text=self.phone, width=self.d_column_size['c_phone'])
+        self.r_email.content = self._field(text=self.email, width=self.d_column_size['c_email'])
+        self.r_telegram_name.content = self._field(text=self.telegram_name, width=self.d_column_size['c_telegram_name'])
+        self.r_telegram_link.content = self._field(text=self.telegram_link, width=self.d_column_size['c_telegram_link'])
+        self.r_role.content = self._field(text=(self.role).replace("_", " ").title(), width=self.d_column_size['c_role'])  #todo: error while edit name
+        self.r_password_reset.content = ft.CupertinoButton(content=ft.Text("Сбросить", color=ft.Colors.WHITE, size=14), on_click=self.reset_password, width=self.d_column_size['c_password'])
 
 
     def edit(self, e):
@@ -279,31 +203,31 @@ class AdminRow(ft.Row):
         v_telegram_link = self.r_telegram_link.content.value
         v_role = self.r_role.content.value
 
-        if (v_name != self.admin_name or
-               v_phone != self.admin_phone or
-               v_email != self.admin_email or
-               v_telegram_name != self.admin_telegram_name or
-               v_telegram_link != self.admin_telegram_link or
-               v_role != self.admin_role
+        if (v_name != self.name or
+               v_phone != self.phone or
+               v_email != self.email or
+               v_telegram_name != self.telegram_name or
+               v_telegram_link != self.telegram_link or
+               v_role != self.role
                ):
 
 
-            self.admin_name = v_name
-            self.admin_phone = v_phone
-            self.admin_email = v_email
-            self.admin_telegram_name = v_telegram_name
-            self.admin_telegram_link = v_telegram_link
-            self.admin_role = v_role
+            self.name = v_name
+            self.phone = v_phone
+            self.email = v_email
+            self.telegram_name = v_telegram_name
+            self.telegram_link = v_telegram_link
+            self.role = v_role
 
             req = ReqAdmins()
             req.update_user(
-                self.admin_telegram_id,
-                name=self.admin_name,
-                phone=self.admin_phone,
-                email=self.admin_email,
-                telegram_name=self.admin_telegram_name,
-                telegram_link=self.admin_telegram_link,
-                role=self.admin_role
+                self.telegram_id,
+                name=self.name,
+                phone=self.phone,
+                email=self.email,
+                telegram_name=self.telegram_name,
+                telegram_link=self.telegram_link,
+                role=self.role
             )
 
 
@@ -323,7 +247,7 @@ class AdminRow(ft.Row):
     def delete_dialog(self, e):
         def delete_admin_handle_yes(e):
             req = ReqAdmins()
-            req.delete_admin(self.admin_telegram_id)
+            req.delete_admin(self.telegram_id)
             self.column_with_rows.controls.remove(self)
             dlg_delete.open = False
             self.page.update()
@@ -370,7 +294,7 @@ class AdminRow(ft.Row):
                         row_3.visible = True
                         dlg_reset_password.content.update()
                         return
-                req.set_password(self.admin_telegram_id,  hash_password_(new_pass))
+                req.set_password(self.telegram_id, hash_password_(new_pass))
                 dlg_reset_password.open = False
                 snack_message_pass.open = True
                 self.page.update()
@@ -443,4 +367,4 @@ class AdminRow(ft.Row):
 
 
     def __repr__(self):
-        return (f'{self.__class__.__name__} (id={self.admin_telegram_id}, name={self.admin_name}, role={self.admin_role})')
+        return (f'{self.__class__.__name__} (id={self.telegram_id}, name={self.name}, role={self.role})')

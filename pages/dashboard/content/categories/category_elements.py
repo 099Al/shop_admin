@@ -5,74 +5,10 @@ from database.requests.req_categories import ReqCategory
 from pages.config.errors import error_message_categtory, error_message_category_validate_order
 from pages.config.sizes import d_category_width
 from pages.config.style import *
-from pages.dashboard.content.sort_header import SortHeader
 
-
-
-class Category_Header:
-    def __init__(self, page, rows_controls):
-        super().__init__()
-        self.page = page
-        self.rows_controls: list[CategoryRow] = rows_controls
-        self.d_category_width = d_category_width
-
-        self.el_divider = ft.Container(
-                height=35,
-                width=1,
-                bgcolor="white",
-                margin=0,
-                padding=0
-            )
-
-    def _create_header_cell(self, text, width, visible=True):
-        return ft.Container(
-            content=ft.Text(
-                text,
-                color=defaultFontColor,
-                size=15,
-                font_family="cupurum",
-            ),
-            width=width,
-            alignment=ft.alignment.bottom_left,
-            visible=visible
-        )
-
-    def build(self):
-
-        sort_headers = []
-
-        def _reset_all_sort_headers_except(active_header):
-            for hdr in sort_headers:
-                if hdr != active_header:
-                    hdr.reset_sort()
-
-        sort_category = SortHeader(self.page, self.rows_controls, default_sort_key='id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-        sort_order = SortHeader(self.page, self.rows_controls, default_sort_key='id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-
-        sort_headers.append(sort_category)
-        sort_headers.append(sort_order)
-
-        category_controls = [
-                ft.Container(
-                    width=d_category_width["c_edit"],
-                ),
-                self.el_divider,
-                sort_category.attribute_header_with_sort("Категория", d_category_width["c_category"], str, 'p_name'),
-                self.el_divider,
-                self._create_header_cell("Количество позиций", d_category_width["c_cnt"]),
-                self.el_divider,
-                sort_order.attribute_header_with_sort("Порядковый\nномер", d_category_width["c_order_sort"], int, 'p_order'),
-                self.el_divider,
-            ]
-
-        return ft.Row(
-                controls=category_controls,
-                height=50,
-                vertical_alignment=ft.CrossAxisAlignment.END,
-            )
 
 class CategoryRow(ft.Row):
-    def __init__(self, page, category, p_product_cnt, column_with_rows, **kwargs):
+    def __init__(self, page, category, product_cnt, column_with_rows, **kwargs):
         super().__init__()
         self.page = page
         self.column_with_rows = column_with_rows  # ссылка на список категорий, чтобы отсюда ее модифицировать
@@ -83,9 +19,9 @@ class CategoryRow(ft.Row):
 
         self.category: Category = category
         self.id = category.id                   #id категории в БД
-        self.p_name = category.name             #название категории
-        self.p_order = category.order_number    #порядковый номер для сортировки
-        self.p_product_cnt = p_product_cnt      # количество продуктов в категории
+        self.name = category.name             #название категории
+        self.order_sort = category.order_number    #порядковый номер для сортировки
+        self.product_cnt = product_cnt      # количество продуктов в категории
 
         self.el_divider = ft.Container(
             height=25,
@@ -98,8 +34,8 @@ class CategoryRow(ft.Row):
         )
 
         #init attr containers
-        self.r_name = ft.Container(width=self.d_width['c_category'], alignment=ft.alignment.bottom_left)
-        self.r_cnt = ft.Container(width=self.d_width['c_cnt'], alignment=ft.alignment.bottom_left)
+        self.r_name = ft.Container(width=self.d_width['c_name'], alignment=ft.alignment.bottom_left)
+        self.r_cnt = ft.Container(width=self.d_width['c_product_cnt'], alignment=ft.alignment.bottom_left)
         self.r_order = ft.Container(width=self.d_width['c_order_sort'], alignment=ft.alignment.bottom_left)
 
         self.r_content_edit = ft.Row(controls=[
@@ -116,7 +52,7 @@ class CategoryRow(ft.Row):
             # bgcolor="orange",
             width=self.d_width['c_edit'],
             # padding=ft.padding.only(right=30),
-            content=self.r_content_edit if self.p_name != "default" else None  #default нельзя изменить
+            content=self.r_content_edit if self.name != "default" else None  #default нельзя изменить
         )
 
         #init delete button
@@ -125,7 +61,7 @@ class CategoryRow(ft.Row):
                 margin=ft.margin.only(left=0),
                 padding=ft.padding.only(right=15),
 
-                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog) if self.p_name != "default" else None  #default нельзя удалить
+                content=ft.IconButton(ft.icons.DELETE, on_click=self.delete_dialog) if self.name != "default" else None  #default нельзя удалить
             )
 
 
@@ -147,9 +83,9 @@ class CategoryRow(ft.Row):
 
     def _set_read_view(self):
         self.r_container_icon.content = self.r_content_edit
-        self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_cnt.content = ft.Text(self.p_product_cnt, color=defaultFontColor, size=15, font_family="cupurum")
-        self.r_order.content = ft.Text(self.p_order, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_name.content = ft.Text(self.name, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_cnt.content = ft.Text(self.product_cnt, color=defaultFontColor, size=15, font_family="cupurum")
+        self.r_order.content = ft.Text(self.order_sort, color=defaultFontColor, size=15, font_family="cupurum")
 
 
 
@@ -173,8 +109,8 @@ class CategoryRow(ft.Row):
         v_text = self.r_name.content.value
         v_order = self.r_order.content.value
         # self.category_text = v_text  # save text
-        self.p_name = v_text
-        self.p_order = v_order
+        self.name = v_text
+        self.order_sort = v_order
 
         self.r_name.content = ft.TextField(v_text, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor,
                                            text_size=15)
@@ -214,7 +150,7 @@ class CategoryRow(ft.Row):
             return
 
         req = ReqCategory()
-        upd_res = req.update_category(self.p_name, v_text, v_order)
+        upd_res = req.update_category(self.name, v_text, v_order)
 
         if upd_res is None:
             self.error_message.open = True
@@ -231,8 +167,8 @@ class CategoryRow(ft.Row):
 
         # обновление параметров Category внутри Category Row
         self.category = req.get_category_by_id(self.id)
-        self.p_name = v_text
-        self.p_order = v_order
+        self.name = v_text
+        self.order_sort = v_order
 
         self._set_read_view()
         self.page.update()
