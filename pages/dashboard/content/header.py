@@ -64,6 +64,8 @@ class GenericHeader(ft.Row):
             else:
                 header_controls.append(self._create_header_cell(label, width))
 
+        header_controls.append(self.el_divider)
+
         return ft.Row(
             controls=header_controls,
             height=50,

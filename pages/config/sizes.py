@@ -14,9 +14,11 @@ pr_promo_desc_max_length = 350
 #Названия должны совпадать с названиями в классе  self.name -> c_name  иначе не будет работать фильтр
 
 d_category_width = {"c_edit": 80,
-                   "c_category": 300,
-                   "c_cnt": 150,
-                   "c_order_sort": 130}
+                   "c_name": 300,
+                   "c_product_cnt": 150,
+                   "c_order_sort": 130,
+                   "el_height": 40
+                    }
 
 d_product_column_size = {"c_edit": 100,
                          "c_image": 100,
@@ -27,7 +29,8 @@ d_product_column_size = {"c_edit": 100,
                          "c_price_promo": 80,
                          "c_promo_end": 100,
                          "c_promo_desc": 150,
-                         "c_category_name": 300
+                         "c_category_name": 300,
+                         "el_height": 40
                          }
 
 d_category_product_column_size = {"c_edit": 100,

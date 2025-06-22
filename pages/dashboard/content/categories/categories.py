@@ -3,6 +3,7 @@ from pages.config.errors import error_message_categtory, error_message_category_
 from pages.config.sizes import d_category_width
 from pages.dashboard.content.categories.add_category_button import AddCategoryButton
 from pages.dashboard.content.categories.category_elements import CategoryRow, Category_Header
+from pages.dashboard.content.header import GenericHeader
 from pages.dashboard.head_elements import header
 from pages.config.style import inputBgErrorColor
 import flet as ft
@@ -15,6 +16,12 @@ class CategoriesContent:
         self.page = instance.page
         self.user_role = instance.user_role
         self.view_content = []
+        self.field_definitions_header = [
+            {"label": "", "field_name": "edit", "sort_attr": None, "is_sortable": False, "type": None},
+            {"label": "Название", "field_name": "name", "sort_attr": "name", "is_sortable": True, "type": str},
+            {"label": "Количество товаров", "field_name": "product_cnt", "sort_attr": None, "is_sortable": False, "type": str},
+            {"label": "Порядковый\nномер", "field_name": "order_sort", "sort_attr": "order_sort", "is_sortable": True, "type": int},
+        ]
 
     def build(self):
         self.column_with_category_rows = ft.Column(
@@ -48,7 +55,16 @@ class CategoriesContent:
         self.column_1 = ft.Column(
             controls=[
                 # Category_Filter(self.page, self.column_with_category_rows.controls, d_category_width).build(),
-                Category_Header(self.page, self.column_with_category_rows.controls).build(),
+                GenericHeader(
+                    self.page,
+                    self.column_with_category_rows.controls,
+                    self.field_definitions_header,
+                    d_category_width,
+                    'id',
+                    int,
+                    False
+                ).build(),
+                # Category_Header(self.page, self.column_with_category_rows.controls).build(),
                 self.column_with_category_rows
             ],
             expand=True  #без expand scroll не работает
@@ -60,7 +76,7 @@ class CategoriesContent:
                 CategoryRow(
                     page=self.page,
                     category=category,
-                    p_product_cnt=str(p_cnt),
+                    product_cnt=str(p_cnt),
                     column_with_rows=self.column_with_category_rows
                 )
             )
