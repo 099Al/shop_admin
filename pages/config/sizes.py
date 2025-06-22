@@ -33,12 +33,12 @@ d_product_column_size = {"edit": 100,
                          "el_height": 40
                          }
 
-d_category_product_column_size = {"c_edit": 100,
-                                  "c_category_name": 300,
-                                  "c_image": 70,
-                                  "c_name": 300,
-                                  "c_item_no": 100,
-                                  "c_dell_add": 100,
+d_category_product_column_size = {"edit": 100,
+                                  "category_name": 300,
+                                  "image": 70,
+                                  "name": 300,
+                                  "item_no": 100,
+                                  "dell_add": 100,
                                   "el_height": 40
                                   }
 
