@@ -5,71 +5,7 @@ from database.requests.req_categories import ReqCategory
 from pages.config.errors import error_message_categtory, error_message_category_validate_order
 from pages.config.sizes import d_category_width
 from pages.config.style import *
-from pages.dashboard.content.sort_header import SortHeader
 
-
-
-class Category_Header:
-    def __init__(self, page, rows_controls):
-        super().__init__()
-        self.page = page
-        self.rows_controls: list[CategoryRow] = rows_controls
-        self.d_category_width = d_category_width
-
-        self.el_divider = ft.Container(
-                height=35,
-                width=1,
-                bgcolor="white",
-                margin=0,
-                padding=0
-            )
-
-    def _create_header_cell(self, text, width, visible=True):
-        return ft.Container(
-            content=ft.Text(
-                text,
-                color=defaultFontColor,
-                size=15,
-                font_family="cupurum",
-            ),
-            width=width,
-            alignment=ft.alignment.bottom_left,
-            visible=visible
-        )
-
-    def build(self):
-
-        sort_headers = []
-
-        def _reset_all_sort_headers_except(active_header):
-            for hdr in sort_headers:
-                if hdr != active_header:
-                    hdr.reset_sort()
-
-        sort_category = SortHeader(self.page, self.rows_controls, default_sort_key='id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-        sort_order = SortHeader(self.page, self.rows_controls, default_sort_key='id', sort_key_type=int, sort_key_reverse=False, reset_others_callback=_reset_all_sort_headers_except)
-
-        sort_headers.append(sort_category)
-        sort_headers.append(sort_order)
-
-        category_controls = [
-                ft.Container(
-                    width=d_category_width["c_edit"],
-                ),
-                self.el_divider,
-                sort_category.attribute_header_with_sort("Категория", d_category_width["c_name"], str, 'name'),
-                self.el_divider,
-                self._create_header_cell("Количество позиций", d_category_width["c_product_cnt"]),
-                self.el_divider,
-                sort_order.attribute_header_with_sort("Порядковый\nномер", d_category_width["c_order_sort"], int, 'order_sort'),
-                self.el_divider,
-            ]
-
-        return ft.Row(
-                controls=category_controls,
-                height=50,
-                vertical_alignment=ft.CrossAxisAlignment.END,
-            )
 
 class CategoryRow(ft.Row):
     def __init__(self, page, category, product_cnt, column_with_rows, **kwargs):

@@ -2,10 +2,9 @@ from database.requests.req_categories import ReqCategory
 from pages.config.errors import error_message_categtory, error_message_category_validate_order
 from pages.config.sizes import d_category_width
 from pages.dashboard.content.categories.add_category_button import AddCategoryButton
-from pages.dashboard.content.categories.category_elements import CategoryRow, Category_Header
+from pages.dashboard.content.categories.category_elements import CategoryRow
 from pages.dashboard.content.header import GenericHeader
 from pages.dashboard.head_elements import header
-from pages.config.style import inputBgErrorColor
 import flet as ft
 
 
