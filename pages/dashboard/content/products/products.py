@@ -2,9 +2,11 @@ from database.requests.req_products import ReqProduct
 from pages.config.errors import d_error_messages
 from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.filter_header import GenericFilter
+from pages.dashboard.content.header import GenericHeader
 from pages.dashboard.content.products.add_product_button import AddProductButton
 from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
 from pages.dashboard.head_elements import header
+from datetime import date
 
 import flet as ft
 
@@ -16,11 +18,44 @@ class ProductsContent:
         self.user_role = instance.user_role
         self.view_content = []
 
-        self.field_definitions = [
+        self.field_definitions_filter = [
             ("image", False),
             ("name", True),
             ("item_no", True),
         ]
+
+        #  ),
+        #         el_divider,
+        #         self._create_header_cell("Изображение", self.d_column_size["c_image"]),
+        #         el_divider,
+        #         sort_name.attribute_header_with_sort("Наименование", self.d_column_size["c_name"], str, 'p_name'),
+        #         el_divider,
+        #         sort_item_no.attribute_header_with_sort("Артикул", self.d_column_size["с_item_no"], str, 'p_item_no'),
+        #         el_divider,
+        #         sort_price.attribute_header_with_sort("Цена", self.d_column_size["c_price"], float, 'p_price'),
+        #         el_divider,
+        #         self._create_header_cell("Описание", self.d_column_size["c_desc"]),
+        #         el_divider,
+        #         self._create_header_cell("Цена по Акции", self.d_column_size["c_price_promo"]),
+        #         el_divider,
+        #         sort_promo.attribute_header_with_sort("Акция до", self.d_column_size["c_promo_end"], date, 'p_promo_end'),
+        #         el_divider,
+        #         self._create_header_cell("Акция Описание", self.d_column_size["c_promo_desc"]),
+        #         el_divider,
+                #self.header_category
+
+        self.field_definitions_header = [
+            {"label": "", "field_name": "edit", "sort_attr": None, "is_sortable": False, "type": None},
+            {"label": "Изображение", "field_name": "image", "sort_attr": None, "is_sortable": False, "type": None},
+            {"label": "Наименование", "field_name": "name", "sort_attr": "name", "is_sortable": True, "type": str},
+            {"label": "Артикул", "field_name": "item_no", "sort_attr": "item_no", "is_sortable": True, "type": str},
+            {"label": "Цена", "field_name": "price", "sort_attr": "price", "is_sortable": True, "type": float},
+            {"label": "Описание", "field_name": "desc", "sort_attr": None, "is_sortable": False, "type": None},
+            {"label": "Цена по\nАкции", "field_name": "promo_price", "sort_attr": "promo_price", "is_sortable": True, "type": float},
+            {"label": "Акция до", "field_name": "promo_end", "sort_attr": "promo_end", "is_sortable": True, "type": date},
+            {"label": "Акция Описание", "field_name": "promo_desc", "sort_attr": None, "is_sortable": False, "type": None},
+        ]
+
 
     def build(self):
         self.column_with_product_rows = ft.Column(
@@ -54,8 +89,17 @@ class ProductsContent:
 
         self.column_1 = ft.Column(
             controls=[
-                GenericFilter(self.page, self.column_with_product_rows.controls, self.field_definitions, d_product_column_size).build(),
+                GenericFilter(self.page, self.column_with_product_rows.controls, self.field_definitions_filter, d_product_column_size).build(),
                 Product_Header(self.page, self.column_with_product_rows.controls).build(),
+                GenericHeader(
+                    self.page,
+                    self.column_with_product_rows.controls,
+                    self.field_definitions_header,
+                    d_product_column_size,
+                    default_sort_key='product_id',
+                    sort_key_type=int,
+                    sort_key_reverse=True
+                ).build(),
                 self.column_with_product_rows
             ],
             expand=True  #без expand scroll не работает
