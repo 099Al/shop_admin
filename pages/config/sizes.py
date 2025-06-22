@@ -10,6 +10,9 @@ pr_item_no_max_length = 25
 pr_description_max_length = 350
 pr_promo_desc_max_length = 350
 
+
+#Названия должны совпадать с названиями в классе  self.name -> c_name  иначе не будет работать фильтр
+
 d_category_width = {"c_edit": 80,
                    "c_category": 300,
                    "c_cnt": 150,
