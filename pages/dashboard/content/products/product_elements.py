@@ -83,17 +83,17 @@ class Product_Header:
                 el_divider,
                 self._create_header_cell("Изображение", self.d_column_size["c_image"]),
                 el_divider,
-                sort_name.attribute_header_with_sort("Наименование", self.d_column_size["c_name"], str, 'p_name'),
+                sort_name.attribute_header_with_sort("Наименование", self.d_column_size["c_name"], str, 'name'),
                 el_divider,
-                sort_item_no.attribute_header_with_sort("Артикул", self.d_column_size["с_item_no"], str, 'p_item_no'),
+                sort_item_no.attribute_header_with_sort("Артикул", self.d_column_size["c_item_no"], str, 'item_no'),
                 el_divider,
-                sort_price.attribute_header_with_sort("Цена", self.d_column_size["c_price"], float, 'p_price'),
+                sort_price.attribute_header_with_sort("Цена", self.d_column_size["c_price"], float, 'price'),
                 el_divider,
                 self._create_header_cell("Описание", self.d_column_size["c_desc"]),
                 el_divider,
-                self._create_header_cell("Цена по Акции", self.d_column_size["c_price_promo"]),
+                self._create_header_cell("Цена по Акции", self.d_column_size["c_promo_price"]),
                 el_divider,
-                sort_promo.attribute_header_with_sort("Акция до", self.d_column_size["c_promo_end"], date, 'p_promo_end'),
+                sort_promo.attribute_header_with_sort("Акция до", self.d_column_size["c_promo_end"], date, 'promo_end'),
                 el_divider,
                 self._create_header_cell("Акция Описание", self.d_column_size["c_promo_desc"]),
                 el_divider,
@@ -191,10 +191,10 @@ class ProductRow(ft.Row):
     def _init_attr_containers(self):
 
         self.r_name = ft.Container(width=self.d_column_width['c_name'], alignment=ft.alignment.bottom_left)
-        self.r_item_no = ft.Container(width=self.d_column_width['с_item_no'], alignment=ft.alignment.bottom_left)
+        self.r_item_no = ft.Container(width=self.d_column_width['c_item_no'], alignment=ft.alignment.bottom_left)
         self.r_price = ft.Container(width=self.d_column_width['c_price'], alignment=ft.alignment.bottom_left)
         self.r_desc = ft.Container(width=self.d_column_width['c_desc'], alignment=ft.alignment.bottom_left)
-        self.r_promo_price = ft.Container(width=self.d_column_width['c_price'], alignment=ft.alignment.bottom_left)
+        self.r_promo_price = ft.Container(width=self.d_column_width['c_promo_price'], alignment=ft.alignment.bottom_left)
         self.r_promo_end = ft.Container(width=self.d_column_width['c_promo_end'], alignment=ft.alignment.bottom_left)
         self.r_promo_desc = ft.Container(width=self.d_column_width['c_promo_desc'], alignment=ft.alignment.bottom_left)
 
@@ -431,10 +431,10 @@ class ProductRow(ft.Row):
 
     def _set_attr_Text(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
         self.r_name.content = self._field(name, self.d_column_width['c_name'], max_lines=2)
-        self.r_item_no.content = self._field(item_no, self.d_column_width['с_item_no'])
+        self.r_item_no.content = self._field(item_no, self.d_column_width['c_item_no'])
         self.r_price.content = self._field(price, self.d_column_width['c_price'])
         self.r_desc.content = self._field(desc, self.d_column_width['c_desc'], max_lines=4)
-        self.r_promo_price.content = self._field(promo_price, self.d_column_width['c_price'])
+        self.r_promo_price.content = self._field(promo_price, self.d_column_width['c_promo_price'])
         self.r_promo_end.content = self._field(promo_end, self.d_column_width['c_promo_end'])
         self.r_promo_desc.content = self._field(promo_desc, self.d_column_width['c_promo_desc'], max_lines=4)
 
