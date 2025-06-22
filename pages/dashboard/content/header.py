@@ -40,7 +40,7 @@ class GenericHeader(ft.Row):
 
             field_name = col.get("field_name")
             label = col["label"]
-            width_key = f"c_{field_name}"
+            width_key = f"{field_name}"
             width = self.d_column_size.get(width_key, 80)
 
             if col.get("is_sortable"):

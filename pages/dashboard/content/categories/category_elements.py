@@ -34,9 +34,9 @@ class CategoryRow(ft.Row):
         )
 
         #init attr containers
-        self.r_name = ft.Container(width=self.d_width['c_name'], alignment=ft.alignment.bottom_left)
-        self.r_cnt = ft.Container(width=self.d_width['c_product_cnt'], alignment=ft.alignment.bottom_left)
-        self.r_order = ft.Container(width=self.d_width['c_order_sort'], alignment=ft.alignment.bottom_left)
+        self.r_name = ft.Container(width=self.d_width['name'], alignment=ft.alignment.bottom_left)
+        self.r_cnt = ft.Container(width=self.d_width['product_cnt'], alignment=ft.alignment.bottom_left)
+        self.r_order = ft.Container(width=self.d_width['order_sort'], alignment=ft.alignment.bottom_left)
 
         self.r_content_edit = ft.Row(controls=[
             ft.Container(
@@ -50,7 +50,7 @@ class CategoryRow(ft.Row):
         #элемент с редактированием
         self.r_container_icon = ft.Container(
             # bgcolor="orange",
-            width=self.d_width['c_edit'],
+            width=self.d_width['edit'],
             # padding=ft.padding.only(right=30),
             content=self.r_content_edit if self.name != "default" else None  #default нельзя изменить
         )
@@ -155,13 +155,7 @@ class CategoryRow(ft.Row):
         if upd_res is None:
             self.error_message.open = True
             self.error_message.update()
-            # #self.r_name.content = ft.Text(self.p_name, color=defaultFontColor, size=15, font_family="cupurum")
-            # self.r_name.content = ft.TextField(self.p_name, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
-            # self.r_order.content = ft.TextField(self.p_order, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
         else:
-            # self.r_name.content = ft.Text(v_text, color=defaultFontColor, size=15, font_family="cupurum")
-            # self.r_order.content = ft.Text(v_order, color=defaultFontColor, size=15, font_family="cupurum")
-            #
             self.r_container_icon.content = self.r_content_edit
             self.r_container_icon.update()
 

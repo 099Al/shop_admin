@@ -98,7 +98,7 @@ class ProductRow(ft.Row):
 
         self._img_start_1 = ft.Image(
                         src=f"{settings.MEDIA}/original/{self.image}.jpeg" if self.image else f"{settings.MEDIA}/default/no_product_photo.jpeg",
-                        width=self.d_column_width['c_image'],
+                        width=self.d_column_width['image'],
                         height=100,
                         fit=ft.ImageFit.CONTAIN
         )
@@ -108,13 +108,13 @@ class ProductRow(ft.Row):
 
     def _init_attr_containers(self):
 
-        self.r_name = ft.Container(width=self.d_column_width['c_name'], alignment=ft.alignment.bottom_left)
-        self.r_item_no = ft.Container(width=self.d_column_width['c_item_no'], alignment=ft.alignment.bottom_left)
-        self.r_price = ft.Container(width=self.d_column_width['c_price'], alignment=ft.alignment.bottom_left)
-        self.r_desc = ft.Container(width=self.d_column_width['c_desc'], alignment=ft.alignment.bottom_left)
-        self.r_promo_price = ft.Container(width=self.d_column_width['c_promo_price'], alignment=ft.alignment.bottom_left)
-        self.r_promo_end = ft.Container(width=self.d_column_width['c_promo_end'], alignment=ft.alignment.bottom_left)
-        self.r_promo_desc = ft.Container(width=self.d_column_width['c_promo_desc'], alignment=ft.alignment.bottom_left)
+        self.r_name = ft.Container(width=self.d_column_width['name'], alignment=ft.alignment.bottom_left)
+        self.r_item_no = ft.Container(width=self.d_column_width['item_no'], alignment=ft.alignment.bottom_left)
+        self.r_price = ft.Container(width=self.d_column_width['price'], alignment=ft.alignment.bottom_left)
+        self.r_desc = ft.Container(width=self.d_column_width['desc'], alignment=ft.alignment.bottom_left)
+        self.r_promo_price = ft.Container(width=self.d_column_width['promo_price'], alignment=ft.alignment.bottom_left)
+        self.r_promo_end = ft.Container(width=self.d_column_width['promo_end'], alignment=ft.alignment.bottom_left)
+        self.r_promo_desc = ft.Container(width=self.d_column_width['promo_desc'], alignment=ft.alignment.bottom_left)
 
         #доп столбец для добавления категории
         self.r_category = ft.Container(width=0, alignment=ft.alignment.bottom_left, content=None, visible=False)
@@ -132,7 +132,7 @@ class ProductRow(ft.Row):
         # элемент с редактированием
         self.r_container_icon = ft.Container(
             # bgcolor="orange",
-            width=self.d_column_width['c_edit'],
+            width=self.d_column_width['edit'],
             # padding=ft.padding.only(right=30),
             content=None
         )
@@ -348,13 +348,13 @@ class ProductRow(ft.Row):
             )
 
     def _set_attr_Text(self, name, item_no, price, desc, promo_price, promo_end, promo_desc):
-        self.r_name.content = self._field(name, self.d_column_width['c_name'], max_lines=2)
-        self.r_item_no.content = self._field(item_no, self.d_column_width['c_item_no'])
-        self.r_price.content = self._field(price, self.d_column_width['c_price'])
-        self.r_desc.content = self._field(desc, self.d_column_width['c_desc'], max_lines=4)
-        self.r_promo_price.content = self._field(promo_price, self.d_column_width['c_promo_price'])
-        self.r_promo_end.content = self._field(promo_end, self.d_column_width['c_promo_end'])
-        self.r_promo_desc.content = self._field(promo_desc, self.d_column_width['c_promo_desc'], max_lines=4)
+        self.r_name.content = self._field(name, self.d_column_width['name'], max_lines=2)
+        self.r_item_no.content = self._field(item_no, self.d_column_width['item_no'])
+        self.r_price.content = self._field(price, self.d_column_width['price'])
+        self.r_desc.content = self._field(desc, self.d_column_width['desc'], max_lines=4)
+        self.r_promo_price.content = self._field(promo_price, self.d_column_width['promo_price'])
+        self.r_promo_end.content = self._field(promo_end, self.d_column_width['promo_end'])
+        self.r_promo_desc.content = self._field(promo_desc, self.d_column_width['promo_desc'], max_lines=4)
 
     def _image_delete(self, e):
         self._img_edit_1.src = f"{settings.MEDIA}/default/no_product_photo.jpeg"

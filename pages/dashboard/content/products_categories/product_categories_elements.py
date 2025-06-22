@@ -78,7 +78,7 @@ class CategoryProductsRow(ft.Row):
 
         self._img_start_1 = ft.Image(
                         src=self.image_path,
-                        width=self.d_column_size['c_image'],
+                        width=self.d_column_size['image'],
                         height=self.d_column_size['el_height'],
                         fit=ft.ImageFit.CONTAIN
         )
@@ -87,11 +87,11 @@ class CategoryProductsRow(ft.Row):
         self.r_img = ft.Container(content=self._img_start, padding=ft.padding.only(top=5, bottom=5))
 
     def _init_attr_containers(self):
-        self.r_category_name = ft.Container(width=self.d_column_size['c_category_name'], alignment=ft.alignment.bottom_left)
+        self.r_category_name = ft.Container(width=self.d_column_size['category_name'], alignment=ft.alignment.bottom_left)
 
-        self.r_product_item_no = ft.Container(width=self.d_column_size['c_item_no'], alignment=ft.alignment.bottom_left)
-        self.r_product_name = ft.Container(width=self.d_column_size['c_name'], alignment=ft.alignment.bottom_left)
-        self.r_img = ft.Container(width=self.d_column_size['c_image'], alignment=ft.alignment.bottom_left)
+        self.r_product_item_no = ft.Container(width=self.d_column_size['item_no'], alignment=ft.alignment.bottom_left)
+        self.r_product_name = ft.Container(width=self.d_column_size['name'], alignment=ft.alignment.bottom_left)
+        self.r_img = ft.Container(width=self.d_column_size['image'], alignment=ft.alignment.bottom_left)
 
 
 
@@ -108,7 +108,7 @@ class CategoryProductsRow(ft.Row):
         # элемент с редактированием
         self.r_edit_container = ft.Container(
             # bgcolor="orange",
-            width=self.d_column_size['c_edit'],
+            width=self.d_column_size['edit'],
             # padding=ft.padding.only(right=30),
             content=None
         )
@@ -154,9 +154,9 @@ class CategoryProductsRow(ft.Row):
     def set_read_view(self):
         self.r_edit_container.content = self.r_content_edit
 
-        self.r_category_name.content = self._field(self.category_name, self.d_column_size['c_category_name'], max_lines=2)
-        self.r_product_name.content = self._field(self.name, self.d_column_size['c_name'], max_lines=2)
-        self.r_product_item_no.content = self._field(self.item_no, self.d_column_size['c_item_no'], max_lines=1)
+        self.r_category_name.content = self._field(self.category_name, self.d_column_size['category_name'], max_lines=2)
+        self.r_product_name.content = self._field(self.name, self.d_column_size['name'], max_lines=2)
+        self.r_product_item_no.content = self._field(self.item_no, self.d_column_size['item_no'], max_lines=1)
 
 
         self.r_img.content = self._img_start
@@ -172,8 +172,8 @@ class CategoryProductsRow(ft.Row):
         else:
             v_category_name = None
 
-            self.r_product_name.content = self._field(self.name, self.d_column_size['c_name'], max_lines=2)
-            self.r_product_item_no.content = self._field(self.item_no, self.d_column_size['c_item_no'], max_lines=1)
+            self.r_product_name.content = self._field(self.name, self.d_column_size['name'], max_lines=2)
+            self.r_product_item_no.content = self._field(self.item_no, self.d_column_size['item_no'], max_lines=1)
 
 
             self.r_img.content = self._img_start
@@ -181,13 +181,13 @@ class CategoryProductsRow(ft.Row):
 
 
         self.dd_menu = ft.Dropdown(
-            width=self.d_column_size['c_category_name'],
+            width=self.d_column_size['category_name'],
             editable=False,
             border_color=textFieldColor,
             color="white",
             hint_text=v_category_name,
             hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
-            menu_width=self.d_column_size['c_category_name'],
+            menu_width=self.d_column_size['category_name'],
             menu_height=300,
             options=self.l_categories,
 
@@ -236,7 +236,7 @@ class CategoryProductsRow(ft.Row):
 
         self.category_id = new_category_id
         self.category_name = self.d_categories[new_category_id]
-        self.r_category_name.content = self._field(self.category_name, self.d_column_size['c_category_name'], max_lines=2)
+        self.r_category_name.content = self._field(self.category_name, self.d_column_size['category_name'], max_lines=2)
         self.set_read_view()
 
         self.page.update()

@@ -66,13 +66,13 @@ class ClientRow(ft.Row):
             )
 
     def _init_attr_containers(self):
-        self.r_name = ft.Container(width=self.d_column_size['c_name'], alignment=ft.alignment.bottom_left)
-        self.r_phone = ft.Container(width=self.d_column_size['c_phone'], alignment=ft.alignment.bottom_left)
-        self.r_email = ft.Container(width=self.d_column_size['c_email'], alignment=ft.alignment.bottom_left)
-        self.r_telegram_name = ft.Container(width=self.d_column_size['c_telegram_name'], alignment=ft.alignment.bottom_left)
-        self.r_telegram_link = ft.Container(width=self.d_column_size['c_telegram_link'], alignment=ft.alignment.bottom_left)
-        self.r_is_banned = ft.Container(width=self.d_column_size['c_is_banned'], alignment=ft.alignment.bottom_left)
-        self.r_ban_reason = ft.Container(width=self.d_column_size['c_ban_reason'], alignment=ft.alignment.bottom_left)
+        self.r_name = ft.Container(width=self.d_column_size['name'], alignment=ft.alignment.bottom_left)
+        self.r_phone = ft.Container(width=self.d_column_size['phone'], alignment=ft.alignment.bottom_left)
+        self.r_email = ft.Container(width=self.d_column_size['email'], alignment=ft.alignment.bottom_left)
+        self.r_telegram_name = ft.Container(width=self.d_column_size['telegram_name'], alignment=ft.alignment.bottom_left)
+        self.r_telegram_link = ft.Container(width=self.d_column_size['telegram_link'], alignment=ft.alignment.bottom_left)
+        self.r_is_banned = ft.Container(width=self.d_column_size['is_banned'], alignment=ft.alignment.bottom_left)
+        self.r_ban_reason = ft.Container(width=self.d_column_size['ban_reason'], alignment=ft.alignment.bottom_left)
 
     def _init_edit_button(self):
         self.r_content_edit = ft.Row(controls=[
@@ -87,7 +87,7 @@ class ClientRow(ft.Row):
         # элемент с редактированием
         self.r_container_icon = ft.Container(
             # bgcolor="orange",
-            width=self.d_column_size['c_edit'],
+            width=self.d_column_size['edit'],
             content=None
         )
 
@@ -128,13 +128,13 @@ class ClientRow(ft.Row):
 
         self.r_container_icon.content = self.r_content_edit
 
-        self.r_name.content = self._field(self.name, self.d_column_size['c_name'])
-        self.r_phone.content = self._field(self.phone, self.d_column_size['c_phone'])
-        self.r_email.content = self._field(self.email, self.d_column_size['c_email'])
-        self.r_telegram_name.content = self._field(self.telegram_name, self.d_column_size['c_telegram_name'])
-        self.r_telegram_link.content = self._field(self.telegram_link, self.d_column_size['c_telegram_link'])
-        self.r_is_banned.content = self._field(d_ban.get(self.is_banned, None), self.d_column_size['c_is_banned'])
-        self.r_ban_reason.content = self._field(self.ban_reason, self.d_column_size['c_ban_reason'])
+        self.r_name.content = self._field(self.name, self.d_column_size['name'])
+        self.r_phone.content = self._field(self.phone, self.d_column_size['phone'])
+        self.r_email.content = self._field(self.email, self.d_column_size['email'])
+        self.r_telegram_name.content = self._field(self.telegram_name, self.d_column_size['telegram_name'])
+        self.r_telegram_link.content = self._field(self.telegram_link, self.d_column_size['telegram_link'])
+        self.r_is_banned.content = self._field(d_ban.get(self.is_banned, None), self.d_column_size['is_banned'])
+        self.r_ban_reason.content = self._field(self.ban_reason, self.d_column_size['ban_reason'])
 
 
     def set_edit_view(self, e):
@@ -176,13 +176,13 @@ class ClientRow(ft.Row):
         self.r_ban_reason.content = ft.TextField(v_ban_reason, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
 
         self.dd_ban = ft.Dropdown(
-            width=self.d_column_size['c_is_banned'],
+            width=self.d_column_size['is_banned'],
             editable=False,
             border_color=textFieldColor,
             color="white",
             hint_text=v_is_banned,
             hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
-            menu_width=self.d_column_size['c_is_banned'] * 1.5,
+            menu_width=self.d_column_size['is_banned'] * 1.5,
             # menu_height=300,
             options=self.l_ban_options
 
