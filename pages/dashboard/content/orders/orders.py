@@ -1,5 +1,6 @@
 import flet as ft
 
+from pages.dashboard.head_elements import header
 
 
 class OrdersContent:
@@ -9,5 +10,17 @@ class OrdersContent:
         self.view_content = []
         # self.error_messages = d_error_messages_admin
 
+
+
     def build(self):
-        pass
+        self.column_with_rows = ft.Column(
+            controls=[],
+            spacing=1,
+            scroll=ft.ScrollMode.AUTO,
+            expand=True
+        )
+
+        content_header = header(label_name="Заказы", user_role=self.user_role)
+        self.view_content.append(content_header)
+
+        return self.view_content
