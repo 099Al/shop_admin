@@ -76,7 +76,7 @@ class GenericFilter(ft.Row):
             if i > 0:
                 filter_controls.append(self.el_divider)
 
-            col_key = "c_" + field_name
+            col_key = field_name
             width = self.d_colum_size.get(col_key, 0) or self.d_colum_size.get(field_name, 100)
 
             filter_controls.append(
@@ -93,7 +93,7 @@ class GenericFilter(ft.Row):
                 ft.Container(
                     content=ft.IconButton(icon=ft.icons.FILTER_ALT, scale=0.8),
                     height=40,
-                    width=self.d_colum_size["c_edit"],
+                    width=self.d_colum_size["edit"],
                     alignment=ft.alignment.center_right,
                     padding=0
                 ),
