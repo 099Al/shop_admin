@@ -24,25 +24,6 @@ class ProductsContent:
             ("item_no", True),
         ]
 
-        #  ),
-        #         el_divider,
-        #         self._create_header_cell("Изображение", self.d_column_size["c_image"]),
-        #         el_divider,
-        #         sort_name.attribute_header_with_sort("Наименование", self.d_column_size["c_name"], str, 'p_name'),
-        #         el_divider,
-        #         sort_item_no.attribute_header_with_sort("Артикул", self.d_column_size["с_item_no"], str, 'p_item_no'),
-        #         el_divider,
-        #         sort_price.attribute_header_with_sort("Цена", self.d_column_size["c_price"], float, 'p_price'),
-        #         el_divider,
-        #         self._create_header_cell("Описание", self.d_column_size["c_desc"]),
-        #         el_divider,
-        #         self._create_header_cell("Цена по Акции", self.d_column_size["c_price_promo"]),
-        #         el_divider,
-        #         sort_promo.attribute_header_with_sort("Акция до", self.d_column_size["c_promo_end"], date, 'p_promo_end'),
-        #         el_divider,
-        #         self._create_header_cell("Акция Описание", self.d_column_size["c_promo_desc"]),
-        #         el_divider,
-                #self.header_category
 
         self.field_definitions_header = [
             {"label": "", "field_name": "edit", "sort_attr": None, "is_sortable": False, "type": None},
@@ -90,7 +71,6 @@ class ProductsContent:
         self.column_1 = ft.Column(
             controls=[
                 GenericFilter(self.page, self.column_with_product_rows.controls, self.field_definitions_filter, d_product_column_size).build(),
-                Product_Header(self.page, self.column_with_product_rows.controls).build(),
                 GenericHeader(
                     self.page,
                     self.column_with_product_rows.controls,
