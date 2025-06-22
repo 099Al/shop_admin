@@ -43,14 +43,14 @@ d_category_product_column_size = {"edit": 100,
                                   }
 
 
-d_admin_column_size = {"c_edit": 100,
-                       "c_telegram_name": 130,
-                        "c_role": 100,
-                       "c_telegram_link": 100,
-                       "c_phone": 130,
-                       "c_email": 200,
-                       "c_name": 100,
-                       "c_password": 100,
+d_admin_column_size = {"edit": 100,
+                       "telegram_name": 130,
+                        "role": 100,
+                       "telegram_link": 100,
+                       "phone": 130,
+                       "email": 200,
+                       "name": 100,
+                       "password": 100,
                         "el_height": 40
 
                        }
