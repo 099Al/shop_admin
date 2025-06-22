@@ -20,16 +20,16 @@ d_category_width = {"edit": 80,
                    "el_height": 40
                     }
 
-d_product_column_size = {"c_edit": 100,
-                         "c_image": 100,
-                         "c_name": 150,
-                         "c_item_no": 100,
-                         "c_price": 80,
-                         "c_desc": 150,
-                         "c_promo_price": 90,
-                         "c_promo_end": 100,
-                         "c_promo_desc": 150,
-                         "c_category_name": 300,
+d_product_column_size = {"edit": 100,
+                         "image": 100,
+                         "name": 150,
+                         "item_no": 100,
+                         "price": 80,
+                         "desc": 150,
+                         "promo_price": 90,
+                         "promo_end": 100,
+                         "promo_desc": 150,
+                         "category_name": 300,
                          "el_height": 40
                          }
 
