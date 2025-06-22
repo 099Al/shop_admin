@@ -4,7 +4,7 @@ from pages.config.sizes import d_product_column_size
 from pages.dashboard.content.filter_header import GenericFilter
 from pages.dashboard.content.header import GenericHeader
 from pages.dashboard.content.products.add_product_button import AddProductButton
-from pages.dashboard.content.products.product_elements import ProductRow, Product_Header
+from pages.dashboard.content.products.product_elements import ProductRow
 from pages.dashboard.head_elements import header
 from datetime import date
 
