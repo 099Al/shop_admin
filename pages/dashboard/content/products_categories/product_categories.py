@@ -5,10 +5,10 @@ from database.requests.req_catgprod import ReqCategoryProduct
 from pages.config.errors import d_error_messages_ctg_prod
 from pages.config.sizes import d_category_product_column_size
 from pages.dashboard.content.filter_header import GenericFilter
+from pages.dashboard.content.header import GenericHeader
 
-from pages.dashboard.content.products_categories.product_categories_elements import (
-    CategoryProductsRow,
-    CategoryProducts_Header)
+from pages.dashboard.content.products_categories.product_categories_elements import CategoryProductsRow
+
 from pages.dashboard.head_elements import header
 
 import flet as ft
@@ -21,10 +21,19 @@ class ProductsAndCategoriesContent:
         self.user_role = instance.user_role
         self.view_content = []
 
-        self.field_definitions = [
+        self.field_definitions_filter = [
             ("category_name", True),
             ("item_no", True),
             ("name", True),
+        ]
+
+        self.field_definitions_header = [
+            {"label": "", "field_name": "edit", "sort_attr": None, "is_sortable": False, "type": None},
+            {"label": "Категория", "field_name": "category_name", "sort_attr": "category_name", "is_sortable": True, "type": str},
+            {"label": "Артикул", "field_name": "item_no", "sort_attr": "item_no", "is_sortable": True, "type": str},
+            {"label": "Продукт", "field_name": "name", "sort_attr": "name", "is_sortable": True, "type": str},
+            {"label": "Фото", "field_name": "image", "sort_attr": None, "is_sortable": False, "type": None},
+            {"label": "Удалить/Добавить", "field_name": "dell_add", "sort_attr": None, "is_sortable": False, "type": None, "right_devider": False},
         ]
 
     def build(self):
@@ -49,10 +58,15 @@ class ProductsAndCategoriesContent:
 
         self.column_1 = ft.Column(
             controls=[
-                GenericFilter(self.page, self.column_with_rows_elements.controls, self.field_definitions, d_category_product_column_size).build(),
-                CategoryProducts_Header(
-                    page=self.page,
-                    rows_controls=self.column_with_rows_elements.controls
+                GenericFilter(self.page, self.column_with_rows_elements.controls, self.field_definitions_filter, d_category_product_column_size).build(),
+                GenericHeader(
+                    self.page,
+                    self.column_with_rows_elements.controls,
+                    self.field_definitions_header,
+                    d_category_product_column_size,
+                    'product_id',
+                    int,
+                    False
                 ).build(),
                 self.column_with_rows_elements
             ],

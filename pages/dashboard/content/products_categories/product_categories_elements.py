@@ -6,85 +6,6 @@ from database.requests.req_catgprod import ReqCategoryProduct
 from pages.config.errors import d_error_messages_ctg_prod
 from pages.config.sizes import d_category_product_column_size
 from pages.config.style import defaultFontColor, textFieldColor
-from pages.dashboard.content.sort_header import SortHeader
-
-
-class CategoryProducts_Header:
-
-    def __init__(self, page, rows_controls):
-        self.page = page
-        self.rows_controls: list[CategoryProductsRow] = rows_controls
-        self.d_column_size = d_category_product_column_size
-
-
-        self.el_divider = ft.Container(
-                height=25,
-                width=1,
-                bgcolor="white",
-                margin=0,
-                padding=0
-            )
-
-
-    def _create_sort_cell(self):
-        return ft.Container(
-            content=ft.Text(""),
-            alignment=ft.alignment.bottom_left,
-            width=20,
-            #padding=ft.padding.only(left=20),
-            #bgcolor='red'
-        )
-
-    def build(self):
-
-        sort_headers = []
-
-        def _reset_all_sort_headers_except(active_header):
-            for hdr in sort_headers:
-                if hdr != active_header:
-                    hdr.reset_sort()
-
-        sort_category = SortHeader(self.page, self.rows_controls, default_sort_key='p_product_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
-        sort_item_no = SortHeader(self.page, self.rows_controls, default_sort_key='p_product_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
-        sort_product = SortHeader(self.page, self.rows_controls, default_sort_key='p_product_id', sort_key_type=int, sort_key_reverse=True, reset_others_callback=_reset_all_sort_headers_except)
-
-        sort_headers.append(sort_category)
-        sort_headers.append(sort_item_no)
-        sort_headers.append(sort_product)
-
-        header_controls = [
-            ft.Container(
-                width=self.d_column_size["c_edit"],
-            ),
-            self.el_divider,
-            sort_category.attribute_header_with_sort("Категория", self.d_column_size["c_category_name"], str, 'p_category_name'),
-            self.el_divider,
-            sort_item_no.attribute_header_with_sort("Артикул", self.d_column_size["c_item_no"], str, 'p_item_no'),
-            self.el_divider,
-            sort_product.attribute_header_with_sort("Продукт", self.d_column_size["c_name"], str, 'p_name'),
-            self.el_divider,
-            self._create_header_cell("Фото", self.d_column_size["c_image"]),
-            self.el_divider,
-            self._create_header_cell("Удалить/Добавить", self.d_column_size["c_dell_add"]),
-        ]
-
-        return ft.Row(
-            controls=header_controls,
-            height=50,
-            vertical_alignment=ft.CrossAxisAlignment.END
-        )
-
-    def _create_header_cell(self, text, width):
-        return ft.Container(
-            content=ft.Text(
-                text,
-                color=defaultFontColor,
-                size=15,
-                font_family="cupurum",
-            ),
-            width=width,
-            alignment=ft.alignment.bottom_left,
-        )
 
 
 class CategoryProductsRow(ft.Row):
@@ -102,7 +23,7 @@ class CategoryProductsRow(ft.Row):
         self.product_id: int = self.element.product_id
         self.name: str = self.element.name
         self.item_no: str = self.element.item_no
-        self.img: str = self.element.image_name
+        self.image: str = self.element.image_name
         self.category_id: int = self.element.category_id
         self.category_name: str = self.element.category_name
 

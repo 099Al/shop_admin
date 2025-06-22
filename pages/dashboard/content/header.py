@@ -35,8 +35,8 @@ class GenericHeader(ft.Row):
         header_controls = []
 
         for i, col in enumerate(self.field_definitions):
-            if i > 0:
-                header_controls.append(self.el_divider)
+            # if i > 0:
+            #     header_controls.append(self.el_divider)
 
             field_name = col.get("field_name")
             label = col["label"]
@@ -64,7 +64,10 @@ class GenericHeader(ft.Row):
             else:
                 header_controls.append(self._create_header_cell(label, width))
 
-        header_controls.append(self.el_divider)
+            if col.get("right_devider", 1):
+                header_controls.append(self.el_divider)
+
+
 
         return ft.Row(
             controls=header_controls,
