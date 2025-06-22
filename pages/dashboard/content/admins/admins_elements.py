@@ -75,7 +75,7 @@ class AdminRow(ft.Row):
         self.r_telegram_name = ft.Container(width=self.d_column_size['c_telegram_name'], alignment=ft.alignment.bottom_left)
         self.r_telegram_link = ft.Container(width=self.d_column_size['c_telegram_link'], alignment=ft.alignment.bottom_left)
         self.r_role = ft.Container(width=self.d_column_size['c_role'], alignment=ft.alignment.bottom_left)
-        self.r_password_reset = ft.Container(width=self.d_column_size['c_reset_password'], alignment=ft.alignment.bottom_left)
+        self.r_password_reset = ft.Container(width=self.d_column_size['c_password'], alignment=ft.alignment.bottom_left)
 
     def _init_edit_button(self):
         self.r_content_edit = ft.Row(controls=[
@@ -140,7 +140,7 @@ class AdminRow(ft.Row):
         self.r_telegram_name.content = self._field(text=self.telegram_name, width=self.d_column_size['c_telegram_name'])
         self.r_telegram_link.content = self._field(text=self.telegram_link, width=self.d_column_size['c_telegram_link'])
         self.r_role.content = self._field(text=(self.role).replace("_", " ").title(), width=self.d_column_size['c_role'])  #todo: error while edit name
-        self.r_password_reset.content = ft.CupertinoButton(content=ft.Text("Сбросить", color=ft.Colors.WHITE, size=14), on_click=self.reset_password, width=self.d_column_size['c_reset_password'])
+        self.r_password_reset.content = ft.CupertinoButton(content=ft.Text("Сбросить", color=ft.Colors.WHITE, size=14), on_click=self.reset_password, width=self.d_column_size['c_password'])
 
 
     def edit(self, e):
