@@ -13,10 +13,10 @@ pr_promo_desc_max_length = 350
 
 #Названия должны совпадать с названиями в классе  self.name -> c_name  иначе не будет работать фильтр
 
-d_category_width = {"c_edit": 80,
-                   "c_name": 300,
-                   "c_product_cnt": 150,
-                   "c_order_sort": 130,
+d_category_width = {"edit": 80,
+                   "name": 300,
+                   "product_cnt": 150,
+                   "order_sort": 130,
                    "el_height": 40
                     }
 
