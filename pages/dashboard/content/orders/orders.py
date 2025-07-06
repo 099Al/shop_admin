@@ -4,6 +4,7 @@ import flet as ft
 
 from database.requests.req_orders import ReqOrders
 from pages.config.sizes import d_order_column_size
+from pages.dashboard.content.filter_header import GenericFilter
 from pages.dashboard.content.header import GenericHeader
 from pages.dashboard.content.orders.order_elements import OrderRow
 from pages.dashboard.head_elements import header
@@ -18,11 +19,14 @@ class OrdersContent:
 
 
         self.field_definitions_filter = [
-            ("name", True),
             ("phone", True),
             ("telegram_link", True),
-            ("payment_status", True),
+            ("created_at", True),
+            ("order_sum", False),
             ("status", True),
+            ("payment_status", True),
+            ("delivery_address", False),
+            ("comment", False),
             ("order_id", True)
         ]
 
@@ -62,6 +66,7 @@ class OrdersContent:
 
         self.column_1 = ft.Column(
             controls=[
+                GenericFilter(self.page, self.column_with_rows.controls, self.field_definitions_filter, d_order_column_size).build(),
                 GenericHeader(
                     self.page,
                     self.column_with_rows.controls,
