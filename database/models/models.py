@@ -146,10 +146,10 @@ class Order(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_tg_id: Mapped[str] = mapped_column(String(30), nullable=False)
     order_sum: Mapped[float] = mapped_column(Float)
-    satus: Mapped[str] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(Integer)
     payment_status: Mapped[str] = mapped_column(String(100))
-    address_destination: Mapped[str] = mapped_column(String(1000))
+    delivery_address: Mapped[str] = mapped_column(String(1000))
     created_at: Mapped[Date] = mapped_column(String(100), nullable=False)
     comment: Mapped[str] = mapped_column(String(2000))
-    order_products: Mapped[str] = mapped_column(Date, nullable=True)
+    order_products: Mapped[str] = mapped_column(String)
 
