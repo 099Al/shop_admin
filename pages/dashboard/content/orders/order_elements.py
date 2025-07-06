@@ -2,17 +2,19 @@ import json
 
 import flet as ft
 
+from database.requests.req_orders import ReqOrders
 from pages.config.sizes import d_order_column_size
-from pages.config.style import defaultFontColor
+from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
 
 class OrderRow(ft.Row):
-    def __init__(self, page, order_info, column_with_rows, **kwargs):
+    def __init__(self, page, order_info, column_with_rows, l_status_options, **kwargs):
         super().__init__()
         self.page = page
         self.order_info = order_info
         self.column_with_rows = column_with_rows
         self.d_column_size = d_order_column_size
+        self.l_status_options = l_status_options
 
         self.order_info = order_info
 
@@ -147,7 +149,81 @@ class OrderRow(ft.Row):
         self.r_order_products.content = self._field(self.order_products_cnt, self.d_column_size['order_products'])
 
     def set_edit_view(self, e):
-        pass
+        v_delivery_address = self.r_delivery_address.content.value
+        v_status = self.r_status.content.value
+        v_comment = self.r_comment.content.value
+        v_order_products = self.r_order_products.content.value
+
+        self.r_container_icon.content = self.r_content_edit
+
+        self.r_container_icon.content = ft.Row(
+            spacing=0,
+            alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+            controls=[
+                ft.Container(margin=ft.margin.all(0),
+                             padding=ft.padding.all(0),
+                             adaptive=True,
+                             scale=0.8,
+                             # bgcolor="red",
+                             content=ft.IconButton(ft.icons.SAVE, on_click=self.save)),
+                ft.Container(margin=ft.margin.only(left=0),
+                             scale=0.8,
+                             # bgcolor="green",
+                             content=ft.IconButton(ft.icons.CANCEL, on_click=self.cancel))
+            ]
+        )
+
+        self.r_delivery_address.content = ft.TextField(v_delivery_address, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_comment.content = ft.TextField(v_comment, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+        self.r_order_products.content = ft.TextField(v_order_products, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+
+        self.r_status.content = ft.TextField(v_status, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
+
+        self.dd_status = ft.Dropdown(
+            width=self.d_column_size['status'],
+            editable=False,
+            border_color=textFieldColor,
+            color="white",
+            hint_text=v_status,
+            hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
+            menu_width=self.d_column_size['status'] * 1.5,
+            options=self.l_status_options
+        )
+
+        self.r_status.content = self.dd_status
+
+        self.page.update()
+
+    def save(self, e):
+        v_delivery_address = self.r_delivery_address.content.value
+        v_status = self.r_status.content.value
+        v_comment = self.r_comment.content.value
+        v_order_products = self.r_order_products.content.value
+
+        if(v_delivery_address != self.delivery_address or
+                v_status != self.status or
+                v_comment != self.comment or
+                v_order_products != self.order_products_cnt
+        ):
+            self.delivery_address = v_delivery_address
+            self.status = v_status
+            self.comment = v_comment
+            self.order_products_cnt = v_order_products
+
+            req = ReqOrders()
+            req.update_order(self.order_id,
+                             delivery_address=self.delivery_address,
+                             status=self.status,
+                             comment=self.comment,
+                             #order_products_cnt=self.order_products_cnt
+                             )
+
+            self.set_read_view()
+            self.page.update()
+
+    def cancel(self, e):
+        self.set_read_view()
+        self.page.update()
 
     def delete_dialog(self, e):
         pass

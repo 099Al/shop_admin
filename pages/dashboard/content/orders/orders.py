@@ -2,6 +2,7 @@ from datetime import date
 
 import flet as ft
 
+from database.models.models import OrderSatus
 from database.requests.req_orders import ReqOrders
 from pages.config.sizes import d_order_column_size
 from pages.dashboard.content.filter_header import GenericFilter
@@ -80,15 +81,15 @@ class OrdersContent:
             expand=True
         )
 
-
+        l_status_options = [ft.DropdownOption(key=status.value, text=status.value) for status in OrderSatus]
         for order_info in req.get_all_orders_with_users():
             self.column_with_rows.controls.append(
                 OrderRow(
                     page=self.page,
                     order_info=order_info,
-                    column_with_rows=self.column_with_rows
+                    column_with_rows=self.column_with_rows,
+                    l_status_options=l_status_options
                 )
-
             )
 
         self.row_scroll = ft.Row(controls=[self.column_1],

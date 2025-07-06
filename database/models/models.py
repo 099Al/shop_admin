@@ -132,6 +132,7 @@ class ImagePhoto(Base):
 
 
 class OrderSatus(enum.Enum):
+    INIT = "не оформлен"
     NEW = "новый"
     IN_PROCESS = "в работе"
     REJECTED = "отменен"
@@ -141,7 +142,7 @@ class OrderSatus(enum.Enum):
 class Order(Base):
     __tablename__ = 'orders'
     __table_args__ = (
-        CheckConstraint("satus IN ('новый', 'в работе', 'не оплачен', 'отменен', 'доставлен')", name="chk_satus"),
+        CheckConstraint("satus IN ('не оформлен', 'новый', 'в работе', 'отменен', 'доставлен')", name="chk_satus"),
         CheckConstraint("payment_status IN ('при получении', 'оплачен')", name="chk_payment_status"),
     )
 
