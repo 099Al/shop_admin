@@ -23,7 +23,7 @@ class OrderRow(ft.Row):
         self.status: str = self.order_info.status
         self.payment_status: str = self.order_info.payment_status
         self.delivery_address: str = self.order_info.delivery_address
-        self.created_at: str = self.order_info.created_at
+        self.created_at: str = self.order_info.created_at.strftime("%Y-%m-%d %H:%M")
         self.comment: str = self.order_info.comment
         self.order_products: str = self.order_info.order_products
 
@@ -38,7 +38,7 @@ class OrderRow(ft.Row):
                 height=self.d_column_size['el_height'],
                 width=1,
                 bgcolor="white",
-                margin=0,
+                margin=ft.margin.only(bottom=5),
                 padding=0
         )
         # Text containers

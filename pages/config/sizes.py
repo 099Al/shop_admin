@@ -73,16 +73,16 @@ d_client_column_size = {"edit": 100,
                         }
 
 d_order_column_size = {"edit": 100,
-                       "phone": 130,
-                        "telegram_link": 100,
+                       "phone": 110,
+                        "telegram_link": 110,
                        "created_at": 100,
-                       "order_sum": 200,
+                       "order_sum": 80,
                        "status": 100,
                        "payment_status": 100,
                        "order_id": 100,
                        "order_products": 100,
                        "delivery_address": 200,
-                       "comment": 300,
-                        "el_height": 40
+                       "comment": 100,
+                        "el_height": 50
 
                        }

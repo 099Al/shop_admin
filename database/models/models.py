@@ -1,4 +1,6 @@
-from sqlalchemy import String, Integer, ForeignKey, Float, Date, CheckConstraint, Enum as SQLEnum
+from datetime import datetime
+
+from sqlalchemy import String, Integer, ForeignKey, Float, Date, DateTime, CheckConstraint, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Text
 import enum
@@ -146,10 +148,10 @@ class Order(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     user_tg_id: Mapped[str] = mapped_column(String(30), nullable=False)
     order_sum: Mapped[float] = mapped_column(Float)
-    status: Mapped[str] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
     payment_status: Mapped[str] = mapped_column(String(100))
     delivery_address: Mapped[str] = mapped_column(String(1000))
-    created_at: Mapped[Date] = mapped_column(String(100), nullable=False)
+    created_at: Mapped[DateTime] = mapped_column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0))
     comment: Mapped[str] = mapped_column(String(2000))
     order_products: Mapped[str] = mapped_column(String)
 
