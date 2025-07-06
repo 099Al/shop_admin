@@ -21,7 +21,7 @@ class OrdersContent:
         self.field_definitions_filter = [
             ("phone", True),
             ("telegram_link", True),
-            ("created_at", True),
+            ("created_at", 'period'),
             ("order_sum", False),
             ("status", True),
             ("payment_status", True),
