@@ -102,6 +102,8 @@ class OrderRow(ft.Row):
 
     def _init_compile_row(self):
         self.controls = [
+            self.r_container_icon,
+            self.el_divider,
             self.r_phone,
             self.el_divider,
             self.r_telegram_link,
