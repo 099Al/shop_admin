@@ -66,10 +66,12 @@ class OrderRow(ft.Row):
             )
 
     def _init_attr_containers(self):
+        self.order_id = ft.Container(width=self.d_column_size['order_id'], alignment=ft.alignment.bottom_left)
         self.r_phone = ft.Container(width=self.d_column_size['phone'], alignment=ft.alignment.bottom_left)
         self.r_telegram_link = ft.Container(width=self.d_column_size['telegram_link'], alignment=ft.alignment.bottom_left)
         self.r_order_sum = ft.Container(width=self.d_column_size['order_sum'], alignment=ft.alignment.bottom_left)
         self.r_status = ft.Container(width=self.d_column_size['status'], alignment=ft.alignment.bottom_left)
+        self.r_payment_status = ft.Container(width=self.d_column_size['payment_status'], alignment=ft.alignment.bottom_left)
         self.r_delivery_address = ft.Container(width=self.d_column_size['delivery_address'], alignment=ft.alignment.bottom_left)
         self.r_created_at = ft.Container(width=self.d_column_size['created_at'], alignment=ft.alignment.bottom_left)
         self.r_comment = ft.Container(width=self.d_column_size['comment'], alignment=ft.alignment.bottom_left)
@@ -108,15 +110,19 @@ class OrderRow(ft.Row):
             self.el_divider,
             self.r_telegram_link,
             self.el_divider,
+            self.r_created_at,
+            self.el_divider,
             self.r_order_sum,
             self.el_divider,
             self.r_status,
             self.el_divider,
+            self.r_payment_status,
+            self.el_divider,
             self.r_delivery_address,
             self.el_divider,
-            self.r_created_at,
-            self.el_divider,
             self.r_comment,
+            self.el_divider,
+            self.order_id,
             self.el_divider,
             self.r_order_products,
             self.el_divider,
@@ -127,11 +133,13 @@ class OrderRow(ft.Row):
         self.r_container_icon.content = self.r_content_edit
         self.r_phone.content = self._field(self.phone, self.d_column_size['phone'])
         self.r_telegram_link.content = self._field(self.telegram_link, self.d_column_size['telegram_link'])
+        self.r_created_at.content = self._field(self.created_at, self.d_column_size['created_at'])
         self.r_order_sum.content = self._field(self.order_sum, self.d_column_size['order_sum'])
         self.r_status.content = self._field(self.status, self.d_column_size['status'])
+        self.r_payment_status.content = self._field(self.payment_status, self.d_column_size['payment_status'])
         self.r_delivery_address.content = self._field(self.delivery_address, self.d_column_size['delivery_address'])
-        self.r_created_at.content = self._field(self.created_at, self.d_column_size['created_at'])
         self.r_comment.content = self._field(self.comment, self.d_column_size['comment'])
+        self.order_id.content = self._field(self.order_id, self.d_column_size['order_id'])
         self.r_order_products.content = self._field(self.order_products, self.d_column_size['order_products'])
 
     def set_edit_view(self, e):
