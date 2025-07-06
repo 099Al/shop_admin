@@ -1,3 +1,5 @@
+import json
+
 import flet as ft
 
 from pages.config.sizes import d_order_column_size
@@ -25,7 +27,9 @@ class OrderRow(ft.Row):
         self.delivery_address: str = self.order_info.delivery_address
         self.created_at: str = self.order_info.created_at.strftime("%Y-%m-%d %H:%M")
         self.comment: str = self.order_info.comment
-        self.order_products: str = self.order_info.order_products
+        self.order_products: str = json.loads(self.order_info.order_products or "[]")
+
+        self.order_products_cnt = sum([int(x["cnt"]) for x in self.order_products])
 
         self._init_ui_components()
 
@@ -140,7 +144,7 @@ class OrderRow(ft.Row):
         self.r_delivery_address.content = self._field(self.delivery_address, self.d_column_size['delivery_address'])
         self.r_comment.content = self._field(self.comment, self.d_column_size['comment'])
         self.r_order_id.content = self._field(self.order_id, self.d_column_size['order_id'])
-        self.r_order_products.content = self._field(self.order_products, self.d_column_size['order_products'])
+        self.r_order_products.content = self._field(self.order_products_cnt, self.d_column_size['order_products'])
 
     def set_edit_view(self, e):
         pass
