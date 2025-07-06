@@ -176,13 +176,13 @@ class AdminRow(ft.Row):
         self.r_telegram_link.content = ft.TextField(v_telegram_link, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=15)
 
         self.dd_menu = ft.Dropdown(
-            width=self.d_column_size['c_role'],
+            width=self.d_column_size['role'],
             editable=False,
             border_color=textFieldColor,
             color="white",
             hint_text=v_role,
             hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
-            menu_width=self.d_column_size['c_role']*1.5,
+            menu_width=self.d_column_size['role']*1.5,
             #menu_height=300,
             options=self.l_roles
 
