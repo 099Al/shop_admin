@@ -1,6 +1,8 @@
-from sqlalchemy import String, Integer, ForeignKey, Float, Date, CheckConstraint, Enum as SQLEnum
+from datetime import datetime
+
+from sqlalchemy import String, Integer, ForeignKey, Float, Date, DateTime, CheckConstraint, Enum as SQLEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import List
+from typing import List, Text
 import enum
 from database.models.base import Base
 
@@ -127,4 +129,29 @@ class ImagePhoto(Base):
 
     def __repr__(self):
         return f'ImagePhoto(id={self.image_id}, name={self.image_name}, format={self.img_format})'
+
+
+class OrderSatus(enum.Enum):
+    NEW = "новый"
+    IN_PROCESS = "в работе"
+    REJECTED = "отменен"
+    DONE = "доставлен"
+
+
+class Order(Base):
+    __tablename__ = 'orders'
+    __table_args__ = (
+        CheckConstraint("satus IN ('новый', 'в работе', 'не оплачен', 'отменен', 'доставлен')", name="chk_satus"),
+        CheckConstraint("payment_status IN ('при получении', 'оплачен')", name="chk_payment_status"),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    user_tg_id: Mapped[str] = mapped_column(String(30), nullable=False)
+    order_sum: Mapped[float] = mapped_column(Float)
+    status: Mapped[str] = mapped_column(String(20))
+    payment_status: Mapped[str] = mapped_column(String(100))
+    delivery_address: Mapped[str] = mapped_column(String(1000))
+    created_at: Mapped[DateTime] = mapped_column(DateTime, default=lambda: datetime.now().replace(second=0, microsecond=0))
+    comment: Mapped[str] = mapped_column(String(2000))
+    order_products: Mapped[str] = mapped_column(String)
 

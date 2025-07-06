@@ -43,12 +43,6 @@ def sidebar_menu(content_template: Dash_Content):
                 controls=[
                     ft.Text("МЕНЮ", color=menuFontColor, size=12, font_family="cuprum"),
                     ft.TextButton(
-                        "Главная",
-                        icon="space_dashboard_rounded",
-                        style=style_menu,
-                        on_click=lambda e: page.go("/dashboard"),
-                    ),
-                    ft.TextButton(
                         "Категории",
                         icon=ft.icons.CATEGORY,
                         style=style_menu,
@@ -82,7 +76,7 @@ def sidebar_menu(content_template: Dash_Content):
                         "Заказы"
                         , icon=ft.icons.SHOPPING_BASKET
                         , style=style_menu
-                        , on_click=lambda e: page.go("/post"),
+                        , on_click=lambda e: content_template.update_content(EnumDashContent.ORDERS),
                     ),
                 ]
             ),
