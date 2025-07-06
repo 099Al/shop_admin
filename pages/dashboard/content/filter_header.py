@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import flet as ft
 
 from pages.config.style import textFieldColor
@@ -17,9 +19,18 @@ class GenericFilter(ft.Row):
             height=25, width=1, bgcolor=None, margin=0, padding=0, visible=True
         )
 
-    def _filter_row(self, row, field_name, text):
-        value = getattr(row, field_name, "") or ""
-        row.visible = text.lower() in value.lower()
+    def _filter_row(self, row, field_name, text, tp=None):
+        if tp == "period":
+            try:
+                value_raw = getattr(row, field_name, "") or ""
+                value_date = datetime.strptime(str(value_raw[0:10]), "%Y-%m-%d").date()
+                text_date = datetime.strptime(str(text[0:10]), "%Y-%m-%d").date()
+                row.visible = value_date >= text_date
+            except (ValueError, TypeError):
+                pass
+        else:
+            value = getattr(row, field_name, "") or ""
+            row.visible = text.lower() in value.lower()
 
     def _drop_row_filter(self, row):
         row.visible = True
@@ -36,9 +47,9 @@ class GenericFilter(ft.Row):
 
         self.page.update()
 
-    def filter_by(self, field_name, e):
+    def filter_by(self, field_name, e, tp=None):
         for row in self.rows_controls:
-            self._filter_row(row, field_name, e.data)
+            self._filter_row(row, field_name, e.data, tp)
 
         self.c_drop_filter.content = self.icon_drop_filter
 
@@ -49,6 +60,7 @@ class GenericFilter(ft.Row):
 
         self.page.update()
 
+
     def build(self):
         self.icon_drop_filter = ft.IconButton(
             icon=ft.icons.CANCEL,
@@ -58,15 +70,28 @@ class GenericFilter(ft.Row):
 
         # Dynamically build controls for each field
         filter_controls = []
+        #is_filterable = True - поиск по совпадению
+        #is_filterable = period - по периоду, старше указанной даты
         for i, (field_name, is_filterable) in enumerate(self.field_definitions):
-            if is_filterable:
+            if is_filterable == True:
                 tf = ft.TextField(
-                    height=40,
+                    height=45,
                     read_only=False,
                     text_size=15,
                     border_color=textFieldColor,
                     color="white",
                     on_submit=lambda e, f=field_name: self.filter_by(f, e)
+                )
+                self.filter_fields[field_name] = tf
+                content = tf
+            elif is_filterable == "period":
+                tf = ft.TextField(
+                    height=45,
+                    read_only=False,
+                    text_size=15,
+                    border_color=textFieldColor,
+                    color="white",
+                    on_submit=lambda e, f=field_name, tp='period': self.filter_by(f, e, tp)
                 )
                 self.filter_fields[field_name] = tf
                 content = tf
