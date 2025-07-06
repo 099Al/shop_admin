@@ -226,4 +226,30 @@ class OrderRow(ft.Row):
         self.page.update()
 
     def delete_dialog(self, e):
-        pass
+        def order_delete_handle_close(e):
+            dlg_order_delete.open = False
+            self.page.update()
+
+        def order_delete_handle_yes(e):
+            self.column_with_rows.controls.remove(self)
+            dlg_order_delete.open = False
+
+            req = ReqOrders()
+            req.delete_order(self.order_id)
+
+            self.page.update()
+
+
+        dlg_order_delete = ft.AlertDialog(
+            title=ft.Text("Подтверждение"),
+            content=ft.Text("Удалить Заказ?"),
+            actions=[
+                ft.TextButton("Yes", on_click=order_delete_handle_yes),
+                ft.TextButton("No", on_click=order_delete_handle_close),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        self.page.open(dlg_order_delete)
+        self.page.update()
+

@@ -41,3 +41,8 @@ class ReqOrders:
         stmt = update(Order).where(Order.id == order_id).values(**kwargs)
         self.session.execute(stmt)
         self.session.commit()
+
+    def delete_order(self, order_id):
+        stmt = delete(Order).where(Order.id == order_id)
+        self.session.execute(stmt)
+        self.session.commit()
