@@ -66,7 +66,7 @@ class OrderRow(ft.Row):
             )
 
     def _init_attr_containers(self):
-        self.order_id = ft.Container(width=self.d_column_size['order_id'], alignment=ft.alignment.bottom_left)
+        self.r_order_id = ft.Container(width=self.d_column_size['order_id'], alignment=ft.alignment.bottom_left)
         self.r_phone = ft.Container(width=self.d_column_size['phone'], alignment=ft.alignment.bottom_left)
         self.r_telegram_link = ft.Container(width=self.d_column_size['telegram_link'], alignment=ft.alignment.bottom_left)
         self.r_order_sum = ft.Container(width=self.d_column_size['order_sum'], alignment=ft.alignment.bottom_left)
@@ -122,7 +122,7 @@ class OrderRow(ft.Row):
             self.el_divider,
             self.r_comment,
             self.el_divider,
-            self.order_id,
+            self.r_order_id,
             self.el_divider,
             self.r_order_products,
             self.el_divider,
@@ -139,7 +139,7 @@ class OrderRow(ft.Row):
         self.r_payment_status.content = self._field(self.payment_status, self.d_column_size['payment_status'])
         self.r_delivery_address.content = self._field(self.delivery_address, self.d_column_size['delivery_address'])
         self.r_comment.content = self._field(self.comment, self.d_column_size['comment'])
-        self.order_id.content = self._field(self.order_id, self.d_column_size['order_id'])
+        self.r_order_id.content = self._field(self.order_id, self.d_column_size['order_id'])
         self.r_order_products.content = self._field(self.order_products, self.d_column_size['order_products'])
 
     def set_edit_view(self, e):
