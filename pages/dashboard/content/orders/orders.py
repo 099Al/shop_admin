@@ -1,5 +1,6 @@
 import flet as ft
 
+from database.requests.req_orders import ReqOrders
 from pages.dashboard.head_elements import header
 
 
@@ -22,5 +23,10 @@ class OrdersContent:
 
         content_header = header(label_name="Заказы", user_role=self.user_role)
         self.view_content.append(content_header)
+
+        self.row_1 = ft.Row(controls=[ft.Container(margin=36)])  # empty row
+        self.view_content.append(self.row_1)
+
+        req = ReqOrders()
 
         return self.view_content
