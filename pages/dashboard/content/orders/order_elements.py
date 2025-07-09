@@ -37,16 +37,29 @@ class OrderRow(ft.Row):
 
         self.set_read_view()
 
-    def _init_ui_components(self):
-        """Initialize all UI components"""
-        # Divider element
-        self.el_divider = ft.Container(
-                height=self.d_column_size['el_height'],
-                width=1,
-                bgcolor="white",
-                margin=ft.margin.only(bottom=5),
-                padding=0
+
+    def _create_divider(self, height=None):
+        return ft.Container(
+            height=height or self.d_column_size['el_height'],
+            width=1,
+            bgcolor="white",
+            margin=ft.margin.only(bottom=5),
+            padding=0
         )
+
+    def _init_ui_components(self):
+        self.dividers = [self._create_divider() for _ in range(11)]
+
+        # self.el_divider = ft.Container(
+        #         height=self.d_column_size['el_height'],
+        #         width=1,
+        #         bgcolor="white",
+        #         margin=ft.margin.only(bottom=5),
+        #         padding=0
+        # )
+
+
+
         # Text containers
         self._init_attr_containers()
 
@@ -58,6 +71,8 @@ class OrderRow(ft.Row):
 
         # Main row controls
         self._init_compile_row()
+
+
 
 
     def _field(self, text, width, max_lines=2):
@@ -111,27 +126,27 @@ class OrderRow(ft.Row):
     def _init_compile_row(self):
         self.controls = [
             self.r_container_icon,
-            self.el_divider,
+            self.dividers[0],
             self.r_phone,
-            self.el_divider,
+            self.dividers[1],
             self.r_telegram_link,
-            self.el_divider,
+            self.dividers[2],
             self.r_created_at,
-            self.el_divider,
+            self.dividers[3],
             self.r_order_sum,
-            self.el_divider,
+            self.dividers[4],
             self.r_status,
-            self.el_divider,
+            self.dividers[5],
             self.r_payment_status,
-            self.el_divider,
+            self.dividers[6],
             self.r_delivery_address,
-            self.el_divider,
+            self.dividers[7],
             self.r_comment,
-            self.el_divider,
+            self.dividers[8],
             self.r_order_id,
-            self.el_divider,
+            self.dividers[9],
             self.r_order_products,
-            self.el_divider,
+            self.dividers[10],
             self.r_delete_container,
         ]
 
@@ -146,7 +161,36 @@ class OrderRow(ft.Row):
         self.r_delivery_address.content = self._field(self.delivery_address, self.d_column_size['delivery_address'])
         self.r_comment.content = self._field(self.comment, self.d_column_size['comment'])
         self.r_order_id.content = self._field(self.order_id, self.d_column_size['order_id'])
-        self.r_order_products.content = self._field(self.order_products_cnt, self.d_column_size['order_products'])
+        #self.r_order_products.content = self._field(self.order_products_cnt, self.d_column_size['order_products'])
+
+        order_content = ft.Row(
+               spacing=0,
+               alignment=ft.MainAxisAlignment.SPACE_EVENLY,
+               controls=[
+                   ft.Text(f"{self.order_products_cnt}", color=ft.Colors.WHITE, size=14),
+                   ft.Container(margin=ft.margin.only(left=0),
+                                scale=0.8,
+                                # bgcolor="green",
+                                content=ft.IconButton(ft.icons.ARROW_DROP_DOWN, on_click=self.order_list))
+               ]
+           )
+        self.r_order_products.content = order_content
+
+    def order_list(self, e):
+
+        column_item_list = ft.Column()
+
+        for item in self.order_products:
+            bt_i = ft.CupertinoButton(content=ft.Text(item["product_id"], color=ft.Colors.WHITE, size=14), on_click=lambda e: print("A1"), width=self.d_column_size['order_products'])
+            column_item_list.controls.append(bt_i)
+
+
+        self.r_order_products.content = column_item_list
+
+        for div in self.dividers:
+            div.height = self.d_column_size['el_height']*3
+
+        self.page.update()
 
     def set_edit_view(self, e):
         v_delivery_address = self.r_delivery_address.content.value
