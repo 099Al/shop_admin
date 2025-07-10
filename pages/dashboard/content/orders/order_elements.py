@@ -3,6 +3,7 @@ import json
 import flet as ft
 
 from database.requests.req_orders import ReqOrders
+from database.requests.req_products import ReqProduct
 from pages.config.sizes import d_order_column_size
 from pages.config.style import defaultFontColor, secondaryBgColor, textFieldColor
 
@@ -173,22 +174,69 @@ class OrderRow(ft.Row):
                                 # bgcolor="green",
                                 content=ft.IconButton(ft.icons.ARROW_DROP_DOWN, on_click=self.order_list))
                ]
-           )
+        )
         self.r_order_products.content = order_content
 
     def order_list(self, e):
 
         column_item_list = ft.Column()
 
+        product_ids = [int(x["product_id"]) for x in self.order_products]
+        print(product_ids)
+        req = ReqProduct()
+        d_product_info = req.get_products_short_info_by_ids(product_ids)
+
+        bt_1 = ft.Container(
+            content=ft.Icon(ft.Icons.ARROW_DROP_UP),
+            # bgcolor=ft.colors.GREEN,
+            alignment=ft.alignment.center,
+            height=25,
+            on_click=lambda e: print("A1")
+        )
+
+        column_item_list.controls.append(bt_1)
+
+        max_lenth_info = 0
         for item in self.order_products:
-            bt_i = ft.CupertinoButton(content=ft.Text(item["product_id"], color=ft.Colors.WHITE, size=14), on_click=lambda e: print("A1"), width=self.d_column_size['order_products'])
+            info = d_product_info[int(item["product_id"])]
+            info_text = f'{(info["name"])[:15]} {info["item_no"]} - {item['cnt']}'
+            info_length = len(info_text)
+            max_lenth_info = max(info_length, max_lenth_info)
+
+            bt_i = ft.Container(
+                    content=ft.Text(
+                    info_text,
+                    color=ft.Colors.WHITE, size=14,
+                    text_align=ft.TextAlign.CENTER
+                    ),
+                    height=40,
+                    bgcolor=ft.Colors.PINK_400,
+                    on_click=lambda e: print("A1"),
+                    alignment=ft.alignment.center
+
+                )
+
+
             column_item_list.controls.append(bt_i)
 
+        bt_add = ft.Container(
+            content=ft.Row(controls=[ft.Icon(ft.Icons.ADD), ft.Text("Добавить", color=ft.Colors.WHITE, size=14)], alignment=ft.MainAxisAlignment.CENTER),
+            alignment=ft.alignment.center,
+            height=40,
+            on_click=lambda e: print("A1")
+        )
+
+        column_item_list.controls.append(bt_add)
+
+        cnt_items = len(column_item_list.controls)
 
         self.r_order_products.content = column_item_list
+        self.r_order_products.width = 300 #max_lenth_info * 8
+
+        #self.r_order_products.content = ft.Text(f"{self.order_products_cnt}", color=ft.Colors.WHITE, size=14)
 
         for div in self.dividers:
-            div.height = self.d_column_size['el_height']*3
+            div.height = self.d_column_size['el_height'] * (cnt_items - 2) + 25 + 40  #25 это высота крайних элементов
 
         self.page.update()
 

@@ -46,3 +46,4 @@ class ReqOrders:
         stmt = delete(Order).where(Order.id == order_id)
         self.session.execute(stmt)
         self.session.commit()
+
