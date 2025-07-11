@@ -127,6 +127,7 @@ class OrderRow(ft.Row):
     def _init_compile_row(self):
         self.controls = [
             self.r_container_icon,
+            #self.r_order_products,
             self.dividers[0],
             self.r_phone,
             self.dividers[1],
@@ -187,7 +188,7 @@ class OrderRow(ft.Row):
         d_product_info = req.get_products_short_info_by_ids(product_ids)
 
         bt_1 = ft.Container(
-            content=ft.Icon(ft.Icons.ARROW_DROP_UP),
+            content=ft.Icon(ft.Icons.CHECK_CIRCLE),
             # bgcolor=ft.colors.GREEN,
             alignment=ft.alignment.center,
             height=25,
@@ -199,22 +200,30 @@ class OrderRow(ft.Row):
         max_lenth_info = 0
         for item in self.order_products:
             info = d_product_info[int(item["product_id"])]
-            info_text = f'{(info["name"])[:15]} {info["item_no"]} - {item['cnt']}'
+            info_text = f'#{info["item_no"]}: {(info["name"])[:15]}{"..." if len(info["name"]) > 15 else ""}'      #
             info_length = len(info_text)
             max_lenth_info = max(info_length, max_lenth_info)
 
             bt_i = ft.Container(
-                    content=ft.Text(
-                    info_text,
-                    color=ft.Colors.WHITE, size=14,
-                    text_align=ft.TextAlign.CENTER
+                    content=ft.Row(
+                        controls=[
+                                  ft.Container(content=ft.Text(info_text, color=ft.Colors.WHITE, size=14,text_align=ft.TextAlign.CENTER), width=150, alignment=ft.alignment.center),
+                                  ft.Container(content=ft.TextField(item["cnt"], height=45, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=14, text_align=ft.TextAlign.CENTER)
+                                               , width=60, alignment=ft.alignment.center, padding=ft.padding.only(right=3)
+                                               )
+                                  ],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                     ),
-                    height=40,
-                    bgcolor=ft.Colors.PINK_400,
+                    #width=50,#max_lenth_info * 8 + 50,
+                    height=50,
+                    bgcolor=ft.Colors.GREEN_400,
+                    border_radius=ft.border_radius.all(2),
+                    margin=0,
+                    padding=0,
                     on_click=lambda e: print("A1"),
                     alignment=ft.alignment.center
 
-                )
+            )
 
 
             column_item_list.controls.append(bt_i)
@@ -223,6 +232,7 @@ class OrderRow(ft.Row):
             content=ft.Row(controls=[ft.Icon(ft.Icons.ADD), ft.Text("Добавить", color=ft.Colors.WHITE, size=14)], alignment=ft.MainAxisAlignment.CENTER),
             alignment=ft.alignment.center,
             height=40,
+            padding=ft.padding.only(left=50),
             on_click=lambda e: print("A1")
         )
 
