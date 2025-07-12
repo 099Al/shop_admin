@@ -294,7 +294,7 @@ class OrderRow(ft.Row):
             dlg_add_to_basket.open = False
             self.page.update()
 
-        def on_item_submit(e):
+        def on_submit_item_no(e):
             product = req.get_product_by_item_no(row_1.value)
             if product:
                 row_2.value = product.name
@@ -304,8 +304,27 @@ class OrderRow(ft.Row):
 
             dlg_add_to_basket.content.update()
 
+
+
+        def on_submit_name(e):
+            product = None
+            if self.filtered_product:
+                product_id = self.filtered_product[0].product_id         #Берем первое наименование, чтобы можно было вести поисе, если название введено не полностью
+                product = req.get_product_by_id(product_id)  #Берем первый совпавший элемент
+                print(product.name)
+                if product:
+                    row_1.value = product.item_no
+                    row_2.value = product.name
+                    row_3.value = ""
+                else:
+                    row_1.value = ""
+                    row_3.value = "Товар по названию не найден"
+
+            dlg_add_to_basket.content.update()
+
         self.flag_serch = False
         self.l_products = []
+        self.filtered_product = []
         def on_name_change(e):
             text = row_2.value
             text_ln = len(text)
@@ -320,10 +339,11 @@ class OrderRow(ft.Row):
                 row_3.value = ""
                 dlg_add_to_basket.content.update()
 
-            filtered = [product for product in self.l_products if product.name.lower().startswith(text.lower())]
-            if filtered:
-                row_3.value = " ".join([f"{x.name}" for x in filtered])
+            self.filtered_product = [product for product in self.l_products if product.name.lower().startswith(text.lower())]
+            if self.filtered_product:
+                row_3.value = " ".join([f"{x.name}" for x in self.filtered_product])
             elif self.flag_serch:
+                row_1.value = ""
                 row_3.value = "Товар не найден"
 
             dlg_add_to_basket.content.update()
@@ -342,8 +362,8 @@ class OrderRow(ft.Row):
             actions_alignment=ft.MainAxisAlignment.END,
         )
 
-        row_1 = ft.TextField(label="Артикул", on_submit=on_item_submit)
-        row_2 = ft.TextField(label="Название", on_change=on_name_change)
+        row_1 = ft.TextField(label="Артикул", on_submit=on_submit_item_no)
+        row_2 = ft.TextField(label="Название", on_change=on_name_change, on_submit=on_submit_name)
         row_3 = ft.Text(value="Варианты", height=80, font_family="cupurum", size=12, width=300)
 
         dlg_add_to_basket.content.controls = [
