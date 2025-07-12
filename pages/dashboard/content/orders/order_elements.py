@@ -295,12 +295,13 @@ class OrderRow(ft.Row):
             self.page.update()
 
         def on_submit_item_no(e):
-            product = req.get_product_by_item_no(row_1.value)
+            product = req.get_product_by_item_no(row_it_no.value)
             if product:
-                row_2.value = product.name
+                row_nm.value = product.name
+                row_list.value = ""
             else:
-                row_2.value = ""
-                row_3.value = "Товар по артикулу не найден"
+                row_nm.value = ""
+                row_list.value = "Товар по артикулу не найден"
 
             dlg_add_to_basket.content.update()
 
@@ -311,14 +312,13 @@ class OrderRow(ft.Row):
             if self.filtered_product:
                 product_id = self.filtered_product[0].product_id         #Берем первое наименование, чтобы можно было вести поисе, если название введено не полностью
                 product = req.get_product_by_id(product_id)  #Берем первый совпавший элемент
-                print(product.name)
                 if product:
-                    row_1.value = product.item_no
-                    row_2.value = product.name
-                    row_3.value = ""
+                    row_it_no.value = product.item_no
+                    row_nm.value = product.name
+                    row_list.value = ""
                 else:
-                    row_1.value = ""
-                    row_3.value = "Товар по названию не найден"
+                    row_it_no.value = ""
+                    row_list.value = "Товар по названию не найден"
 
             dlg_add_to_basket.content.update()
 
@@ -326,7 +326,7 @@ class OrderRow(ft.Row):
         self.l_products = []
         self.filtered_product = []
         def on_name_change(e):
-            text = row_2.value
+            text = row_nm.value
             text_ln = len(text)
 
             if text_ln >= 3 and not self.flag_serch:
@@ -336,15 +336,15 @@ class OrderRow(ft.Row):
                 #Для сброса предыдущий выборки
                 self.l_products = []
                 self.flag_serch = False
-                row_3.value = ""
+                row_list.value = ""
                 dlg_add_to_basket.content.update()
 
             self.filtered_product = [product for product in self.l_products if product.name.lower().startswith(text.lower())]
             if self.filtered_product:
-                row_3.value = " ".join([f"{x.name}" for x in self.filtered_product])
+                row_list.value = " ".join([f"{x.name}" for x in self.filtered_product])
             elif self.flag_serch:
-                row_1.value = ""
-                row_3.value = "Товар не найден"
+                row_it_no.value = ""
+                row_list.value = "Товар не найден"
 
             dlg_add_to_basket.content.update()
 
@@ -354,23 +354,26 @@ class OrderRow(ft.Row):
         dlg_add_to_basket = ft.AlertDialog(
             modal=True,
             title=ft.Text("Добавить товар"),
-            content=ft.Column(height=150, controls=[]),
+            content=ft.Column(height=190, controls=[]),
             actions=[
                 ft.TextButton("Сохранить", on_click=confirm),
                 ft.TextButton("Отмена", on_click=cancel),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
+
         )
 
-        row_1 = ft.TextField(label="Артикул", on_submit=on_submit_item_no)
-        row_2 = ft.TextField(label="Название", on_change=on_name_change, on_submit=on_submit_name)
-        row_3 = ft.Text(value="Варианты", height=80, font_family="cupurum", size=12, width=300)
+        row_nm = ft.TextField(label="Название", on_change=on_name_change, on_submit=on_submit_name)
+        row_it_no = ft.TextField(label="Артикул", width=215, on_submit=on_submit_item_no)
+        row_cnt = ft.Container(content=ft.TextField(label="Кол-во", label_style=ft.TextStyle(font_family="cupurum", size=14), width=75), alignment=ft.alignment.center_right)
+        row_list = ft.Text(value="Варианты", height=80, font_family="cupurum", size=12, width=300)
+
 
         dlg_add_to_basket.content.controls = [
-            row_1,
-            row_2,
-            row_3
-        ]
+            row_nm,
+            ft.Row(controls=[row_it_no, row_cnt], alignment=ft.MainAxisAlignment.SPACE_BETWEEN, width=300),
+            row_list
+            ]
 
         self.page.open(dlg_add_to_basket)
         self.page.update()
