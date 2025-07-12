@@ -21,6 +21,14 @@ class ReqProduct:
         stmt = select(Product).where(Product.product_id == product_id)
         return self.session.execute(stmt).scalars().first()
 
+    def get_products_by_name_part(self, name_part):
+        stmt = select(Product).where(Product.name.ilike(f"{name_part}%"))
+        return self.session.execute(stmt).scalars().all()
+
+    def get_product_by_item_no(self, item_no):
+        stmt = select(Product).where(Product.item_no == item_no)
+        return self.session.execute(stmt).scalars().first()
+
     def get_product_by_category(self, category_id):
         stmt = select(Product).join(Category_Product).where(Category_Product.category_fk == category_id).order_by(Product.product_id)
         return self.session.execute(stmt).scalars().all()

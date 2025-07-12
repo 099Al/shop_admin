@@ -241,7 +241,7 @@ class OrderRow(ft.Row):
             alignment=ft.alignment.center,
             height=40,
             padding=ft.padding.only(left=50),
-            on_click=lambda e: print("A1")
+            on_click=self.add_to_basket
         )
 
         column_item_list.controls.append(bt_add)
@@ -280,6 +280,83 @@ class OrderRow(ft.Row):
             self.r_order_products.width = self.d_column_size['order_products']
 
             self.page.update()
+
+
+
+
+    def add_to_basket(self, e):
+
+        def confirm(e):
+            dlg_add_to_basket.open = False
+            self.page.update()
+
+        def cancel(e):
+            dlg_add_to_basket.open = False
+            self.page.update()
+
+        def on_item_submit(e):
+            product = req.get_product_by_item_no(row_1.value)
+            if product:
+                row_2.value = product.name
+            else:
+                row_2.value = ""
+                row_3.value = "Товар по артикулу не найден"
+
+            dlg_add_to_basket.content.update()
+
+        self.flag_serch = False
+        self.l_products = []
+        def on_name_change(e):
+            text = row_2.value
+            text_ln = len(text)
+
+            if text_ln >= 3 and not self.flag_serch:
+                self.l_products = req.get_products_by_name_part(text)
+                self.flag_serch = True
+            if self.flag_serch and text_ln < 3:
+                #Для сброса предыдущий выборки
+                self.l_products = []
+                self.flag_serch = False
+                row_3.value = ""
+                dlg_add_to_basket.content.update()
+
+            filtered = [product for product in self.l_products if product.name.lower().startswith(text.lower())]
+            if filtered:
+                row_3.value = "\n".join([f"{x.name}" for x in filtered])
+            elif self.flag_serch:
+                row_3.value = "Товар не найден"
+
+            dlg_add_to_basket.content.update()
+
+
+        req = ReqProduct()
+
+        dlg_add_to_basket = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Добавить товар"),
+            content=ft.Column(height=150, controls=[]),
+            actions=[
+                ft.TextButton("Сохранить", on_click=confirm),
+                ft.TextButton("Отмена", on_click=cancel),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+
+        row_1 = ft.TextField(label="Артикул", on_submit=on_item_submit)
+        row_2 = ft.TextField(label="Название", on_change=on_name_change)
+        row_3 = ft.Text(value="Варианты", height=80, font_family="cupurum", size=12)
+
+        dlg_add_to_basket.content.controls = [
+            row_1,
+            row_2,
+            row_3
+        ]
+
+        self.page.open(dlg_add_to_basket)
+        self.page.update()
+
+
+
 
 
 
