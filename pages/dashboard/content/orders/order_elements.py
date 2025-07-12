@@ -1,4 +1,5 @@
 import json
+from typing import Dict
 
 import flet as ft
 
@@ -30,14 +31,19 @@ class OrderRow(ft.Row):
         self.delivery_address: str = self.order_info.delivery_address
         self.created_at: str = self.order_info.created_at.strftime("%Y-%m-%d %H:%M")
         self.comment: str = self.order_info.comment
-        self.order_products: str = json.loads(self.order_info.order_products or "[]")
+        self.order_products: Dict = {item['product_id']: item for item in json.loads(self.order_info.order_products or "[]")}
 
-        self.order_products_cnt = sum([int(x["cnt"]) for x in self.order_products])
+        self.d_cnt_info = {}
+
+        # self.order_products_cnt = sum([int(x["cnt"]) for x in self.order_products.values()])
 
         self._init_ui_components()
 
         self.set_read_view()
 
+    @property
+    def order_products_cnt(self):
+        return sum([int(x["cnt"]) for x in self.order_products.values()])
 
     def _create_divider(self, height=None):
         return ft.Container(
@@ -127,7 +133,7 @@ class OrderRow(ft.Row):
     def _init_compile_row(self):
         self.controls = [
             self.r_container_icon,
-            #self.r_order_products,
+            self.r_order_products,
             self.dividers[0],
             self.r_phone,
             self.dividers[1],
@@ -147,7 +153,7 @@ class OrderRow(ft.Row):
             self.dividers[8],
             self.r_order_id,
             self.dividers[9],
-            self.r_order_products,
+            #self.r_order_products,
             self.dividers[10],
             self.r_delete_container,
         ]
@@ -173,17 +179,16 @@ class OrderRow(ft.Row):
                    ft.Container(margin=ft.margin.only(left=0),
                                 scale=0.8,
                                 # bgcolor="green",
-                                content=ft.IconButton(ft.icons.ARROW_DROP_DOWN, on_click=self.order_list))
+                                content=ft.IconButton(ft.icons.ARROW_DROP_DOWN, on_click=self.expand_order_list))
                ]
         )
         self.r_order_products.content = order_content
 
-    def order_list(self, e):
+    def expand_order_list(self, e):
 
         column_item_list = ft.Column()
 
-        product_ids = [int(x["product_id"]) for x in self.order_products]
-        print(product_ids)
+        product_ids = [int(x["product_id"]) for x in self.order_products.values()]
         req = ReqProduct()
         d_product_info = req.get_products_short_info_by_ids(product_ids)
 
@@ -192,23 +197,26 @@ class OrderRow(ft.Row):
             # bgcolor=ft.colors.GREEN,
             alignment=ft.alignment.center,
             height=25,
-            on_click=lambda e: print("A1")
+            on_click=self.save_count
         )
 
         column_item_list.controls.append(bt_1)
 
         max_lenth_info = 0
-        for item in self.order_products:
-            info = d_product_info[int(item["product_id"])]
+        for k, item in self.order_products.items():
+            info = d_product_info[k]
             info_text = f'#{info["item_no"]}: {(info["name"])[:15]}{"..." if len(info["name"]) > 15 else ""}'      #
-            info_length = len(info_text)
+            info_length = len(info_text)               #возможно нет смысла использовать, лучше зафиксировать размер
             max_lenth_info = max(info_length, max_lenth_info)
+
+            text_cnt_info = ft.TextField(item["cnt"], height=45, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=14, text_align=ft.TextAlign.CENTER)
+            self.d_cnt_info[item["product_id"]] = text_cnt_info
 
             bt_i = ft.Container(
                     content=ft.Row(
                         controls=[
                                   ft.Container(content=ft.Text(info_text, color=ft.Colors.WHITE, size=14,text_align=ft.TextAlign.CENTER), width=150, alignment=ft.alignment.center),
-                                  ft.Container(content=ft.TextField(item["cnt"], height=45, color="white", bgcolor=secondaryBgColor, border_color=textFieldColor, text_size=14, text_align=ft.TextAlign.CENTER)
+                                  ft.Container(content=text_cnt_info
                                                , width=60, alignment=ft.alignment.center, padding=ft.padding.only(right=3)
                                                )
                                   ],
@@ -220,11 +228,9 @@ class OrderRow(ft.Row):
                     border_radius=ft.border_radius.all(2),
                     margin=0,
                     padding=0,
-                    on_click=lambda e: print("A1"),
+                    # on_click=lambda e: print("A1"),
                     alignment=ft.alignment.center
-
             )
-
 
             column_item_list.controls.append(bt_i)
 
@@ -249,6 +255,25 @@ class OrderRow(ft.Row):
             div.height = self.d_column_size['el_height'] * (cnt_items - 2) + 25 + 40  #25 это высота крайних элементов
 
         self.page.update()
+
+
+
+    def save_count(self, e):
+        for k, v in self.d_cnt_info.items():
+            new_value = int(v.value)
+            self.order_products[k]["cnt"] = new_value
+
+
+            req = ReqOrders()
+
+            req.update_order(self.order_id, order_products=json.dumps(list(self.order_products.values())))
+
+            self.page.update()
+
+            # self.d_cnt_info.clear()     #очищать после скрытия элементов
+
+
+
 
     def set_edit_view(self, e):
         v_delivery_address = self.r_delivery_address.content.value
