@@ -171,18 +171,20 @@ class OrderRow(ft.Row):
         self.r_order_id.content = self._field(self.order_id, self.d_column_size['order_id'])
         #self.r_order_products.content = self._field(self.order_products_cnt, self.d_column_size['order_products'])
 
-        order_content = ft.Row(
+
+        self.order_content_short_text = ft.Text(f"{self.order_products_cnt}", color=ft.Colors.WHITE, size=14)
+        self.order_content_short = ft.Row(
                spacing=0,
                alignment=ft.MainAxisAlignment.SPACE_EVENLY,
                controls=[
-                   ft.Text(f"{self.order_products_cnt}", color=ft.Colors.WHITE, size=14),
+                   self.order_content_short_text,
                    ft.Container(margin=ft.margin.only(left=0),
                                 scale=0.8,
                                 # bgcolor="green",
                                 content=ft.IconButton(ft.icons.ARROW_DROP_DOWN, on_click=self.expand_order_list))
                ]
         )
-        self.r_order_products.content = order_content
+        self.r_order_products.content = self.order_content_short
 
     def expand_order_list(self, e):
 
@@ -254,6 +256,7 @@ class OrderRow(ft.Row):
         for div in self.dividers:
             div.height = self.d_column_size['el_height'] * (cnt_items - 2) + 25 + 40  #25 это высота крайних элементов
 
+
         self.page.update()
 
 
@@ -268,9 +271,15 @@ class OrderRow(ft.Row):
 
             req.update_order(self.order_id, order_products=json.dumps(list(self.order_products.values())))
 
-            self.page.update()
+            self.order_content_short_text.value = f"{self.order_products_cnt}"
+            self.r_order_products.content = self.order_content_short
 
-            # self.d_cnt_info.clear()     #очищать после скрытия элементов
+            for div in self.dividers:
+                div.height = self.d_column_size['el_height']
+
+            self.r_order_products.width = self.d_column_size['order_products']
+
+            self.page.update()
 
 
 
