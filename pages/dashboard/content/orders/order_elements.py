@@ -322,7 +322,7 @@ class OrderRow(ft.Row):
 
             filtered = [product for product in self.l_products if product.name.lower().startswith(text.lower())]
             if filtered:
-                row_3.value = "\n".join([f"{x.name}" for x in filtered])
+                row_3.value = " ".join([f"{x.name}" for x in filtered])
             elif self.flag_serch:
                 row_3.value = "Товар не найден"
 
@@ -344,7 +344,7 @@ class OrderRow(ft.Row):
 
         row_1 = ft.TextField(label="Артикул", on_submit=on_item_submit)
         row_2 = ft.TextField(label="Название", on_change=on_name_change)
-        row_3 = ft.Text(value="Варианты", height=80, font_family="cupurum", size=12)
+        row_3 = ft.Text(value="Варианты", height=80, font_family="cupurum", size=12, width=300)
 
         dlg_add_to_basket.content.controls = [
             row_1,
