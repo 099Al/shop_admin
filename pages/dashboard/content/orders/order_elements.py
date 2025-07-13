@@ -32,9 +32,10 @@ class OrderRow(ft.Row):
         self.delivery_address: str = self.order_info.delivery_address
         self.created_at: str = self.order_info.created_at.strftime("%Y-%m-%d %H:%M")
         self.comment: str = self.order_info.comment
+        print(self.order_info.order_products)
         self.order_products: Dict = {item['product_id']: item for item in json.loads(self.order_info.order_products or "[]")}
 
-        self.d_cnt_info = {}
+        self.d_cnt_info = {}  #Сохраняем ссылки на Containers в расширенном ссписке продуктов
 
         # self.order_products_cnt = sum([int(x["cnt"]) for x in self.order_products.values()])
 
@@ -134,7 +135,6 @@ class OrderRow(ft.Row):
     def _init_compile_row(self):
         self.controls = [
             self.r_container_icon,
-            self.r_order_products,
             self.dividers[0],
             self.r_phone,
             self.dividers[1],
@@ -154,7 +154,7 @@ class OrderRow(ft.Row):
             self.dividers[8],
             self.r_order_id,
             self.dividers[9],
-            #self.r_order_products,
+            self.r_order_products,
             self.dividers[10],
             self.r_delete_container,
         ]
@@ -275,6 +275,9 @@ class OrderRow(ft.Row):
 
         for k in l_to_delete:
             del self.order_products[k]
+
+        self.d_cnt_info = {}
+        self.column_item_list.controls = []
 
 
         req = ReqOrders()
