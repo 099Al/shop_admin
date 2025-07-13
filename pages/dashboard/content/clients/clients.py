@@ -76,13 +76,14 @@ class ClientsContent:
 
         d_ban = {1: "Бан", 0: "Снять бан"}
         clients = req.get_all_clients()
+        l_ban_options = [ft.DropdownOption(key=status.value, text=d_ban[status.value]) for status in ClientsBan]
         # ---rows--- заполнене списка
         for client in clients:
             self.column_with_rows.controls.append(
                 ClientRow(
                     page=self.page,
                     client=client,
-                    l_ban_options=[ft.DropdownOption(key=status.value, text=d_ban[status.value]) for status in ClientsBan],
+                    l_ban_options=l_ban_options,
                     column_with_rows=self.column_with_rows
                 )
 

@@ -1,3 +1,5 @@
+from typing import List, Tuple, Dict
+
 from sqlalchemy import select, func, update, delete, or_
 
 from database.connect import DataBase
@@ -19,6 +21,18 @@ class ReqProduct:
         stmt = select(Product).where(Product.product_id == product_id)
         return self.session.execute(stmt).scalars().first()
 
+    def get_product_by_name(self, name):
+        stmt = select(Product).where(Product.name == name)
+        return self.session.execute(stmt).scalars().first()
+
+    def get_products_by_name_part(self, name_part):
+        stmt = select(Product).where(Product.name.ilike(f"{name_part}%"))
+        return self.session.execute(stmt).scalars().all()
+
+    def get_product_by_item_no(self, item_no):
+        stmt = select(Product).where(Product.item_no == item_no)
+        return self.session.execute(stmt).scalars().first()
+
     def get_product_by_category(self, category_id):
         stmt = select(Product).join(Category_Product).where(Category_Product.category_fk == category_id).order_by(Product.product_id)
         return self.session.execute(stmt).scalars().all()
@@ -27,6 +41,19 @@ class ReqProduct:
         max_length = self.session.query(func.max(func.length(Product.name))).scalar()
         return max_length
 
+    def get_products_short_info_by_ids(self, product_ids: List[int]) -> Dict:
+        if not product_ids:
+            return {}
+
+        stmt = (
+            select(Product.product_id, Product.name, Product.item_no)
+            .where(Product.product_id.in_(product_ids))
+        )
+        result = self.session.execute(stmt)
+        return {
+            product_id: {"name": name or "N/N", "item_no": item_no or "N/I"}
+            for product_id, name, item_no in result.all()
+        }
 
     def delete_product(self, product_id):
         self.session.execute(
