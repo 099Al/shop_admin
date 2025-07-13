@@ -118,19 +118,21 @@ class OrdersContent:
             options=self.filter_orders
         )
 
-        self.row_1 = ft.Row(controls=[ft.Container(margin=ft.margin.only(left=d_order_column_size["edit"]))])
+        #Филтр по статусу
+        self.row_1 = ft.Row(controls=[ft.Container(margin=ft.margin.only(left=d_order_column_size["edit"]))], alignment=ft.MainAxisAlignment.START)
         self.row_1.controls.append(dd_order_filer)
 
 
 
 
 
-        self.view_content.append(self.row_1)
+        #self.view_content.append(self.row_1)
 
         req = ReqOrders()
 
         self.column_1 = ft.Column(
             controls=[
+                self.row_1,
                 GenericFilter(self.page, self.column_with_rows.controls, self.field_definitions_filter, d_order_column_size).build(),
                 GenericHeader(
                     self.page,
@@ -162,6 +164,7 @@ class OrdersContent:
                                  expand=True,  # без expand scroll не работает
                                  scroll=ft.ScrollMode.ALWAYS
                                  )
+
 
         self.view_content.append(self.row_scroll)
         print(self.view_content)
