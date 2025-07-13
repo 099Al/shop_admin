@@ -295,8 +295,10 @@ class OrderRow(ft.Row):
         row_cnt = ft.Container(content=None, alignment=ft.alignment.center_right, disabled=True)
 
         def confirm(e):
-            dlg_add_to_basket.open = False
-            self.page.update()
+            if product_exists:
+                self.order_products[row_it_no.value] = {"product_id": row_it_no.value, "cnt": int(product_cnt_tf.value)}
+                dlg_add_to_basket.open = False
+                self.page.update()
 
         def cancel(e):
             dlg_add_to_basket.open = False
@@ -347,9 +349,6 @@ class OrderRow(ft.Row):
 
             dlg_add_to_basket.content.update()
 
-        # self.flag_serch = False
-        # self.l_products = []
-        # self.filtered_product = []
         def on_name_change(e):
             nonlocal product_exists
             nonlocal l_products
@@ -384,6 +383,25 @@ class OrderRow(ft.Row):
 
             dlg_add_to_basket.content.update()
 
+        def on_item_no_change(e):
+            nonlocal product_exists
+            nonlocal product_cnt_tf
+            nonlocal row_cnt
+            nonlocal l_products
+            nonlocal flag_search
+            nonlocal filtered_product
+
+            l_products = []
+            flag_search = False
+            filtered_product = []
+
+            product_exists = False
+            product_cnt_tf.value = "0"
+            row_cnt.disabled = True
+
+            row_nm.value = ""
+
+            dlg_add_to_basket.content.update()
 
         req = ReqProduct()
 
@@ -400,7 +418,7 @@ class OrderRow(ft.Row):
         )
 
         row_nm = ft.TextField(label="Название", on_change=on_name_change, on_submit=on_submit_name)
-        row_it_no = ft.TextField(label="Артикул", width=215, on_submit=on_submit_item_no)
+        row_it_no = ft.TextField(label="Артикул", width=215, on_change=on_item_no_change, on_submit=on_submit_item_no)
         product_cnt_tf = ft.TextField(label="Кол-во", label_style=ft.TextStyle(font_family="cupurum", size=14), width=75)
         row_cnt.content = product_cnt_tf
         row_list = ft.Text(value="Варианты", height=80, font_family="cupurum", size=12, width=300)
