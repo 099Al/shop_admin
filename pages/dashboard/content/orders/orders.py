@@ -1,10 +1,11 @@
-from datetime import date
+from datetime import date, datetime, timedelta
 
 import flet as ft
 
-from database.models.models import OrderSatus
+from database.models.models import OrderSatus, Order
 from database.requests.req_orders import ReqOrders
 from pages.config.sizes import d_order_column_size
+from pages.config.style import textFieldColor
 from pages.dashboard.content.filter_header import GenericFilter
 from pages.dashboard.content.header import GenericHeader
 from pages.dashboard.content.orders.order_elements import OrderRow
@@ -46,10 +47,41 @@ class OrdersContent:
         ]
 
 
+        self.filter_orders = [ft.DropdownOption(key="Все", text="Все"),
+                              ft.DropdownOption(key="Новые", text="Новые"),
+                              ft.DropdownOption(key="В работе", text="В работе"),
+                              ft.DropdownOption(key="Отмененные", text="Отмененные"),
+                              ft.DropdownOption(key="Завершенные", text="Завершенные"),
+                              ft.DropdownOption(key="Завершенные 1 день", text="Завершенные 1 день"),
+                              ft.DropdownOption(key="Завершенные неделя", text="Завершенные неделя"),
+                              ft.DropdownOption(key="Завершенные месяц", text="Завершенные месяц"),
+                              ]
 
 
+    def filter_orders_change(self, e):
+        filter = e.control.value
+        if filter == "Новые":
+            where_stm = [Order.status == OrderSatus.NEW.value]
+        elif filter == "В работе":
+            where_stm = [Order.status == OrderSatus.IN_PROCESS.value]
+        elif filter == "Отмененные":
+            where_stm = [Order.status == OrderSatus.REJECTED.value]
+        elif filter == "Завершенные":
+            where_stm = [Order.status == OrderSatus.DONE.value]
+        elif filter == "Завершенные 1 день":
+            where_stm = [Order.status == OrderSatus.DONE.value, Order.created_at > datetime.today() - timedelta(days=1)]
+        elif filter == "Завершенные неделя":
+            where_stm = [Order.status == OrderSatus.DONE.value, Order.created_at > datetime.today() - timedelta(days=7)]
+        elif filter == "Завершенные месяц":
+            where_stm = [Order.status == OrderSatus.DONE.value, Order.created_at > datetime.today() - timedelta(days=30)]
+        else:
+            where_stm = None
 
-    def build(self):
+        self.build(where_stm)
+        self.page.update()
+
+
+    def build(self, where_stm=None):
         self.column_with_rows = ft.Column(
             controls=[],
             spacing=1,
@@ -60,7 +92,25 @@ class OrdersContent:
         content_header = header(label_name="Заказы", user_role=self.user_role)
         self.view_content.append(content_header)
 
-        self.row_1 = ft.Row(controls=[ft.Container(margin=36)])  # empty row  #Todo: фильтр по статусу заказов RadioButton
+        dd_order_filer = ft.Dropdown(
+            width=230,
+            editable=False,
+            border_color=textFieldColor,
+            color="white",
+            on_change=self.filter_orders_change,
+            # hint_text = v_status,
+            hint_style=ft.TextStyle(font_family="cupurum", size=15, color="white"),
+            menu_width=150 * 1.5,
+            options=self.filter_orders
+        )
+
+        self.row_1 = ft.Row(controls=[ft.Container(margin=ft.margin.only(left=d_order_column_size["edit"]))])
+        self.row_1.controls.append(dd_order_filer)
+
+
+
+
+
         self.view_content.append(self.row_1)
 
         req = ReqOrders()
@@ -82,7 +132,7 @@ class OrdersContent:
         )
 
         l_status_options = [ft.DropdownOption(key=status.value, text=status.value) for status in OrderSatus]
-        for order_info in req.get_all_orders_with_users():
+        for order_info in req.get_all_orders_with_users(where_stm=where_stm):
             self.column_with_rows.controls.append(
                 OrderRow(
                     page=self.page,
