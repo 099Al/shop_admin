@@ -77,8 +77,22 @@ class OrdersContent:
         else:
             where_stm = None
 
-        self.build(where_stm)
+        self.column_with_rows.controls.clear()
+        req = ReqOrders()
+        l_status_options = [ft.DropdownOption(key=status.value, text=status.value) for status in OrderSatus]
+        for order_info in req.get_all_orders_with_users(where_stm=where_stm):
+            self.column_with_rows.controls.append(
+                OrderRow(
+                    page=self.page,
+                    order_info=order_info,
+                    column_with_rows=self.column_with_rows,
+                    l_status_options=l_status_options
+                )
+            )
+
+
         self.page.update()
+
 
 
     def build(self, where_stm=None):
@@ -131,6 +145,8 @@ class OrdersContent:
             expand=True
         )
 
+        # print([(x.id, x.status) for x in req.get_all_orders_with_users(where_stm=where_stm)])
+
         l_status_options = [ft.DropdownOption(key=status.value, text=status.value) for status in OrderSatus]
         for order_info in req.get_all_orders_with_users(where_stm=where_stm):
             self.column_with_rows.controls.append(
@@ -148,5 +164,5 @@ class OrdersContent:
                                  )
 
         self.view_content.append(self.row_scroll)
-
+        print(self.view_content)
         return self.view_content
