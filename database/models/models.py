@@ -99,6 +99,16 @@ class Product(Base):
     r_image: Mapped['ImagePhoto'] = relationship(back_populates='r_product', uselist=False, lazy="selectin")
     r_categories: Mapped[List['Category']] = relationship(secondary=Category_Product.__tablename__, back_populates='r_products')
 
+    @property
+    def curr_price(self) -> float | None:
+        if (
+                self.promo_price is not None and
+                self.promo_expire_date is not None and
+                datetime.now().date() < self.promo_expire_date
+        ):
+            return self.promo_price
+        return self.price
+
     def __repr__(self):
         return (f'{self.__class__.__name__} (id={self.product_id}, nm={self.name}, im_id={self.image_id}, {self.price})')
 

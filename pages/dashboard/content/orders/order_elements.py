@@ -3,6 +3,7 @@ from typing import Dict
 
 import flet as ft
 
+from database.models.models import Product
 from database.requests.req_orders import ReqOrders
 from database.requests.req_products import ReqProduct
 from pages.config.sizes import d_order_column_size
@@ -289,14 +290,22 @@ class OrderRow(ft.Row):
         flag_search = False
         l_products = []
         filtered_product = []
-        product_exists = False
+        product_added: Product = None
         product_cnt_tf = None
 
         row_cnt = ft.Container(content=None, alignment=ft.alignment.center_right, disabled=True)
 
-        def confirm(e):
-            if product_exists:
-                self.order_products[row_it_no.value] = {"product_id": row_it_no.value, "cnt": int(product_cnt_tf.value)}
+        def confirm_save(e):
+            nonlocal product_added
+            if product_added:
+                self.order_products[product_added.product_id] = {"product_id": product_added.product_id,
+                                                                 "cnt": int(product_cnt_tf.value),
+                                                                 "price": product_added.curr_price,
+                                                                 "total_price": product_added.curr_price * int(product_cnt_tf.value)
+                                                                 }
+
+                req_orderts = ReqOrders()
+                req_orderts.update_order(self.order_id, order_products=json.dumps(list(self.order_products.values())))
                 dlg_add_to_basket.open = False
                 self.page.update()
 
@@ -305,10 +314,10 @@ class OrderRow(ft.Row):
             self.page.update()
 
         def on_submit_item_no(e):
-            nonlocal product_exists
+            nonlocal product_added
             nonlocal product_cnt_tf
 
-            product_exists = False
+            product_added = None
             product_cnt_tf.value = "0"
             row_cnt.disabled = True
 
@@ -316,7 +325,7 @@ class OrderRow(ft.Row):
             if product:
                 row_nm.value = product.name
                 row_list.value = ""
-                product_exists = True
+                product_added = product
                 product_cnt_tf.value = "1"
                 row_cnt.disabled = False
             else:
@@ -328,9 +337,9 @@ class OrderRow(ft.Row):
 
 
         def on_submit_name(e):
-            nonlocal product_exists
+            nonlocal product_added
             product = None
-            product_exists = False
+            product_added = None
             product_cnt_tf.value = "0"
             row_cnt.disabled = True
             if filtered_product:
@@ -340,7 +349,7 @@ class OrderRow(ft.Row):
                     row_it_no.value = product.item_no
                     row_nm.value = product.name
                     row_list.value = ""
-                    product_exists = True
+                    product_added = product
                     product_cnt_tf.value = "1"
                     row_cnt.disabled = False
                 else:
@@ -350,14 +359,14 @@ class OrderRow(ft.Row):
             dlg_add_to_basket.content.update()
 
         def on_name_change(e):
-            nonlocal product_exists
+            nonlocal product_added
             nonlocal l_products
             nonlocal flag_search
             nonlocal filtered_product
             nonlocal product_cnt_tf
             nonlocal row_cnt
 
-            product_exists = False
+            product_added = None
             product_cnt_tf.value = "0"
             row_cnt.disabled = True
 
@@ -384,7 +393,7 @@ class OrderRow(ft.Row):
             dlg_add_to_basket.content.update()
 
         def on_item_no_change(e):
-            nonlocal product_exists
+            nonlocal product_added
             nonlocal product_cnt_tf
             nonlocal row_cnt
             nonlocal l_products
@@ -395,7 +404,7 @@ class OrderRow(ft.Row):
             flag_search = False
             filtered_product = []
 
-            product_exists = False
+            product_added = None
             product_cnt_tf.value = "0"
             row_cnt.disabled = True
 
@@ -410,7 +419,7 @@ class OrderRow(ft.Row):
             title=ft.Text("Добавить товар"),
             content=ft.Column(height=190, controls=[]),
             actions=[
-                ft.TextButton("Сохранить", on_click=confirm),
+                ft.TextButton("Сохранить", on_click=confirm_save),
                 ft.TextButton("Отмена", on_click=cancel),
             ],
             actions_alignment=ft.MainAxisAlignment.END,
