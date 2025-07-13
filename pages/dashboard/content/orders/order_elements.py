@@ -267,20 +267,30 @@ class OrderRow(ft.Row):
             new_value = int(v.value)
             self.order_products[k]["cnt"] = new_value
 
+        print(self.order_products)
 
-            req = ReqOrders()
+        l_to_delete = []
+        for k, x in self.order_products.items():
+            if x["cnt"] <= 0:
+                l_to_delete.append(k)
 
-            req.update_order(self.order_id, order_products=json.dumps(list(self.order_products.values())))
+        for k in l_to_delete:
+            del self.order_products[k]
 
-            self.order_content_short_text.value = f"{self.order_products_cnt}"
-            self.r_order_products.content = self.order_content_short
 
-            for div in self.dividers:
-                div.height = self.d_column_size['el_height']
+        req = ReqOrders()
 
-            self.r_order_products.width = self.d_column_size['order_products']
+        req.update_order(self.order_id, order_products=json.dumps(list(self.order_products.values())))
 
-            self.page.update()
+        self.order_content_short_text.value = f"{self.order_products_cnt}"
+        self.r_order_products.content = self.order_content_short
+
+        for div in self.dividers:
+            div.height = self.d_column_size['el_height']
+
+        self.r_order_products.width = self.d_column_size['order_products']
+
+        self.page.update()
 
 
 
