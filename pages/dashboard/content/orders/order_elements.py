@@ -172,6 +172,7 @@ class OrderRow(ft.Row):
         self.r_order_id.content = self._field(self.order_id, self.d_column_size['order_id'])
         #self.r_order_products.content = self._field(self.order_products_cnt, self.d_column_size['order_products'])
 
+        self.column_item_list = ft.Column() #список товаров в зказе
 
         self.order_content_short_text = ft.Text(f"{self.order_products_cnt}", color=ft.Colors.WHITE, size=14)
         self.order_content_short = ft.Row(
@@ -189,7 +190,7 @@ class OrderRow(ft.Row):
 
     def expand_order_list(self, e):
 
-        column_item_list = ft.Column()
+        # column_item_list = ft.Column()
 
         product_ids = [int(x["product_id"]) for x in self.order_products.values()]
         req = ReqProduct()
@@ -203,7 +204,7 @@ class OrderRow(ft.Row):
             on_click=self.save_count
         )
 
-        column_item_list.controls.append(bt_1)
+        self.column_item_list.controls.append(bt_1)
 
         max_lenth_info = 0
         for k, item in self.order_products.items():
@@ -235,7 +236,7 @@ class OrderRow(ft.Row):
                     alignment=ft.alignment.center
             )
 
-            column_item_list.controls.append(bt_i)
+            self.column_item_list.controls.append(bt_i)
 
         bt_add = ft.Container(
             content=ft.Row(controls=[ft.Icon(ft.Icons.ADD), ft.Text("Добавить", color=ft.Colors.WHITE, size=14)], alignment=ft.MainAxisAlignment.CENTER),
@@ -245,11 +246,11 @@ class OrderRow(ft.Row):
             on_click=self.add_to_basket
         )
 
-        column_item_list.controls.append(bt_add)
+        self.column_item_list.controls.append(bt_add)
 
-        cnt_items = len(column_item_list.controls)
+        cnt_items = len(self.column_item_list.controls)
 
-        self.r_order_products.content = column_item_list
+        self.r_order_products.content = self.column_item_list
         self.r_order_products.width = 300 #max_lenth_info * 8
 
         #self.r_order_products.content = ft.Text(f"{self.order_products_cnt}", color=ft.Colors.WHITE, size=14)
@@ -315,6 +316,33 @@ class OrderRow(ft.Row):
                 req_orderts = ReqOrders()
                 req_orderts.update_order(self.order_id, order_products=json.dumps(list(self.order_products.values())))
                 dlg_add_to_basket.open = False
+
+                text_cnt_info = ft.TextField(str(self.order_products[product_added.product_id]["cnt"]), height=45, color="white", bgcolor=secondaryBgColor,
+                                             border_color=textFieldColor, text_size=14, text_align=ft.TextAlign.CENTER)
+                self.d_cnt_info[product_added.product_id] = text_cnt_info
+
+                self.column_item_list.controls.insert(-1,
+                    ft.Container(
+                        content=ft.Row(
+                            controls=[
+                                ft.Container(content=ft.Text(f'#{product_added.item_no}: {product_added.name}', color=ft.Colors.WHITE, size=14, text_align=ft.TextAlign.CENTER),
+                                             width=150, alignment=ft.alignment.center),
+                                ft.Container(content=text_cnt_info,
+                                             width=60, alignment=ft.alignment.center, padding=ft.padding.only(right=3)
+                                             )
+                            ],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN
+                        ),
+                        height=50,  #25 это высота крайних элементов
+                        bgcolor=ft.Colors.GREEN_400,
+                        border_radius=ft.border_radius.all(2),
+                        margin=0,
+                        padding=0,
+                        # on_click=lambda e: print("A1"),
+                        alignment=ft.alignment.center
+                    )
+                )
+
                 self.page.update()
 
         def cancel(e):
