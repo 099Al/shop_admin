@@ -267,8 +267,6 @@ class OrderRow(ft.Row):
             new_value = int(v.value)
             self.order_products[k]["cnt"] = new_value
 
-        print(self.order_products)
-
         l_to_delete = []
         for k, x in self.order_products.items():
             if x["cnt"] <= 0:
