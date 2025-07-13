@@ -1,10 +1,13 @@
 import flet as ft
 from flet_route import Params, Basket
 
+from database.connect import DataBase
+from database.models.models import Admin
+from database.requests.req_login import ReqAdmins
+from pages.config.sizes import defaultWidthWindow
 from pages.login.login_elements import email_input, password_input, error_message
-from utils.Database import Database
 from utils.functions import hash_password_
-from utils.style import *
+from pages.config.style import *
 
 
 class LoginPage:
@@ -22,12 +25,15 @@ class LoginPage:
         page.fonts = {"cuprum": "fonts/Cuprum.ttf"}
 
         def authorization(e):
-            db = Database()
+            db = DataBase()
+            req = ReqAdmins(db)
             email = self.email_input.content.value
             password = self.password_input.content.value
             hash_password = hash_password_(password)
-            if db.authorization(email, hash_password):   #TODO переделать на email или login
+            login_resp: Admin = req.authorization(email, hash_password)
+            if login_resp:
                 page.session.set('auth_user', True)
+                page.session.set('auth_role', login_resp.role)
                 page.go('/dashboard')
             else:
                 self.error_message.open = True  # error_message определен выше
@@ -50,7 +56,7 @@ class LoginPage:
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                 controls=[
                                     ft.Text(
-                                        "Приветствую Вас",
+                                        "Вход в систему",
                                         color=defaultFontColor,
                                         size=25,
                                         weight=ft.FontWeight.NORMAL,
@@ -65,19 +71,15 @@ class LoginPage:
                                         bgcolor=hoverBgcolor,
                                         on_click=lambda e: authorization(e)
                                     ),
-                                    ft.Container(        # ft.Container можно вынести в signup_link = ft.Container(...)
-                                        ft.Text(
-                                            "Создать аккаунт", color=defaultFontColor
-                                        ),
-                                        on_click=lambda e: page.go("/signup"),
-                                    ),
                                 ],
                             ),
                         ),
                         ft.Container(
                             expand=3,
-                            image_src="images/bg_login.jpg",
-                            image_fit=ft.ImageFit.COVER,
+                            image=ft.DecorationImage(
+                                src="/images/bg_login.jpg",
+                                fit=ft.ImageFit.COVER,
+                            ),
                             content=ft.Column(
                                 alignment=ft.MainAxisAlignment.CENTER,
                                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,

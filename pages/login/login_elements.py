@@ -1,9 +1,9 @@
 import flet as ft
-from utils.style import *
+from pages.config.style import *
 
 email_input = ft.Container(
         content=ft.TextField(
-            label="Укажите Email",
+            label="Укажите Email или Login",
             bgcolor=secondaryBgColor,
             border=ft.InputBorder.NONE,
             filled=True,

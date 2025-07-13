@@ -4,6 +4,8 @@ from sqlalchemy import create_engine, Table, MetaData, select, insert, and_
 from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
+from utils.functions import validate_email
+
 
 class Database:
     def __init__(self):
@@ -19,10 +21,11 @@ class Database:
         self.metadata = MetaData()
         self.Base = declarative_base()
 
-        self.adminUser = Table('logins', self.metadata, autoload_with=self.engine)
 
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
+
+        self.adminUser = Table('admins', self.metadata, autoload_with=self.engine)
 
     def check_email(self, email):
         result = self.session.execute(
@@ -48,12 +51,16 @@ class Database:
         self.session.commit()
 
     def authorization(self, login, password):
-        result = self.session.execute(
-            select(self.adminUser)
-            .where(and_(self.adminUser.c.login == login,
-                        self.adminUser.c.password == password)
-                   )
-        )
+        if validate_email(login):
+            result = self.session.execute(
+                select(self.adminUser)
+                .where(and_(self.adminUser.c.email == login, self.adminUser.c.password == password))
+            )
+        else:
+            result = self.session.execute(
+                select(self.adminUser)
+                .where(and_(self.adminUser.c.login == login, self.adminUser.c.password == password))
+            )
 
         return result.fetchone()
 
