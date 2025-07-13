@@ -307,12 +307,24 @@ class OrderRow(ft.Row):
         def confirm_save(e):
             nonlocal product_added
             if product_added:
-                self.order_products[product_added.product_id] = {"product_id": product_added.product_id,
-                                                                 "cnt": int(product_cnt_tf.value),
-                                                                 "price": product_added.curr_price,
-                                                                 "total_price": product_added.curr_price * int(product_cnt_tf.value)
-                                                                 }
+                product_id = product_added.product_id
+                new_cnt = int(product_cnt_tf.value)
+                price = product_added.curr_price
 
+                if product_id in self.order_products:
+                    # Update existing entry by summing cnt
+                    self.order_products[product_id]["cnt"] += new_cnt
+                    self.order_products[product_id]["total_price"] = (
+                            self.order_products[product_id]["cnt"] * price
+                    )
+                else:
+                    # Add new entry
+                    self.order_products[product_id] = {
+                        "product_id": product_id,
+                        "cnt": new_cnt,
+                        "price": price,
+                        "total_price": price * new_cnt
+                    }
                 req_orderts = ReqOrders()
                 req_orderts.update_order(self.order_id, order_products=json.dumps(list(self.order_products.values())))
                 dlg_add_to_basket.open = False
