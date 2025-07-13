@@ -32,7 +32,6 @@ class OrderRow(ft.Row):
         self.delivery_address: str = self.order_info.delivery_address
         self.created_at: str = self.order_info.created_at.strftime("%Y-%m-%d %H:%M")
         self.comment: str = self.order_info.comment
-        print(self.order_info.order_products)
         self.order_products: Dict = {item['product_id']: item for item in json.loads(self.order_info.order_products or "[]")}
 
         self.d_cnt_info = {}  #Сохраняем ссылки на Containers в расширенном ссписке продуктов
