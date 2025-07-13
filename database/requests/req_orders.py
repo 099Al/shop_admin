@@ -1,3 +1,5 @@
+from operator import and_
+
 from sqlalchemy import select, update, delete
 from database.connect import DataBase
 from database.models.models import Order, Client
@@ -14,7 +16,7 @@ class ReqOrders:
         return self.session
 
 
-    def get_all_orders_with_users(self):
+    def get_all_orders_with_users(self, where_stm: list = None):
 
         sql_stm = (
             select(
@@ -33,6 +35,12 @@ class ReqOrders:
             .join(Client, Client.telegram_id == Order.user_tg_id)
             .order_by(Order.created_at.desc())
         )
+
+        if where_stm:
+            if len(where_stm) == 1:
+                sql_stm = sql_stm.where(where_stm[0])
+            else:
+                sql_stm = sql_stm.where(and_(*where_stm))
 
         result = self.session.execute(sql_stm)
         return result.all()
